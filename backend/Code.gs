@@ -1,5 +1,5 @@
 const SPREADSHEET_ID = '1D1gQe09kytZ5GYBEzCySNl5ICNq7cwCaBNLmm7KP9kU';
-const BACKEND_VERSION = 'v46.1-CHECKLIST-PERFIL-E-SLA-OPERACAO';
+const BACKEND_VERSION = 'v47-RESULTADOS-DO-TIME-TV';
 
 const COLABORADORES_ATIVOS = [
   'Luiz Neto',
@@ -84,7 +84,8 @@ const DASHBOARD_ABAS = [
   'creditos',
   'prazoValidacao',
   'temas',
-  'diretoria'
+  'diretoria',
+  'resultados'
 ];
 
 function normalizarNomeAbaDashboard_(value) {
@@ -151,7 +152,15 @@ function parseAbasPermitidas_(raw) {
     'diretoria': 'diretoria',
     'diretoria / performance': 'diretoria',
     'diretoria/performance': 'diretoria',
-    'performance': 'diretoria'
+    'performance': 'diretoria',
+    'resultados': 'resultados',
+    'resultados do time': 'resultados',
+    'resultados do mes': 'resultados',
+    'resultados por colaborador': 'resultados',
+    'tv': 'resultados',
+    'tv studio': 'resultados',
+    'televisao': 'resultados',
+    'modo tv': 'resultados'
   };
 
   const partes = texto
@@ -1750,21 +1759,32 @@ function getDashboardData(authToken) {
 
   const precisaBasesGerenciais = pode('geral') || pode('diretoria');
 
+  // Resultados do Time (TV) cruza Checklist, Operação, Retificação e Créditos.
+  const carregarResultados = pode('resultados');
+
   const carregarTarefas = precisaBasesGerenciais || pode('tarefas');
   const carregarTecnologia = pode('tecnologia');
   const carregarChecklist =
     precisaBasesGerenciais ||
+    carregarResultados ||
     pode('checklist') ||
     pode('slaOperacao');
 
   const carregarOperacao =
     precisaBasesGerenciais ||
+    carregarResultados ||
     pode('operacao') ||
     pode('slaOperacao');
 
-  const carregarRetificacao = precisaBasesGerenciais || pode('retificacao');
+  const carregarRetificacao =
+    precisaBasesGerenciais ||
+    carregarResultados ||
+    pode('retificacao');
   const carregarTemas = pode('temas');
-  const carregarCreditos = precisaBasesGerenciais || pode('creditos');
+  const carregarCreditos =
+    precisaBasesGerenciais ||
+    carregarResultados ||
+    pode('creditos');
   const carregarPrazoValidacao = pode('prazoValidacao');
   const carregarMetas = pode('diretoria') || pode('geral');
 

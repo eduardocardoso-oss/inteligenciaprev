@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@800&family=Montserrat:wght@700&family=Open+Sans:wght@700&display=swap">
   <!-- Identidade v50: design system único (substitui as camadas v9/v11/v17) -->
 
   <script>
@@ -1337,6 +1337,104 @@
     .login-help{margin-top:22px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px;line-height:1.5}
 
     /* ============================================================
+     * 15b. RESULTADOS DO TIME (TV)
+     * Reproduz os slides do Canva "Slide de métrica pessoal". O palco é
+     * desenhado em 1920×1080 (o mesmo espaço do PDF) e escalado para a
+     * tela. Fundo, ondas, ícones e moldura vêm de assets/tv/*.svg,
+     * convertidos do PDF original; textos e fotos ficam por cima.
+     * ============================================================ */
+    .tvr-toolbar{
+      display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;
+      margin-bottom:16px;padding:14px 18px;
+      background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
+    }
+    .tvr-toolbar-info{min-width:0;flex:1 1 260px}
+    .tvr-toolbar-info b{display:block;font-size:15.5px;font-weight:600;letter-spacing:-.01em}
+    .tvr-toolbar-info small{display:block;margin-top:2px;color:var(--muted);font-size:12.5px;line-height:1.45}
+    .tvr-toolbar-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+    .tvr-interval{display:inline-flex;align-items:center;gap:8px;margin:0 4px;color:var(--muted);white-space:nowrap}
+    .tvr-interval select{width:auto;min-width:96px}
+
+    .tvr-viewport{
+      position:relative;width:100%;aspect-ratio:16/9;
+      max-height:calc(100vh - 240px);min-height:220px;
+      margin-bottom:12px;overflow:hidden;
+      border-radius:var(--radius);background:#dcd9f7;box-shadow:var(--shadow);
+    }
+
+    .tvr-stage{
+      position:absolute;left:50%;top:50%;width:1920px;height:1080px;
+      transform:translate(-50%,-50%) scale(.4);transform-origin:center;
+      overflow:hidden;background:#fff;color:#053561;
+    }
+
+    .tvr-slide{
+      position:absolute;inset:0;opacity:0;pointer-events:none;
+      background:center/100% 100% no-repeat;transition:opacity .8s ease;
+    }
+    .tvr-slide.active{opacity:1;pointer-events:auto}
+    .tvr-slide.is-cover{background-image:url('assets/tv/capa.svg')}
+    .tvr-slide.is-person{background-image:url('assets/tv/colaborador.svg')}
+    .tvr-slide.is-closing{background-image:url('assets/tv/encerramento.svg')}
+
+    /* Cada linha é centrada em "left" e posicionada pela linha de base (JS). */
+    .tvr-line{position:absolute;top:0;margin:0;line-height:1;white-space:nowrap;transform:translateX(-50%);color:#053561}
+    .tvr-line.light{color:#fff}
+    .tvr-f-title{font-family:'DM Sans',var(--font);font-weight:800}
+    .tvr-f-value{font-family:'Open Sans',var(--font);font-weight:700}
+    .tvr-f-cover{font-family:'Montserrat',var(--font);font-weight:700}
+    .tvr-month{opacity:.78;letter-spacing:.06em}
+
+    /* Área da foto: mesma posição e raio do recorte da moldura no PDF. */
+    .tvr-photo{
+      position:absolute;left:108px;top:324.2px;width:597.5px;height:561.7px;
+      border-radius:48px;overflow:hidden;background:#0b3d70;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;color:#fff;
+    }
+    .tvr-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s ease}
+    .tvr-photo.has-photo img{opacity:1}
+    .tvr-initials{font:800 170px/1 'DM Sans',var(--font);letter-spacing:-.02em}
+    .tvr-photo-name{font:700 34px/1.2 'Open Sans',var(--font);opacity:.85;text-align:center;padding:0 24px}
+    .tvr-photo.has-photo .tvr-initials,.tvr-photo.has-photo .tvr-photo-name{visibility:hidden}
+
+    .tvr-dots{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+    .tvr-dot{
+      height:30px;padding:0 12px;border-radius:999px;cursor:pointer;
+      background:var(--surface);border:1px solid var(--line-strong);color:var(--ink-2);
+      font:600 12.5px/1 var(--font);transition:background .15s,color .15s,border-color .15s;
+    }
+    .tvr-dot:hover{background:var(--surface-3);color:var(--ink)}
+    .tvr-dot.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    html[data-theme="dark"] .tvr-dot.active{color:#06122b}
+
+    .tvr-overlay-controls{
+      position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:3;display:none;gap:4px;padding:6px;
+      border-radius:14px;background:rgba(5,53,97,.82);border:1px solid rgba(255,255,255,.14);
+      -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:opacity .3s;
+    }
+    .tvr-ctl{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:10px;background:transparent;color:#fff;cursor:pointer}
+    .tvr-ctl:hover{background:rgba(255,255,255,.12)}
+    .tvr-ctl .ic{width:22px;height:22px}
+
+    /* Modo TV: o palco ocupa a tela inteira, sem barra lateral nem cabeçalho. */
+    body.tvr-tv{overflow:hidden}
+    body.tvr-tv .side,body.tvr-tv .top,body.tvr-tv .side-backdrop{display:none !important}
+    body.tvr-tv #view-resultados{animation:none}
+    body.tvr-tv .tvr-viewport{
+      position:fixed;inset:0;z-index:650;width:auto;height:auto;
+      max-height:none;min-height:0;aspect-ratio:auto;margin:0;
+      border-radius:0;box-shadow:none;background:#000;
+    }
+    body.tvr-tv .tvr-overlay-controls{display:flex}
+    body.tvr-tv.tvr-idle{cursor:none}
+    body.tvr-tv.tvr-idle .tvr-overlay-controls{opacity:0;pointer-events:none}
+
+    .tvr-summary td{white-space:nowrap}
+    .tvr-row{cursor:pointer}
+    .tvr-row.is-current td{background:var(--primary-soft)}
+    .tvr-row.is-current td:first-child{box-shadow:inset 3px 0 0 var(--primary)}
+
+    /* ============================================================
      * 16. RESPONSIVO
      * ============================================================ */
     @media (max-width:1280px){
@@ -1455,6 +1553,12 @@
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V11M11 20V4M17 20v-7M2 20h20"/></symbol>
   <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
   <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20a6.5 6.5 0 0 0-4-6"/></symbol>
+  <symbol id="i-tv" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7.5 5.2v13.6a.8.8 0 0 0 1.2.7l10.6-6.8a.8.8 0 0 0 0-1.4L8.7 4.5a.8.8 0 0 0-1.2.7z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14M15 5v14"/></symbol>
+  <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
 </svg>
 
 <div class="login-overlay" id="loginOverlay">
@@ -1581,6 +1685,7 @@
         <div class="nav-group-items">
           <button data-view="slaOperacao"><svg class="ic" aria-hidden="true"><use href="#i-timer"/></svg>SLA Operação</button>
           <button data-view="diretoria"><svg class="ic" aria-hidden="true"><use href="#i-trending"/></svg>Diretoria / Performance</button>
+          <button data-view="resultados"><svg class="ic" aria-hidden="true"><use href="#i-tv"/></svg>Resultados do Time</button>
           <button data-view="temas"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg>Temas Previdenciários</button>
         </div>
       </details>
@@ -1932,6 +2037,84 @@
       <details class="director-methodology-shell">
         <summary>Metodologia dos Indicadores — clique para abrir</summary>
         <div id="directorMethodology"></div>
+      </details>
+    </div>
+  </div>
+
+</section>
+
+
+<section class="view" id="view-resultados">
+
+  <div class="tvr-toolbar">
+    <div class="tvr-toolbar-info">
+      <b id="tvrToolbarMonth">Resultados do mês</b>
+      <small id="tvrToolbarNote">Mês corrente. Os números se atualizam sozinhos a cada 2 minutos a partir da planilha.</small>
+    </div>
+    <div class="tvr-toolbar-actions">
+      <button class="btn secondary icon-btn" type="button" data-tvr-action="prev" title="Slide anterior (←)" aria-label="Slide anterior"><svg class="ic" aria-hidden="true"><use href="#i-arrow-left"/></svg></button>
+      <button class="btn secondary icon-btn" type="button" data-tvr-action="pause" title="Pausar a troca automática (espaço)" aria-label="Pausar a troca automática"><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg></button>
+      <button class="btn secondary icon-btn" type="button" data-tvr-action="next" title="Próximo slide (→)" aria-label="Próximo slide"><svg class="ic" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+      <label class="tvr-interval">Trocar a cada
+        <select id="tvrInterval">
+          <option value="10">10 s</option>
+          <option value="15" selected>15 s</option>
+          <option value="20">20 s</option>
+          <option value="30">30 s</option>
+          <option value="60">1 min</option>
+        </select>
+      </label>
+      <button class="btn primary" type="button" data-tvr-action="tv" title="Abrir em tela cheia para a TV"><svg class="ic" aria-hidden="true"><use href="#i-tv"/></svg><span class="btn-label">Modo TV</span></button>
+    </div>
+  </div>
+
+  <div class="tvr-viewport" id="tvrViewport" role="region" aria-roledescription="apresentação" aria-label="Acompanhamento de métricas mensais">
+    <div class="tvr-stage" id="tvrStage">
+      <div id="tvrSlides"></div>
+    </div>
+
+    <div class="tvr-overlay-controls">
+      <button class="tvr-ctl" type="button" data-tvr-action="prev" title="Slide anterior (←)" aria-label="Slide anterior"><svg class="ic" aria-hidden="true"><use href="#i-arrow-left"/></svg></button>
+      <button class="tvr-ctl" type="button" data-tvr-action="pause" title="Pausar a troca automática (espaço)" aria-label="Pausar a troca automática"><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg></button>
+      <button class="tvr-ctl" type="button" data-tvr-action="next" title="Próximo slide (→)" aria-label="Próximo slide"><svg class="ic" aria-hidden="true"><use href="#i-arrow-right"/></svg></button>
+      <button class="tvr-ctl" type="button" data-tvr-action="exit" title="Sair do modo TV (Esc)" aria-label="Sair do modo TV"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+  </div>
+
+  <div class="tvr-dots" id="tvrDots" aria-label="Slides"></div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Resumo do mês por colaborador</h2>
+        <small>Os mesmos números exibidos na TV. Clique em uma linha para mostrá-la na tela.</small>
+      </div>
+    </div>
+    <div class="table-scroll">
+      <table class="tvr-summary">
+        <thead>
+          <tr>
+            <th>Colaborador</th>
+            <th>Slide</th>
+            <th>Indicador 1</th>
+            <th class="money">Valor 1</th>
+            <th>Indicador 2</th>
+            <th class="money">Valor 2</th>
+            <th class="money">Linhas na planilha</th>
+          </tr>
+        </thead>
+        <tbody id="tvrSummaryTable">
+          <tr><td colspan="7" class="empty">Aguardando dados...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="director-section">
+    <div class="director-body">
+      <details class="director-methodology-shell">
+        <summary>Como os números são calculados — clique para abrir</summary>
+        <div id="tvrMethodology"></div>
       </details>
     </div>
   </div>
@@ -3581,7 +3764,8 @@ const TITLES={
   tarefas:['To-do do Time','Atividades, responsáveis, prazos e conclusão'],
   tecnologia:['To-do Tecnologia','Demandas de tecnologia, responsáveis, prazos e conclusão'],
   temas:['Temas Previdenciários','Ambiente de estudo e consulta técnica dos temas vigentes'],
-  diretoria:['Diretoria / Performance','Indicadores executivos, metas, produção, estoque e metodologia em tempo real']
+  diretoria:['Diretoria / Performance','Indicadores executivos, metas, produção, estoque e metodologia em tempo real'],
+  resultados:['Resultados do Time','Resultado individual de cada colaborador no mês corrente, pronto para a TV da Studio']
 };
 
 const CK_STEPS=[
@@ -13025,7 +13209,8 @@ const VIEW_ORDER=[
   'prazoValidacao',
   'creditos',
   'temas',
-  'diretoria'
+  'diretoria',
+  'resultados'
 ];
 
 function permittedViewsV27(){
@@ -14060,6 +14245,894 @@ function renderSlaOperacaoV461(){
       : '<tr><td colspan="11" class="empty">Nenhuma empresa concluída encontrada para os filtros selecionados.</td></tr>';
 }
 
+/* ============================================================
+ * RESULTADOS DO TIME (TV) — v47
+ * Apresentação "Acompanhamento de métricas mensais" (design do Canva
+ * "Slide de métrica pessoal"): abertura, um slide por colaborador com
+ * o resultado do mês corrente e encerramento. Usa as mesmas bases que
+ * o dashboard já carrega (Checklist, Operação, Retificação e Estoque
+ * de Créditos) e se atualiza junto com o refresh automático de 2 min.
+ * ============================================================ */
+
+// Data que marca o job como finalizado na Operação: a conclusão da Revisão,
+// gravada quando a Situação passa para "Finalizado" (mesma data da
+// calculadora de bônus da Operação).
+const TVR_OP_DATE_FIELD='Data Finalização Revisão';
+
+const TVR_PHOTO_DIR='assets/equipe/';
+const TVR_PHOTO_EXTS=['jpg','jpeg','png','webp'];
+const TVR_INTERVALS=[10,15,20,30,60];
+const TVR_INTERVAL_STORAGE='inteligenciaprev_tvr_interval';
+
+// Posições medidas no PDF original (espaço 1920×1080, linha de base do texto).
+const TVR_LAYOUT={
+  title:{x:940,y:240,size:137.3,max:1320},
+  label1:{x:1268,y:410,size:73.1,max:1000},
+  value1:{x:1268,y:540,size:100.5,max:1000},
+  label2:{x:1268,y:676,size:73.1,max:1000},
+  value2Int:{x:1268,y:802,size:100.5,max:1000},
+  value2Money:{x:1268,y:802,size:69.3,max:1000},
+  panelText:{x:452,size:69.3,max:820}
+};
+
+function tvrIsName(...names){
+  return value=>names.includes(norm(value));
+}
+
+const TVR_KINDS={
+  checklist:{
+    title:'CHECKLIST',
+    label1:'JOBS PARA A OPERAÇÃO',
+    label2:'JOBS SEM PERFIL',
+    value2:'int',
+    rule:'Linhas do Estoque Checklist com Status Concluído e Data Finalização Checklist no mês, com Analista Responsável igual ao nome da pessoa (linhas sem analista também entram, porque o Checklist é dela). "Jobs para a Operação" são os concluídos que seguiram para a Operação; "Jobs sem perfil" são os concluídos com Perfil = Não (encerrados no Estoque Fim).'
+  },
+  operacao:{
+    title:'OPERAÇÃO',
+    label1:'JOBS ENTREGUES',
+    label2:'VALORES ANALISADOS',
+    value2:'money',
+    rule:'Linhas do Estoque Operação com Analista Responsável igual ao nome da pessoa e Data Finalização Revisão no mês (a data gravada quando o job passa para Finalizado). Valores analisados: soma da coluna Valor do Estoque de Créditos para os números de job dessas linhas.'
+  },
+  revisao:{
+    title:'REVISÃO',
+    label1:'JOBS REVISADOS',
+    label2:'VALOR TOTAL',
+    value2:'money',
+    rule:'Linhas do Estoque Operação com Revisor igual ao nome da pessoa e Data Finalização Revisão no mês. Valor total: soma da coluna Valor do Estoque de Créditos para os números de job dessas linhas.'
+  },
+  retificacao:{
+    title:'RETIFICAÇÃO',
+    label1:'RETIFICAÇÕES ENTREGUES',
+    label2:'HONORÁRIOS GERADOS',
+    value2:'money',
+    rule:'Linhas do Estoque Retificação com Analista igual ao nome da pessoa, Status Retificação Concluído e Data Finalização Retificação no mês. Honorários: Valor Retificação × Honorário %, a mesma regra do relatório da aba Retificação; se o Valor Retificação estiver vazio, usa o Honorário $ da planilha.'
+  },
+  roboStudio:{
+    title:'AUTOMAÇÕES',
+    label1:'EMPRESAS NO ROBÔ STUDIO',
+    label2:'HONORÁRIOS GERADOS',
+    value2:'money',
+    rule:'Retificações concluídas no mês (Status Retificação Concluído e Data Finalização Retificação no mês), de qualquer analista, em que a coluna do robô (Robô ou Robô Utilizado) contém "Studio". Honorários pela mesma regra da Retificação.'
+  }
+};
+
+// Ordem de exibição na TV (a mesma do PDF). "match" reconhece o nome como
+// ele aparece em cada estoque (com ou sem sobrenome). "title" substitui o
+// título padrão da área, quando o slide original usa outro.
+const TVR_TEAM=[
+  {name:'Yasmin Nunes',short:'Yasmin',kind:'checklist',match:value=>{const n=norm(value);return n==='yasmin' || n.startsWith('yasmin ');}},
+  {name:'Luiz Neto',short:'Luiz',kind:'operacao',title:'JOBS PRO',match:tvrIsName('luiz','luiz neto')},
+  {name:'Letícia Oliveira',short:'Letícia O.',kind:'operacao',match:tvrIsName('leticia','leticia oliveira')},
+  {name:'Brenda Guterres',short:'Brenda',kind:'operacao',match:tvrIsName('brenda','brenda guterres')},
+  {name:'Mayan Sampaio',short:'Mayan',kind:'revisao',match:value=>isMayanReviewerV314(value)},
+  {name:'Ellen Rogowski',short:'Ellen',kind:'retificacao',match:tvrIsName('ellen','ellen rogowski')},
+  {name:'Letícia da Silva',short:'Letícia S.',kind:'retificacao',match:tvrIsName('leticia','leticia da silva','leticia silva','leticia santos')},
+  {name:'Igor Paz',short:'Igor',kind:'roboStudio'}
+];
+
+const TVR={
+  inited:false,
+  index:0,
+  count:0,
+  paused:false,
+  intervalMs:15000,
+  elapsed:0,
+  last:0,
+  monthKey:'',
+  tv:false,
+  fsByUs:false,
+  urlHandled:false,
+  wake:null,
+  idleTimer:null,
+  photo:{},
+  baseline:{}
+};
+
+/* ---------- período ---------- */
+
+function tvrMonthKey(d=new Date()){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
+function tvrMonthLabel(key){
+  const m=String(key||'').match(/^(\d{4})-(\d{2})$/);
+  if(!m)return '';
+  return new Date(Number(m[1]),Number(m[2])-1,1)
+    .toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+}
+
+/* ---------- contagem de empresas ---------- */
+
+function tvrCompanyKey(r){
+  return norm(r['Nome da Empresa']) || norm(r['Número do Job']);
+}
+
+function tvrUniqueCompanies(rows){
+  return new Set(rows.map(tvrCompanyKey).filter(Boolean)).size;
+}
+
+/* ---------- crédito pelo número do job ---------- */
+
+function tvrJobBase(job){
+  return slaOperacaoJobBaseV4634(job) || slaOperacaoCanonicalJobV4634(job);
+}
+
+function tvrJobsMatch(a,b){
+  // Mesma regra de cruzamento da SLA Operação: mesmo número-base e ao
+  // menos um componente idêntico (88397-RPA não cruza com 88397-RPQ).
+  if(slaOperacaoJobMatchScoreV4634(a,b)>=0)return true;
+
+  // Um dos lados sem sufixo (ex.: 88397 x 88397-RPQ) cruza pelo número-base.
+  const bare=v=>/^\d+$/.test(slaOperacaoCanonicalJobV4634(v));
+  const base=slaOperacaoJobBaseV4634(a);
+
+  return !!base && base===slaOperacaoJobBaseV4634(b) && (bare(a) || bare(b));
+}
+
+function tvrCreditIndex(){
+  const index=new Map();
+
+  (DATA.creditos||[]).forEach((row,i)=>{
+    const job=String(row['Número do Job']||'').trim();
+    if(!job)return;
+
+    const base=tvrJobBase(job);
+    if(!index.has(base))index.set(base,[]);
+
+    index.get(base).push({
+      id:row.__row!==undefined ? row.__row : 'i'+i,
+      job,
+      row
+    });
+  });
+
+  return index;
+}
+
+function tvrCreditForRows(rows,index){
+  const used=new Set();
+  let total=0;
+
+  const jobs=new Set(
+    rows.map(r=>String(r['Número do Job']||'').trim()).filter(Boolean)
+  );
+
+  jobs.forEach(job=>{
+    (index.get(tvrJobBase(job))||[]).forEach(credit=>{
+      if(used.has(credit.id) || !tvrJobsMatch(job,credit.job))return;
+      used.add(credit.id);
+      total+=money(credit.row['Valor']);
+    });
+  });
+
+  return total;
+}
+
+/* ---------- retificação ---------- */
+
+function tvrRobotValue(row){
+  for(const key of Object.keys(row)){
+    const n=norm(key);
+    if(n==='robo utilizado' || n==='robo' || n==='robo usado'){
+      return row[key];
+    }
+  }
+  return '';
+}
+
+function tvrRetFee(row){
+  if(ret39HasValorRetificacao(row) && ret39HonorarioPercentual(row)>0){
+    return ret39HonorarioRetificacao(row);
+  }
+  return money(row['Honorário $'] || row['Honorário']);
+}
+
+/* ---------- cálculo por colaborador ---------- */
+
+function tvrComputeAll(key){
+  const checklistSource=
+    typeof buildChecklistRowsV317==='function'
+      ? buildChecklistRowsV317()
+      : (DATA.checklist||[]);
+
+  const ctx={
+    key,
+    creditIndex:tvrCreditIndex(),
+    checklistDone:checklistSource.filter(
+      r=>
+        done(r['Status']) &&
+        directorMonthKeyFromDate(
+          r['Data Finalização Checkist'] ||
+          r['Data Finalização Checklist']
+        )===key
+    ),
+    retDelivered:(DATA.retificacao||[]).filter(
+      r=>
+        done(r['Status Retificação'] || r['Retificação']) &&
+        directorMonthKeyFromDate(r['Data Finalização Retificação'])===key
+    )
+  };
+
+  return TVR_TEAM.map(person=>tvrComputePerson(person,ctx));
+}
+
+function tvrComputePerson(person,ctx){
+  const kind=TVR_KINDS[person.kind];
+  let rows=[];
+  let v1=0;
+  let v2=0;
+
+  if(person.kind==='checklist'){
+    rows=ctx.checklistDone.filter(r=>{
+      const analyst=String(r['Analista Responsável']||'').trim();
+      return analyst ? person.match(analyst) : true;
+    });
+
+    const semPerfil=r=>norm(r.__perfil || r['Empresa tem Perfil'] || r['Perfil'])==='nao';
+    v1=tvrUniqueCompanies(rows.filter(r=>!semPerfil(r)));
+    v2=tvrUniqueCompanies(rows.filter(semPerfil));
+  }else if(person.kind==='operacao'){
+    rows=(DATA.operacao||[]).filter(
+      r=>
+        person.match(r['Analista Responsável']) &&
+        directorMonthKeyFromDate(r[TVR_OP_DATE_FIELD])===ctx.key
+    );
+    v1=tvrUniqueCompanies(rows);
+    v2=tvrCreditForRows(rows,ctx.creditIndex);
+  }else if(person.kind==='revisao'){
+    rows=(DATA.operacao||[]).filter(
+      r=>
+        person.match(r['Revisor']) &&
+        directorMonthKeyFromDate(r['Data Finalização Revisão'])===ctx.key
+    );
+    v1=tvrUniqueCompanies(rows);
+    v2=tvrCreditForRows(rows,ctx.creditIndex);
+  }else if(person.kind==='retificacao'){
+    rows=ctx.retDelivered.filter(r=>person.match(r['Analista']));
+    v1=tvrUniqueCompanies(rows);
+    v2=rows.reduce((s,r)=>s+tvrRetFee(r),0);
+  }else if(person.kind==='roboStudio'){
+    rows=ctx.retDelivered.filter(r=>norm(tvrRobotValue(r)).includes('studio'));
+    v1=tvrUniqueCompanies(rows);
+    v2=rows.reduce((s,r)=>s+tvrRetFee(r),0);
+  }
+
+  return {person,kind,rows,v1,v2};
+}
+
+/* ---------- formatação ---------- */
+
+function tvrIntText(v){
+  return Math.round(Number(v)||0).toLocaleString('pt-BR');
+}
+
+function tvrMoneyText(v){
+  return brl(Number(v)||0);
+}
+
+function tvrFormat(v,kind){
+  return kind==='money' ? tvrMoneyText(v) : tvrIntText(v);
+}
+
+function tvrInitials(name){
+  const parts=String(name||'').trim().split(/\s+/).filter(Boolean);
+  if(!parts.length)return '';
+  const first=parts[0].charAt(0);
+  const last=parts.length>1 ? parts[parts.length-1].charAt(0) : '';
+  return (first+last).toUpperCase();
+}
+
+function tvrSlug(name){
+  return norm(name).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+
+/* ---------- fotos (assets/equipe/<nome>.jpg) ---------- */
+
+function tvrPhotoHtml(person){
+  const slug=tvrSlug(person.name);
+  const state=TVR.photo[slug];
+  const fallback=`
+    <span class="tvr-initials">${esc(tvrInitials(person.name))}</span>
+    <span class="tvr-photo-name">${esc(person.name)}</span>`;
+
+  if(state==='missing'){
+    return `<div class="tvr-photo">${fallback}</div>`;
+  }
+
+  const known=state && state.ext;
+  const extIdx=known ? Math.max(0,TVR_PHOTO_EXTS.indexOf(state.ext)) : 0;
+
+  return `
+    <div class="tvr-photo${known?' has-photo':''}">
+      ${fallback}
+      <img src="${TVR_PHOTO_DIR}${slug}.${TVR_PHOTO_EXTS[extIdx]}" alt="${esc(person.name)}"
+        data-slug="${esc(slug)}" data-ext-idx="${extIdx}"
+        onload="tvrPhotoLoaded(this)" onerror="tvrPhotoError(this)">
+    </div>`;
+}
+
+function tvrPhotoLoaded(img){
+  const idx=Number(img.dataset.extIdx)||0;
+  TVR.photo[img.dataset.slug]={ext:TVR_PHOTO_EXTS[idx]};
+  if(img.parentElement)img.parentElement.classList.add('has-photo');
+}
+
+function tvrPhotoError(img){
+  const slug=img.dataset.slug;
+  const next=(Number(img.dataset.extIdx)||0)+1;
+
+  if(next<TVR_PHOTO_EXTS.length){
+    img.dataset.extIdx=String(next);
+    img.src=TVR_PHOTO_DIR+slug+'.'+TVR_PHOTO_EXTS[next];
+    return;
+  }
+
+  TVR.photo[slug]='missing';
+  img.remove();
+}
+
+/* ---------- slides ---------- */
+
+// Uma linha de texto centrada em x, com a linha de base em y (posições do PDF).
+function tvrLine(text,pos,opts={}){
+  const cls=['tvr-line',opts.font||'tvr-f-title'];
+  if(opts.light)cls.push('light');
+  if(opts.extra)cls.push(opts.extra);
+
+  const data=opts.value!==undefined
+    ? ` data-tvr-value="${Number(opts.value)||0}" data-tvr-kind="${opts.kind||'int'}"`
+    : '';
+
+  return `<p class="${cls.join(' ')}" style="left:${pos.x}px;font-size:${pos.size}px"
+    data-baseline="${pos.y}" data-size="${pos.size}" data-max="${pos.max||0}"${data}>${esc(text)}</p>`;
+}
+
+function tvrPanelLines(){
+  const p=TVR_LAYOUT.panelText;
+  return (
+    tvrLine('EQUIPE',{...p,y:517},{font:'tvr-f-value',light:true})+
+    tvrLine('PREVIDENCIÁRIO',{...p,y:614},{font:'tvr-f-value',light:true})
+  );
+}
+
+function tvrCoverHtml(monthKey){
+  const month=tvrMonthLabel(monthKey).toUpperCase();
+  const right={x:1434,size:86,max:960};
+
+  return `
+    <article class="tvr-slide is-cover" data-index="0" aria-hidden="true">
+      ${tvrPanelLines()}
+      ${tvrLine(month,{x:452,y:712,size:40,max:820},{font:'tvr-f-value',light:true,extra:'tvr-month'})}
+      ${tvrLine('ACOMPANHAMENTO',{...right,y:598},{font:'tvr-f-cover'})}
+      ${tvrLine('DE MÉTRICAS',{...right,y:718},{font:'tvr-f-cover'})}
+      ${tvrLine('MENSAIS',{...right,y:838},{font:'tvr-f-cover'})}
+    </article>`;
+}
+
+function tvrPersonHtml(result,index){
+  const {person,kind}=result;
+  const L=TVR_LAYOUT;
+  const value2Pos=kind.value2==='money' ? L.value2Money : L.value2Int;
+
+  return `
+    <article class="tvr-slide is-person" data-index="${index}" aria-hidden="true" aria-label="${esc(person.name)}">
+      ${tvrLine(person.title||kind.title,L.title)}
+      ${tvrPhotoHtml(person)}
+      ${tvrLine(kind.label1,L.label1)}
+      ${tvrLine(tvrIntText(result.v1),L.value1,{font:'tvr-f-value',value:result.v1,kind:'int'})}
+      ${tvrLine(kind.label2,L.label2)}
+      ${tvrLine(tvrFormat(result.v2,kind.value2),value2Pos,{font:'tvr-f-value',value:result.v2,kind:kind.value2})}
+    </article>`;
+}
+
+function tvrClosingHtml(index){
+  const right={x:1337,size:118.5,max:1000};
+
+  return `
+    <article class="tvr-slide is-closing" data-index="${index}" aria-hidden="true">
+      ${tvrPanelLines()}
+      ${tvrLine('LEGADO',{...right,y:333},{font:'tvr-f-cover'})}
+      ${tvrLine('SE',{...right,y:499},{font:'tvr-f-cover'})}
+      ${tvrLine('CONSTRÓI',{...right,y:665},{font:'tvr-f-cover'})}
+      ${tvrLine('EM GRUPO',{...right,y:830},{font:'tvr-f-cover'})}
+    </article>`;
+}
+
+// Posição da linha de base em relação ao topo da linha (line-height:1),
+// medida no navegador para cada fonte, já que as métricas variam por sistema.
+function tvrBaselineRatio(el,stage){
+  const cs=getComputedStyle(el);
+  const key=cs.fontFamily+'|'+cs.fontWeight;
+  if(TVR.baseline[key])return TVR.baseline[key];
+
+  const probe=document.createElement('div');
+  probe.style.cssText=
+    'position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;line-height:1;font-size:100px;'+
+    'font-family:'+cs.fontFamily+';font-weight:'+cs.fontWeight;
+  probe.innerHTML='H<span style="display:inline-block;width:1px;height:0;vertical-align:baseline"></span>';
+  stage.appendChild(probe);
+  const ratio=probe.lastChild.offsetTop/100;
+  probe.remove();
+
+  const family=cs.fontFamily.split(',')[0].trim();
+  const loaded=!document.fonts || document.fonts.check(cs.fontWeight+' 100px '+family);
+  if(ratio>0 && loaded)TVR.baseline[key]=ratio;
+
+  return ratio;
+}
+
+// Aplica as posições e reduz a fonte de textos longos para caberem.
+function tvrLayoutLines(){
+  const stage=document.getElementById('tvrStage');
+  if(!stage || !stage.offsetWidth)return;
+
+  stage.querySelectorAll('.tvr-line').forEach(el=>{
+    const base=Number(el.dataset.size)||0;
+    const max=Number(el.dataset.max)||0;
+    let size=base;
+
+    el.style.fontSize=size+'px';
+
+    if(max && el.offsetWidth>max){
+      size=Math.max(24,size*max/el.offsetWidth);
+      el.style.fontSize=size.toFixed(1)+'px';
+    }
+
+    const ratio=tvrBaselineRatio(el,stage);
+    el.style.top=(Number(el.dataset.baseline)-ratio*size).toFixed(1)+'px';
+  });
+}
+
+function tvrRenderSummary(results){
+  const tbody=document.getElementById('tvrSummaryTable');
+  if(!tbody)return;
+
+  tbody.innerHTML=results.map(
+    (r,i)=>`
+      <tr class="tvr-row" data-tvr-go="${i+1}" title="Mostrar na tela">
+        <td><b>${esc(r.person.name)}</b></td>
+        <td>${esc(r.person.title||r.kind.title)}</td>
+        <td>${esc(r.kind.label1)}</td>
+        <td class="money">${tvrIntText(r.v1)}</td>
+        <td>${esc(r.kind.label2)}</td>
+        <td class="money">${tvrFormat(r.v2,r.kind.value2)}</td>
+        <td class="money">${tvrIntText(r.rows.length)}</td>
+      </tr>`
+  ).join('');
+}
+
+function tvrRenderMethodology(){
+  const el=document.getElementById('tvrMethodology');
+  if(!el || el.childElementCount)return;
+
+  const general=[
+    ['Período','Mês corrente, do dia 1º até hoje. A apresentação vira sozinha para o mês novo no primeiro dia de cada mês.'],
+    ['Empresas únicas','Todas as quantidades contam empresas: linhas repetidas da mesma empresa (pelo Nome da Empresa) contam uma vez só, no Checklist, na Operação e na Retificação.']
+  ];
+
+  const byKind=Object.keys(TVR_KINDS).map(kindKey=>{
+    const names=TVR_TEAM
+      .filter(p=>p.kind===kindKey)
+      .map(p=>p.name)
+      .join(', ');
+
+    return [`${TVR_KINDS[kindKey].title} — ${names}`,TVR_KINDS[kindKey].rule];
+  });
+
+  const extra=[
+    ['Fotos',`Arquivos em ${TVR_PHOTO_DIR} com o nome da pessoa (ex.: ${tvrSlug(TVR_TEAM[0].name)}.jpg). Sem foto, o slide mostra as iniciais e o nome.`]
+  ];
+
+  el.innerHTML=
+    `<div class="director-methodology-legend">${
+      [...general,...byKind,...extra].map(
+        ([title,body])=>`
+          <div class="method-name">${esc(title)}</div>
+          <div class="method-text">${esc(body)}</div>`
+      ).join('')
+    }</div>`;
+}
+
+function tvrUpdatedTime(){
+  const raw=String((DATA && DATA.atualizadoEm) || '');
+  const m=raw.match(/(\d{1,2}:\d{2})/);
+  return m ? m[1] : new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function renderResultadosTV(){
+  const slidesEl=document.getElementById('tvrSlides');
+  if(!slidesEl)return;
+
+  if(!permittedViewsV27().includes('resultados'))return;
+
+  tvrInitOnce();
+  tvrRenderMethodology();
+
+  const key=tvrMonthKey();
+
+  if(TVR.monthKey && TVR.monthKey!==key){
+    TVR.index=0;
+    TVR.elapsed=0;
+  }
+  TVR.monthKey=key;
+
+  const results=tvrComputeAll(key);
+
+  // Abertura + um slide por colaborador + encerramento.
+  TVR.count=results.length+2;
+  if(TVR.index>=TVR.count)TVR.index=0;
+
+  slidesEl.innerHTML=
+    tvrCoverHtml(key)+
+    results.map((r,i)=>tvrPersonHtml(r,i+1)).join('')+
+    tvrClosingHtml(results.length+1);
+
+  const dotLabels=['Abertura',...results.map(r=>r.person.short||r.person.name),'Encerramento'];
+  document.getElementById('tvrDots').innerHTML=dotLabels.map(
+    (label,i)=>`<button type="button" class="tvr-dot" data-tvr-go="${i}">${esc(label)}</button>`
+  ).join('');
+
+  const monthLabel=tvrMonthLabel(key);
+  const toolbarMonth=document.getElementById('tvrToolbarMonth');
+  if(toolbarMonth){
+    toolbarMonth.textContent='Resultados de '+monthLabel;
+  }
+
+  const toolbarNote=document.getElementById('tvrToolbarNote');
+  if(toolbarNote){
+    toolbarNote.textContent=
+      'Mês corrente. Atualizado às '+tvrUpdatedTime()+
+      '; os números se atualizam sozinhos a cada 2 minutos a partir da planilha.';
+  }
+
+  tvrRenderSummary(results);
+  tvrApplyActive(false);
+  tvrFit();
+  tvrHandleUrlOnce();
+}
+
+/* ---------- palco e rotação ---------- */
+
+function tvrFit(){
+  const viewport=document.getElementById('tvrViewport');
+  const stage=document.getElementById('tvrStage');
+  if(!viewport || !stage)return;
+
+  const w=viewport.clientWidth;
+  const h=viewport.clientHeight;
+  if(!w || !h)return;
+
+  const scale=Math.min(w/1920,h/1080);
+  stage.style.transform=`translate(-50%,-50%) scale(${scale})`;
+
+  tvrLayoutLines();
+}
+
+function tvrApplyActive(animate){
+  const slides=[...document.querySelectorAll('#tvrSlides .tvr-slide')];
+
+  slides.forEach((slide,i)=>{
+    const active=i===TVR.index;
+    slide.classList.toggle('active',active);
+    slide.setAttribute('aria-hidden',active?'false':'true');
+  });
+
+  document.querySelectorAll('#tvrDots .tvr-dot').forEach(
+    (dot,i)=>dot.classList.toggle('active',i===TVR.index)
+  );
+
+  document.querySelectorAll('#tvrSummaryTable .tvr-row').forEach(
+    (row,i)=>row.classList.toggle('is-current',i+1===TVR.index)
+  );
+
+  if(animate && slides[TVR.index]){
+    tvrCountUp(slides[TVR.index]);
+  }
+}
+
+function tvrCountUp(slide){
+  const reduce=
+    window.matchMedia &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if(reduce)return;
+
+  // Usa timer comum (não requestAnimationFrame): navegadores de TV e modos
+  // quiosque podem suspender os quadros, e o número nunca pode ficar em zero.
+  slide.querySelectorAll('[data-tvr-value]').forEach(el=>{
+    const target=Number(el.dataset.tvrValue)||0;
+    const kind=el.dataset.tvrKind;
+    const start=Date.now();
+    const duration=1100;
+
+    clearInterval(Number(el.dataset.tvrTimer)||0);
+
+    const timer=setInterval(()=>{
+      if(!el.isConnected){
+        clearInterval(timer);
+        return;
+      }
+
+      const k=Math.min(1,(Date.now()-start)/duration);
+      const eased=1-Math.pow(1-k,3);
+
+      el.textContent=tvrFormat(kind==='money' ? target*eased : Math.round(target*eased),kind);
+
+      if(k>=1){
+        clearInterval(timer);
+        el.textContent=tvrFormat(target,kind);
+      }
+    },40);
+
+    el.dataset.tvrTimer=String(timer);
+    el.textContent=tvrFormat(0,kind);
+  });
+}
+
+function tvrGo(target){
+  if(!TVR.count)return;
+
+  TVR.index=((target%TVR.count)+TVR.count)%TVR.count;
+  TVR.elapsed=0;
+  tvrApplyActive(true);
+}
+
+function tvrIsRunning(){
+  const view=document.getElementById('view-resultados');
+
+  return (
+    !TVR.paused &&
+    !document.hidden &&
+    TVR.count>1 &&
+    !!view &&
+    view.classList.contains('active')
+  );
+}
+
+function tvrTick(){
+  const now=Date.now();
+  const dt=TVR.last ? now-TVR.last : 0;
+  TVR.last=now;
+
+  if(!tvrIsRunning())return;
+
+  // Limita o salto caso o navegador tenha congelado a aba.
+  TVR.elapsed+=Math.min(dt,1000);
+
+  if(TVR.elapsed>=TVR.intervalMs){
+    tvrGo(TVR.index+1);
+  }
+}
+
+function tvrSetPaused(paused){
+  TVR.paused=!!paused;
+
+  const viewport=document.getElementById('tvrViewport');
+  if(viewport)viewport.classList.toggle('is-paused',TVR.paused);
+
+  document.querySelectorAll('[data-tvr-action="pause"]').forEach(btn=>{
+    const use=btn.querySelector('use');
+    if(use)use.setAttribute('href',TVR.paused?'#i-play':'#i-pause');
+
+    const label=TVR.paused?'Retomar a troca automática':'Pausar a troca automática';
+    btn.setAttribute('aria-label',label);
+    btn.title=label+' (espaço)';
+  });
+}
+
+/* ---------- modo TV ---------- */
+
+async function tvrWakeLock(on){
+  try{
+    if(on){
+      if(!TVR.wake && 'wakeLock' in navigator && !document.hidden){
+        TVR.wake=await navigator.wakeLock.request('screen');
+        TVR.wake.addEventListener('release',()=>{TVR.wake=null;});
+      }
+    }else if(TVR.wake){
+      await TVR.wake.release();
+      TVR.wake=null;
+    }
+  }catch(e){
+    // Wake Lock é opcional (nem todo navegador de TV suporta).
+  }
+}
+
+function tvrPokeIdle(){
+  document.body.classList.remove('tvr-idle');
+  clearTimeout(TVR.idleTimer);
+
+  if(TVR.tv){
+    TVR.idleTimer=setTimeout(
+      ()=>document.body.classList.add('tvr-idle'),
+      3000
+    );
+  }
+}
+
+function tvrEnterTv(requestFullscreen){
+  if(!permittedViewsV27().includes('resultados'))return;
+
+  activateViewV27('resultados');
+  document.body.classList.add('tvr-tv');
+  document.body.classList.remove('nav-open');
+  TVR.tv=true;
+
+  const root=document.documentElement;
+
+  if(requestFullscreen && root.requestFullscreen && !document.fullscreenElement){
+    root.requestFullscreen()
+      .then(()=>{TVR.fsByUs=true;})
+      .catch(()=>{});
+  }
+
+  tvrWakeLock(true);
+  tvrPokeIdle();
+  requestAnimationFrame(tvrFit);
+}
+
+function tvrExitTv(){
+  TVR.tv=false;
+  TVR.fsByUs=false;
+  clearTimeout(TVR.idleTimer);
+  document.body.classList.remove('tvr-tv','tvr-idle');
+
+  if(document.fullscreenElement && document.exitFullscreen){
+    document.exitFullscreen().catch(()=>{});
+  }
+
+  tvrWakeLock(false);
+  requestAnimationFrame(tvrFit);
+}
+
+// Abrir o dashboard com ?tv (ou #tv) já entra direto no modo TV.
+function tvrUrlWantsTv(){
+  try{
+    const url=new URL(window.location.href);
+    return (
+      url.searchParams.has('tv') ||
+      norm(url.searchParams.get('modo'))==='tv' ||
+      norm(url.hash)==='#tv'
+    );
+  }catch(e){
+    return false;
+  }
+}
+
+function tvrHandleUrlOnce(){
+  if(TVR.urlHandled)return;
+  TVR.urlHandled=true;
+
+  if(tvrUrlWantsTv()){
+    tvrEnterTv(false);
+  }
+}
+
+function tvrInitOnce(){
+  if(TVR.inited)return;
+  TVR.inited=true;
+
+  try{
+    const saved=Number(localStorage.getItem(TVR_INTERVAL_STORAGE));
+    if(TVR_INTERVALS.includes(saved))TVR.intervalMs=saved*1000;
+  }catch(e){}
+
+  const select=document.getElementById('tvrInterval');
+  if(select){
+    select.value=String(TVR.intervalMs/1000);
+    select.addEventListener('change',()=>{
+      const seconds=Number(select.value);
+      if(!TVR_INTERVALS.includes(seconds))return;
+      TVR.intervalMs=seconds*1000;
+      try{localStorage.setItem(TVR_INTERVAL_STORAGE,String(seconds));}catch(e){}
+    });
+  }
+
+  const view=document.getElementById('view-resultados');
+
+  if(view){
+    view.addEventListener('click',e=>{
+      const action=e.target.closest('[data-tvr-action]');
+
+      if(action){
+        const a=action.dataset.tvrAction;
+        if(a==='prev')tvrGo(TVR.index-1);
+        else if(a==='next')tvrGo(TVR.index+1);
+        else if(a==='pause')tvrSetPaused(!TVR.paused);
+        else if(a==='tv')tvrEnterTv(true);
+        else if(a==='exit')tvrExitTv();
+        return;
+      }
+
+      const go=e.target.closest('[data-tvr-go]');
+      if(go)tvrGo(Number(go.dataset.tvrGo));
+    });
+  }
+
+  const viewport=document.getElementById('tvrViewport');
+  if(viewport && typeof ResizeObserver==='function'){
+    new ResizeObserver(()=>tvrFit()).observe(viewport);
+  }
+  window.addEventListener('resize',tvrFit);
+
+  // As fontes do Google chegam depois do primeiro desenho: reposiciona.
+  if(document.fonts){
+    document.fonts.addEventListener('loadingdone',()=>{
+      TVR.baseline={};
+      tvrLayoutLines();
+    });
+    document.fonts.ready.then(()=>{
+      TVR.baseline={};
+      tvrLayoutLines();
+    });
+  }
+
+  document.addEventListener('keydown',e=>{
+    const active=document.getElementById('view-resultados');
+    if(!active || !active.classList.contains('active'))return;
+
+    const login=document.getElementById('loginOverlay');
+    if(login && !login.classList.contains('hidden'))return;
+    if(document.querySelector('.modal-bg.show'))return;
+
+    const tag=(e.target && e.target.tagName) || '';
+    if(/^(INPUT|SELECT|TEXTAREA)$/.test(tag))return;
+
+    if(e.key==='ArrowRight'){
+      e.preventDefault();
+      tvrGo(TVR.index+1);
+    }else if(e.key==='ArrowLeft'){
+      e.preventDefault();
+      tvrGo(TVR.index-1);
+    }else if(e.key===' ' && tag!=='BUTTON'){
+      e.preventDefault();
+      tvrSetPaused(!TVR.paused);
+    }else if(e.key==='Escape' && TVR.tv){
+      tvrExitTv();
+    }
+
+    if(TVR.tv)tvrPokeIdle();
+  });
+
+  document.addEventListener('mousemove',()=>{
+    if(TVR.tv)tvrPokeIdle();
+  });
+
+  document.addEventListener('fullscreenchange',()=>{
+    // Saiu da tela cheia pelo Esc do navegador: sai do modo TV também.
+    if(!document.fullscreenElement && TVR.fsByUs && TVR.tv){
+      tvrExitTv();
+    }
+  });
+
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && TVR.tv)tvrWakeLock(true);
+  });
+
+  setInterval(tvrTick,250);
+}
+
 function renderAll(){
   safeRender('opções do To-do',populateTaskModalOptions);
   safeRender('Visão Geral',renderGeral);
@@ -14073,6 +15146,7 @@ function renderAll(){
   safeRender('To-do',renderTarefas);
   safeRender('To-do Tecnologia',renderTarefasTecnologiaV37);
   safeRender('Temas Previdenciários',renderTemas);
+  safeRender('Resultados do Time',renderResultadosTV);
   safeRender('filtros adicionais',renderCustomFilterChips);
   safeRender('ordenação',updateSortMarks);
   safeRender('gráficos',renderChartsV50);
