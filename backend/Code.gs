@@ -1,5 +1,5 @@
 const SPREADSHEET_ID = '1D1gQe09kytZ5GYBEzCySNl5ICNq7cwCaBNLmm7KP9kU';
-const BACKEND_VERSION = 'v47.2-STANDBY-RETIFICACAO';
+const BACKEND_VERSION = 'v46.4-2026-11-18-TV-OTIMIZADA-STANDBY';
 
 const COLABORADORES_ATIVOS = [
   'Luiz Neto',
@@ -3945,11 +3945,6 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
       celulaData.clearContent();
     }
 
-    /*
-     * Stand-by: a justificativa é obrigatória e é SEMPRE anexada
-     * ao conteúdo existente da coluna Observações.
-     * Nunca substitui a observação anterior.
-     */
     if (
       campoStatus === 'Status Retificação' &&
       normalizeStatus_(status) === 'stand-by' &&
