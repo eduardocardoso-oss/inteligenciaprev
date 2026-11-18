@@ -2,6 +2,16 @@
 
 Todas as alterações relevantes do dashboard serão registradas neste arquivo.
 
+## Branch `temporaria` (v46.4 + apresentação v47) - 2026-11-18
+
+Versão antiga do dashboard (a que roda no Apps Script e em `app.inteligenciaprev.com.br`), mantida por enquanto, com a apresentação da TV da `main` no lugar da tela v46.4.
+
+- A aba "Resultados da Equipe" (`resultadosEquipe`) passa a mostrar a apresentação "Acompanhamento de métricas mensais", no design do Canva: abertura, um slide por colaborador e encerramento, com as mesmas regras e números da `main`.
+- Fundos SVG e fotos ficam embutidos no `index.html`, para a página funcionar igual na Vercel e no Apps Script. O arquivo caiu de 4,4 MB para 1,5 MB.
+- A aba aparece para quem tem a permissão própria ou vê Visão Geral ou Diretoria, perfis que já carregam todas as bases da TV.
+- `frontend/Index.html` foi renomeado para `index.html`, porque a Vercel só serve a raiz com o nome em minúsculas.
+- O backend continua o v46.4 (sem mudanças).
+
 ## v2.1.0 - 2026-11-17
 
 Nova aba **Resultados do Time**, feita para a TV da Studio. Ela reproduz a apresentação do Canva "Acompanhamento de métricas mensais": abertura, um slide por colaborador com foto e o resultado do mês corrente, e o encerramento "Legado se constrói em grupo".
