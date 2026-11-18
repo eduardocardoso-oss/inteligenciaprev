@@ -1,5 +1,5 @@
 const SPREADSHEET_ID = '1D1gQe09kytZ5GYBEzCySNl5ICNq7cwCaBNLmm7KP9kU';
-const BACKEND_VERSION = 'v47.3-SEM-TV-STANDBY';
+const BACKEND_VERSION = 'v47.4-STANDBY-NEUTRO-SEM-STATUS-PEDIDO';
 
 const COLABORADORES_ATIVOS = [
   'Luiz Neto',
@@ -3740,8 +3740,19 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
 
   try {
     const row = Number(rowNumber);
-    const status = String(novoStatus || '').trim();
+    let status = String(novoStatus || '').trim();
     const campoRecebido = String(campo || '').trim();
+
+    const statusNormStandby = normalizarNomeAbaDashboard_(status)
+      .replace(/[\s_]+/g, '-')
+      .replace(/-+/g, '-');
+
+    if (
+      statusNormStandby === 'stand-by' ||
+      statusNormStandby === 'standby'
+    ) {
+      status = 'Stand-by';
+    }
 
     if (!Number.isInteger(row) || row < 2) {
       throw new Error('Linha inválida: ' + rowNumber);
