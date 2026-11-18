@@ -13231,6 +13231,26 @@ function permittedViewsV27(){
     p.push('slaOperacao');
   }
 
+  // Resultados do Time (TV): aceita o nome usado na versão anterior
+  // ("resultadosEquipe") e libera a aba para quem vê Visão Geral ou
+  // Diretoria, perfis que já carregam Checklist, Operação, Retificação e
+  // Créditos (assim os números da TV nunca saem incompletos).
+  const legacyTv=p.indexOf('resultadosEquipe');
+  if(legacyTv>=0){
+    p.splice(legacyTv,1);
+  }
+
+  if(
+    !p.includes('resultados') &&
+    (
+      legacyTv>=0 ||
+      p.includes('geral') ||
+      p.includes('diretoria')
+    )
+  ){
+    p.push('resultados');
+  }
+
   return p.filter(v=>VIEW_ORDER.includes(v));
 }
 

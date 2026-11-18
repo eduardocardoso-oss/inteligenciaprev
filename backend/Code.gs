@@ -157,7 +157,11 @@ function parseAbasPermitidas_(raw) {
     'resultados do time': 'resultados',
     'resultados do mes': 'resultados',
     'resultados por colaborador': 'resultados',
+    'resultados equipe': 'resultados',
+    'resultados da equipe': 'resultados',
+    'resultadosequipe': 'resultados',
     'tv': 'resultados',
+    'tv equipe': 'resultados',
     'tv studio': 'resultados',
     'televisao': 'resultados',
     'modo tv': 'resultados'

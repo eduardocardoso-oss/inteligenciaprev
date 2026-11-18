@@ -29,7 +29,8 @@ Todas as quantidades contam empresas únicas (linhas repetidas da mesma empresa 
 
 ### Backend
 
-- Nova permissão `resultados` (aliases: "Resultados do Time", "TV"). Quem tem acesso "TODAS" já recebe a aba.
+- Nova permissão `resultados` (aliases: "Resultados do Time", "Resultados da Equipe", "TV"). Quem tem acesso "TODAS" já recebe a aba.
+- A aba também aparece para quem tem Visão Geral ou Diretoria (esses perfis já carregam todas as bases da TV), inclusive com o backend anterior. O nome `resultadosEquipe`, da versão de TV do branch `staging`, abre a mesma aba.
 - A permissão carrega Checklist, Operação, Retificação e Estoque de Créditos.
 
 ## v2.0.0 - 2026-11-13
