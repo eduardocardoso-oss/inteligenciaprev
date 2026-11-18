@@ -4741,988 +4741,6 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
 
 <body>
 
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-card">
-    <div class="login-brand">🔐</div>
-    <h1>Gestão Previdenciária</h1>
-    <p>
-      Entre com o e-mail cadastrado e o seu PIN de acesso.
-    </p>
-
-    <form id="loginForm">
-      <div class="login-field">
-        <label>E-mail</label>
-        <input
-          id="loginEmail"
-          type="email"
-          autocomplete="username"
-          placeholder="nome@empresa.com.br"
-          required
-        >
-      </div>
-
-      <div class="login-field">
-        <label>PIN</label>
-        <input
-          id="loginPin"
-          type="password"
-          inputmode="numeric"
-          autocomplete="current-password"
-          placeholder="Digite seu PIN"
-          required
-        >
-      </div>
-
-      <button class="login-btn" id="loginButton" type="submit">
-        Entrar no dashboard
-      </button>
-
-      <div class="login-error" id="loginError"></div>
-    </form>
-</div>
-</div>
-
-
-<div class="app">
-
-  <aside class="side">
-
-    <div class="brand">
-      <b>Gestão Previdenciária</b>
-      <small>Controle Gerencial<br>Grupo Studio</small>
-    </div>
-
-    <nav class="nav">
-      <button class="active" data-view="geral">Visão Geral</button>
-
-      <details class="nav-group" data-nav-group="estoques">
-        <summary>
-          <span>Estoques</span>
-          <span class="nav-group-arrow">⌄</span>
-        </summary>
-        <div class="nav-group-items">
-          <button data-view="checklist">Checklist</button>
-          <button data-view="operacao">Operação</button>
-          <button data-view="retificacao">Retificação</button>
-          <button data-view="prazoValidacao">Prazo de Validação</button>
-          <button data-view="creditos">Créditos</button>
-        </div>
-      </details>
-
-      <details class="nav-group" data-nav-group="gestao">
-        <summary>
-          <span>Gestão e Dados</span>
-          <span class="nav-group-arrow">⌄</span>
-        </summary>
-        <div class="nav-group-items">
-          <button data-view="slaOperacao">SLA Operação</button>
-          <button data-view="diretoria">Diretoria / Performance</button>
-          <button data-view="temas">Temas Previdenciários</button>
-        </div>
-      </details>
-
-      <details class="nav-group" data-nav-group="todos">
-        <summary>
-          <span>To-dos</span>
-          <span class="nav-group-arrow">⌄</span>
-        </summary>
-        <div class="nav-group-items">
-          <button data-view="tarefas">To-do do Time</button>
-          <button data-view="tecnologia">To-do Tecnologia</button>
-        </div>
-      </details>
-    </nav>
-
-    <div class="foot">
-      <div class="session-chip" id="sessionChip" style="display:none">
-        <div id="sessionUser"></div>
-        <button type="button" id="logoutButton">Sair deste acesso</button>
-      </div>
-      <span id="lastUpdate">Aguardando leitura...</span>
-      <span id="backendVersion" class="tech-hidden">Backend: aguardando...</span>
-      <span id="actionDebug" class="tech-hidden">Ação: aguardando interação</span>
-    </div>
-
-  </aside>
-
-  <main class="main">
-
-    <header class="top">
-
-      <div>
-        <h1 id="title">Visão Geral</h1>
-        <p id="subtitle">Resumo executivo dos estoques e atividades do Previdenciário</p>
-      </div>
-
-      <div class="top-actions">
-        <span class="load" id="loading">Atualizando...</span>
-        <button class="btn secondary theme-toggle icon-theme-btn" id="themeToggle" type="button" title="Alternar claro/escuro" aria-label="Alternar tema claro e escuro">☾</button>
-        <button class="btn secondary gs-theme-btn" id="gsThemeToggle" type="button" title="Tema azul do Previdenciário" aria-label="Alternar tema azul">GS</button>
-        <button class="btn secondary" id="refresh">↻ Atualizar</button>
-        <button class="btn secondary" id="exportExcelActive" type="button" title="Exportar os dados filtrados da aba atual para Excel">⇩ Exportar Excel</button>
-        <button class="btn primary" id="newTask">+ Nova atividade</button>
-      </div>
-
-    </header>
-
-    
-<section class="view active" id="view-geral">
-
-  <div class="overview-stock-update-strip" id="overviewStockUpdatesV362"></div>
-
-
-  <div class="kpis" id="kpis-geral"></div>
-
-  <div class="panel">
-    <div class="panel-body">
-
-      <div class="overview-section-title">
-        <div>
-          <h2>Controle de Prazos por Etapa</h2>
-          <small>Leitura operacional dos estoques, prazos e pendências que exigem acompanhamento.</small>
-        </div>
-      </div>
-
-      <div class="overview-dashboard-grid">
-
-        <div class="overview-block">
-          <div class="overview-block-head">
-            <div>
-              <h3>ESTOQUE CHECKLIST</h3>
-              <small id="overviewChecklistSummary">Carregando...</small>
-            </div>
-          </div>
-          <div class="mini-grid four" id="overviewChecklistBalanceGrid"></div>
-          <div class="details-toggle">
-            <button class="btn secondary small" id="toggleChecklistCompanies" type="button">Ver empresas</button>
-          </div>
-          <div class="details-box" id="checklistCompaniesBox" style="display:none"></div>
-        </div>
-
-        <div class="overview-block">
-          <div class="overview-block-head">
-            <div>
-              <h3>ESTOQUE OPERAÇÃO</h3>
-              <small>Status de prazo do estoque ainda em andamento</small>
-            </div>
-          </div>
-          <div class="mini-grid" id="overviewDeadlineGrid"></div>
-          <div class="details-toggle">
-            <button class="btn secondary small" id="toggleDeadlineCompanies" type="button">Ver empresas</button>
-          </div>
-          <div class="details-box" id="deadlineCompaniesBox" style="display:none"></div>
-        </div>
-
-        <div class="overview-block">
-          <div class="overview-block-head">
-            <div>
-              <h3>ESTOQUE PV</h3>
-              <small>Prazos de validação pendentes e evolução do estoque</small>
-            </div>
-          </div>
-          <div class="mini-grid four" id="overviewPvGrid"></div>
-          <div class="details-toggle">
-            <button class="btn secondary small" id="togglePvCompanies" type="button">Ver empresas</button>
-          </div>
-          <div class="details-box pv-overview-list" id="overviewPvOldest" style="display:none"></div>
-        </div>
-
-        <div class="overview-block">
-          <div class="overview-block-head">
-            <div>
-              <h3>ESTOQUE RETIFICAÇÃO</h3>
-              <small>Pendências operacionais e prazos do estoque</small>
-            </div>
-          </div>
-          <div class="mini-grid four" id="overviewRetGrid"></div>
-          <div class="details-toggle">
-            <button class="btn secondary small" id="toggleRetCompanies" type="button">Ver empresas</button>
-          </div>
-          <div class="details-box" id="retCompaniesBox" style="display:none"></div>
-        </div>
-
-
-      </div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head">
-      <div>
-        <h2>Indicadores do Mês</h2>
-        <small id="performanceWindowLabel">Indicadores consolidados da competência selecionada</small>
-      </div>
-      <div style="min-width:210px">
-        <select id="overviewMonth" style="width:100%;height:40px;border:1px solid #ded5c8;border-radius:10px;padding:0 10px;background:#fff"></select>
-      </div>
-    </div>
-    <div class="panel-body">
-      <div class="monthly-table" id="monthlyPerformanceTable"></div>
-    </div>
-  </div>
-  <div class="panel">
-    <div class="panel-head">
-      <div>
-        <h2>Resumo Executivo</h2>
-        <small>Leitura rápida do estoque atual</small>
-      </div>
-    </div>
-    <div class="panel-body">
-      <div class="attention" id="attention"></div>
-    </div>
-  </div>
-
-</section>
-
-<section class="view" id="view-diretoria">
-
-  <div class="director-toolbar">
-
-    <div class="director-toolbar-card">
-      <label>Competência de análise</label>
-      <select id="directorMonth"></select>
-      <div class="director-note" style="margin-top:10px">
-        
-      </div>
-    </div>
-
-    <div class="director-toolbar-card">
-      <label>Inputs manuais da diretoria</label>
-      <div class="director-input-grid">
-        <input id="dirMetaCredito" class="director-currency-input" inputmode="numeric" placeholder="Meta Crédito">
-        <input id="dirMetaVenda" class="director-currency-input" inputmode="numeric" placeholder="Meta Venda">
-        <input id="dirMetaCaixa" class="director-currency-input" inputmode="numeric" placeholder="Meta Caixa">
-        <input id="dirMetaContratos" inputmode="numeric" placeholder="Meta Contratos">
-      </div>
-      <input id="dirObservacoes" placeholder="Observações da competência" style="margin-top:9px">
-      <div class="director-input-actions">
-        <button class="btn primary" id="saveDirectorInputs" type="button">Salvar metas</button>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="director-section">
-    <div class="director-head">
-      <div>
-        <h2>Metas × Realizado</h2>
-        <small>Venda e contratos usam dados operacionais. Crédito e caixa ficam sem realizado até integração das respectivas fontes.</small>
-      </div>
-    </div>
-    <div class="director-body">
-      <div class="director-meta-grid" id="directorMetaGrid"></div>
-    </div>
-  </div>
-
-  <div class="director-section">
-    <div class="director-head">
-      <div>
-        <h2>Produção do Mês</h2>
-        <small>Diagnósticos entregues na competência, usando a Data Finalização OP do Estoque Operação.</small>
-      </div>
-    </div>
-    <div class="director-body">
-      <div class="director-production-grid" id="directorProductionGrid"></div>
-    </div>
-  </div>
-
-  <div class="director-section">
-    <div class="director-head">
-      <div>
-        <h2>KPIs Secundários</h2>
-        <small>Indicadores operacionais que possuem fonte confiável nas bases atuais.</small>
-      </div>
-    </div>
-    <div class="director-body">
-      <div class="director-kpi-grid" id="directorSecondaryGrid"></div>
-    </div>
-  </div>
-
-  <div class="director-section">
-    <div class="director-head">
-      <div>
-        <h2>Estoque Previdenciário</h2>
-        <small>Fotografia reconstruída no último dia da competência selecionada: entrou até a data e ainda não havia saído naquela data.</small>
-      </div>
-    </div>
-    <div class="director-body">
-      <div class="director-stage-grid" id="directorStockGrid"></div>
-    </div>
-  </div>
-
-      <div class="director-section">
-    <div class="director-head">
-      <div>
-        <h2>Segmento × Crédito</h2>
-        <small>Indicador mantido na estrutura executiva, ainda sem fonte integrada.</small>
-      </div>
-    </div>
-    <div class="director-body">
-      <div class="mini-grid four">
-        <div class="mini-card">
-          <b>0</b>
-          <span>Segmentos mapeados</span>
-        </div>
-        <div class="mini-card">
-          <b>R$ 0,00</b>
-          <span>Crédito produzido</span>
-        </div>
-        <div class="mini-card">
-          <b>0</b>
-          <span>Empresas com crédito</span>
-        </div>
-        <div class="mini-card">
-          <b>0</b>
-          <span>Empresas sem crédito</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="director-section">
-    <div class="director-head">
-      <div>
-        <h2>Evolutivos</h2>
-        <small>Crédito produzido permanece zerado até integração; Retificação utiliza os dados disponíveis.</small>
-      </div>
-    </div>
-    <div class="director-body">
-      <div class="director-split director-split-vertical">
-        <div class="director-chart">
-          <h3>Crédito produzido</h3>
-          <div class="director-evolution" id="directorCreditEvolution"></div>
-        </div>
-
-        <div class="director-chart">
-          <h3>Retificação</h3>
-          <div class="director-evolution" id="directorRetEvolution"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-<div class="director-section">
-    <div class="director-body">
-      <details class="director-methodology-shell">
-        <summary>Metodologia dos Indicadores — clique para abrir</summary>
-        <div id="directorMethodology"></div>
-      </details>
-    </div>
-  </div>
-
-</section>
-
-
-<section class="view" id="view-checklist">
-
-
-      <div class="kpis" id="kpis-checklist"></div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <h2>Prazo Gerencial do Checklist</h2>
-            <small id="checklistBalanceSummary">Carregando...</small>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="mini-grid four" id="checklistBalanceGrid"></div>
-        </div>
-      </div>
-
-
-      <div class="panel">
-
-        <div class="filters checklist-filter-grid">
-
-          <div class="checklist-filter-field">
-            <label>Busca</label>
-            <input id="ckSearch" placeholder="Buscar empresa ou job">
-          </div>
-
-          <div class="checklist-filter-field">
-            <label>Status</label>
-            <select id="ckStatusFilter">
-              <option value="">Todos os status</option>
-              <option value="Pendente">Pendente</option>
-              <option value="Concluído">Concluído</option>
-            </select>
-          </div>
-
-          <div class="checklist-filter-field">
-            <label>Tipo de Empresa</label>
-            <select id="ckFastPass">
-              <option value="">Todos os tipos</option>
-              <option value="FASTPASS">FASTPASS</option>
-              <option value="PRO">PRO</option>
-            </select>
-          </div>
-
-          <div class="checklist-filter-field">
-            <label>Analista Responsável</label>
-            <select id="ckAnalyst">
-              <option value="">Todos os analistas</option>
-              <option value="__SEM_ANALISTA__">Sem analista</option>
-            </select>
-          </div>
-
-          <div class="checklist-filter-action">
-            <label>&nbsp;</label>
-            <button class="btn secondary small" data-add-filter="checklist">+ Filtro</button>
-          </div>
-
-        </div>
-
-        <div class="custom-filter-area" id="custom-checklist"></div>
-
-        <div class="table-scroll">
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th class="sortable" data-table="checklist" data-key="Número do Job">Job</th>
-
-                <th class="sortable company-cell" data-table="checklist" data-key="Nome da Empresa">Empresa</th>
-
-                <th class="sortable" data-table="checklist" data-key="__diasPendentes">Dias no Estoque</th>
-
-                <th class="sortable" data-table="checklist" data-key="__jaOperacao">Já na Operação?</th>
-
-                <th class="sortable" data-table="checklist" data-key="__perfil">Perfil</th>
-
-                <th class="sortable" data-table="checklist" data-key="Data Entrada Checklist">Entrada</th>
-
-                <th class="sortable" data-table="checklist" data-key="Status">Status</th>
-
-                <th class="sortable" data-table="checklist" data-key="Analista Responsável">Analista Responsável</th>
-
-                <th class="sortable" data-table="checklist" data-key="Fast Pass">Fast Pass</th>
-
-                <th class="sortable" data-table="checklist" data-key="Número de Funcionários">Número de Funcionários</th>
-
-                <th class="sortable" data-table="checklist" data-key="DCTFWeb Média">DCTFWeb Média</th>
-
-                <th class="sortable" data-table="checklist" data-key="Certificado Digital">Certificado Digital</th>
-
-                <th class="sortable" data-table="checklist" data-key="Prazo Procuração">Prazo Procuração</th>
-
-                <th class="sortable" data-table="checklist" data-key="Observação">Observação</th>
-
-                <th class="sortable" data-table="checklist" data-key="Data Finalização Checkist">Finalização</th>
-
-              </tr>
-
-            </thead>
-
-            <tbody id="table-checklist"></tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-
-      <div class="panel" id="checklistTemporalPanelV463">
-        <div class="panel-head">
-          <div>
-            <h2>Reporte Temporal do Checklist</h2>
-            <small>Entradas e saídas por período, separado da tabela operacional principal.</small>
-          </div>
-        </div>
-
-        <div class="checklist-temporal-summary">
-          <div class="mini-grid" id="ckTemporalKpisV461">
-            <div class="mini-card blue">
-              <b id="ckTemporalTotalJobs">0</b>
-              <span>Jobs no período</span>
-            </div>
-
-            <div class="mini-card yellow">
-              <b id="ckTemporalPendingJobs">0</b>
-              <span>Jobs pendentes</span>
-            </div>
-
-            <div class="mini-card green">
-              <b id="ckTemporalConcludedJobs">0</b>
-              <span>Jobs concluídos</span>
-            </div>
-
-            <div class="mini-card green">
-              <b id="ckTemporalProfileYes">0</b>
-              <span>Concluídos • Perfil = Sim</span>
-            </div>
-
-            <div class="mini-card red">
-              <b id="ckTemporalProfileNo">0</b>
-              <span>Concluídos • Perfil = Não</span>
-            </div>
-
-            <div class="mini-card blue">
-              <b id="ckTemporalProfilePct">0%</b>
-              <span>% de concluídos com perfil</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="checklist-date-filter-grid">
-          <div class="ret39-filter-card">
-            <label>Entrada no Checklist</label>
-            <div class="ret39-date-grid">
-              <input id="ckEntryFrom" type="date" onchange="renderChecklistTemporalV463()">
-              <input id="ckEntryTo" type="date" onchange="renderChecklistTemporalV463()">
-            </div>
-            <div class="ret39-quick-row">
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('entry','today')">Hoje</button>
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('entry','week')">Semana</button>
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('entry','month')">Mês</button>
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('entry','clear')">Limpar</button>
-            </div>
-          </div>
-
-          <div class="ret39-filter-card">
-            <label>Saída do Checklist</label>
-            <div class="ret39-date-grid">
-              <input id="ckExitFrom" type="date" onchange="renderChecklistTemporalV463()">
-              <input id="ckExitTo" type="date" onchange="renderChecklistTemporalV463()">
-            </div>
-            <div class="ret39-quick-row">
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('exit','today')">Hoje</button>
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('exit','week')">Semana</button>
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('exit','month')">Mês</button>
-              <button class="ret39-quick" type="button" onclick="checklistSetPeriodV462('exit','clear')">Limpar</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="table-scroll" style="max-height:420px">
-          <table>
-            <thead>
-              <tr>
-                <th class="sortable-v4632" data-ck-sort="job" onclick="setChecklistTemporalSortV4632('job')">Job</th>
-                <th class="company-cell sortable-v4632" data-ck-sort="empresa" onclick="setChecklistTemporalSortV4632('empresa')">Empresa</th>
-                <th class="sortable-v4632" data-ck-sort="analista" onclick="setChecklistTemporalSortV4632('analista')">Analista Responsável</th>
-                <th class="sortable-v4632" data-ck-sort="status" onclick="setChecklistTemporalSortV4632('status')">Status</th>
-                <th class="sortable-v4632" data-ck-sort="perfil" onclick="setChecklistTemporalSortV4632('perfil')">Perfil</th>
-                <th class="sortable-v4632" data-ck-sort="tipo" onclick="setChecklistTemporalSortV4632('tipo')">Tipo de Empresa</th>
-                <th class="sortable-v4632" data-ck-sort="entrada" onclick="setChecklistTemporalSortV4632('entrada')">Entrada Checklist</th>
-                <th class="sortable-v4632" data-ck-sort="saida" onclick="setChecklistTemporalSortV4632('saida')">Saída Checklist</th>
-                <th class="sortable-v4632" data-ck-sort="dias" onclick="setChecklistTemporalSortV4632('dias')">Dias no Checklist</th>
-              </tr>
-            </thead>
-            <tbody id="ckTemporalTableV463"></tbody>
-          </table>
-        </div>
-      </div>
-
-    </section>
-
-    <section class="view" id="view-operacao">
-
-      <div class="kpis" id="kpis-operacao"></div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <h2>Panorama de Prazos</h2>
-            <small>Todos os status configurados no Sheets, inclusive os zerados</small>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="status-grid" id="deadlineStatusGrid"></div>
-          <div class="details-toggle">
-            <button class="btn secondary small" id="toggleOperationDeadlineCompanies" type="button">Ver empresas</button>
-          </div>
-          <div class="details-box" id="operationDeadlineCompaniesBox" style="display:none"></div>
-        </div>
-      </div>
-
-      <div class="panel operation-stock-panel">
-        <div class="panel-head">
-          <div>
-            <h2>Estoque Completo da Operação</h2>
-            <small>Colunas gerenciais principais, filtros e alteração de Situação pelo dashboard</small>
-          </div>
-        </div>
-
-        <div class="filters" style="grid-template-columns:1.25fr .85fr .85fr .85fr .8fr .95fr 1.05fr auto">
-          <input id="opSearch" placeholder="Buscar por número do job ou nome da empresa">
-
-          <select id="opSituacao">
-            <option value="">Todas as situações</option>
-          </select>
-
-          <select id="opResp">
-            <option value="">Todos os analistas</option>
-          </select>
-
-          <select id="opRevisor">
-            <option value="">Todos os revisores</option>
-          </select>
-
-          <select id="opFastPass">
-            <option value="">Todos</option>
-            <option value="FASTPASS">FASTPASS</option>
-            <option value="PRO">PRO</option>
-          </select>
-
-          <select id="opMeetingBefore">
-            <option value="">Reunião x prazo: todos</option>
-            <option value="sim">Somente reunião antes do prazo</option>
-          </select>
-
-          <div class="multi-filter" id="opDeadlineMulti">
-            <button class="multi-filter-trigger" id="opDeadlineTrigger" type="button">
-              <span>Status Prazo: todos</span>
-              <b>▾</b>
-            </button>
-            <div class="multi-filter-panel" id="opDeadlinePanel">
-              <div class="multi-mode">
-                <button type="button" id="opDeadlineModeInclude" class="active">Incluir marcados</button>
-                <button type="button" id="opDeadlineModeExclude">Excluir marcados</button>
-              </div>
-              <div id="opDeadlineOptions"></div>
-              <div style="display:flex;gap:6px;margin-top:10px">
-                <button class="btn secondary small" type="button" id="opDeadlineAll">Marcar todos</button>
-                <button class="btn secondary small" type="button" id="opDeadlineClear">Limpar</button>
-              </div>
-            </div>
-          </div>
-
-          <button class="btn secondary small" data-add-filter="operacao">+ Filtro personalizado</button>
-        </div>
-
-        <div class="custom-filter-area" id="custom-operacao"></div>
-
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th class="sortable" data-table="operacao" data-key="Status Prazo">Status Prazo</th>
-                <th class="sortable" data-table="operacao" data-key="Número do Job">Número do Job</th>
-                <th class="sortable company-cell" data-table="operacao" data-key="Nome da Empresa">Nome da Empresa</th>
-                <th class="sortable" data-table="operacao" data-key="CNPJ">CNPJ</th>
-                <th class="sortable" data-table="operacao" data-key="Situação">Situação</th>
-                <th class="sortable" data-table="operacao" data-key="Analista Responsável">Analista Responsável</th>
-                <th class="sortable" data-table="operacao" data-key="Revisor">Revisor</th>
-                <th class="sortable" data-table="operacao" data-key="Data da Entrada na Operação">Data Entrada Operação</th>
-                <th class="sortable" data-table="operacao" data-key="Prazo Final Operação">Prazo Final Operação</th>
-                <th class="sortable" data-table="operacao" data-key="Crédito?">Crédito?</th>
-                <th class="sortable" data-table="operacao" data-key="Grupo Empresárial">Grupo Empresárial</th>
-                <th class="sortable" data-table="operacao" data-key="Fast Pass">Fast Pass</th>
-                <th class="sortable" data-table="operacao" data-key="Data Entrada Checklist">Data Entrada Checklist</th>
-                <th class="sortable" data-table="operacao" data-key="Valor Médio DCTFWeb 1410">Valor Médio DCTFWeb 1410</th>
-                <th class="sortable" data-table="operacao" data-key="Quantidade Média de Funcionários">Quantidade Média Funcionários</th>
-                <th class="sortable" data-table="operacao" data-key="Data Finalização OP">Data Finalização OP</th>
-                <th class="sortable" data-table="operacao" data-key="Data Finalização Revisão">Data Finalização Revisão</th>
-                <th class="sortable" data-table="operacao" data-key="Data Reunião Técnica">Data Reunião Técnica</th>
-              </tr>
-            </thead>
-            <tbody id="table-operacao"></tbody>
-          </table>
-        </div>
-      </div>
-
-
-
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <h2>Meta do Time — Prêmio por Entrega</h2>
-            <small>Meta mensal de 40 jobs finalizados no prazo. Ao destravar a meta, cada job com Crédito = Sim vale R$ 15.</small>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="bonus-controls">
-            <label style="font-size:10px;font-weight:850;color:var(--muted)">Competência da revisão</label>
-            <select id="bonusMonth"></select>
-            <span class="pill blue">Meta: 40 jobs no prazo</span>
-            <span class="pill green">R$ 15 por job com crédito</span>
-          </div>
-
-          <div id="mayanReviewGoalCard"></div>
-
-          <div class="bonus-grid" id="bonusGrid"></div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <h2>Dados Totais da Operação</h2>
-            <small>Histórico consolidado ou competência pela Data Finalização Revisão.</small>
-          </div>
-          <div style="min-width:220px">
-            <select id="operationTotalsMonth" style="width:100%;height:40px;border:1px solid #ded5c8;border-radius:10px;padding:0 10px;background:#fff"></select>
-          </div>
-        </div>
-        <div class="panel-body">
-          <div class="operation-total-grid" id="operationTotalsGrid"></div>
-        </div>
-      </div>
-
-
-
-    </section>
-
-    
-<section class="view" id="view-slaOperacao">
-
-  <div class="kpis" id="kpis-sla-operacao"></div>
-
-  <div class="panel">
-    <div class="panel-head">
-      <div>
-        <h2>SLA Checklist → Finalização da Revisão</h2>
-        <small>
-          Empresas com Revisão finalizada. O tempo considera a entrada no Checklist
-          até a Data Finalização Revisão da Operação.
-        </small>
-      </div>
-    </div>
-
-    <div class="panel-body">
-      <div class="checklist-date-filter-grid">
-
-        <div class="ret39-filter-card">
-          <label>Entrada no Checklist</label>
-          <div class="ret39-date-grid">
-            <input id="slaOpEntryFrom" type="date" onchange="renderSlaOperacaoV461()">
-            <input id="slaOpEntryTo" type="date" onchange="renderSlaOperacaoV461()">
-          </div>
-          <div class="ret39-quick-row">
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('entry','today')">Hoje</button>
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('entry','week')">Semana</button>
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('entry','month')">Mês</button>
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('entry','clear')">Limpar</button>
-          </div>
-        </div>
-
-        <div class="ret39-filter-card">
-          <label>Saída da Operação / Revisão</label>
-          <div class="ret39-date-grid">
-            <input id="slaOpExitFrom" type="date" onchange="renderSlaOperacaoV461()">
-            <input id="slaOpExitTo" type="date" onchange="renderSlaOperacaoV461()">
-          </div>
-          <div class="ret39-quick-row">
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('exit','today')">Hoje</button>
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('exit','week')">Semana</button>
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('exit','month')">Mês</button>
-            <button class="ret39-quick" type="button" onclick="slaOperacaoSetPeriodV461('exit','clear')">Limpar</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <div class="filters" style="grid-template-columns:1.45fr 1fr 1fr .9fr">
-      <input
-        id="slaOpSearch"
-        placeholder="Buscar empresa ou Job"
-        oninput="renderSlaOperacaoV461()"
-      >
-
-      <select id="slaOpAnalyst" onchange="renderSlaOperacaoV461()">
-        <option value="">Todos os analistas</option>
-      </select>
-
-      <select id="slaOpReviewer" onchange="renderSlaOperacaoV461()">
-        <option value="">Todos os revisores</option>
-      </select>
-
-      <select id="slaOpProFilter" onchange="renderSlaOperacaoV461()">
-        <option value="">Todos os diagnósticos</option>
-        <option value="sem">Sem PRO</option>
-        <option value="somente">Somente PRO</option>
-      </select>
-    </div>
-
-    <div class="table-scroll" style="max-height:65vh">
-      <table>
-        <thead>
-          <tr>
-            <th class="sortable-v4632" data-sla-sort="job" onclick="setSlaOperacaoSortV4632('job')">Job</th>
-            <th class="company-cell sortable-v4632" data-sla-sort="empresa" onclick="setSlaOperacaoSortV4632('empresa')">Empresa</th>
-            <th class="sortable-v4632" data-sla-sort="analista" onclick="setSlaOperacaoSortV4632('analista')">Analista Operação</th>
-            <th class="sortable-v4632" data-sla-sort="revisor" onclick="setSlaOperacaoSortV4632('revisor')">Revisor</th>
-            <th class="sortable-v4632" data-sla-sort="entradaChecklist" onclick="setSlaOperacaoSortV4632('entradaChecklist')">Entrada Checklist</th>
-            <th class="sortable-v4632" data-sla-sort="entradaOperacao" onclick="setSlaOperacaoSortV4632('entradaOperacao')">Entrada Operação</th>
-            <th class="sortable-v4632" data-sla-sort="finalizacaoRevisao" onclick="setSlaOperacaoSortV4632('finalizacaoRevisao')">Finalização Revisão</th>
-            <th class="sortable-v4632" data-sla-sort="tempoChecklist" onclick="setSlaOperacaoSortV4632('tempoChecklist')">Tempo Checklist</th>
-            <th class="sortable-v4632" data-sla-sort="tempoOperacao" onclick="setSlaOperacaoSortV4632('tempoOperacao')">Tempo Operação</th>
-            <th class="sortable-v4632" data-sla-sort="tempoTotal" onclick="setSlaOperacaoSortV4632('tempoTotal')">Tempo Total</th>
-            <th class="sortable-v4632" data-sla-sort="credito" onclick="setSlaOperacaoSortV4632('credito')">Crédito?</th>
-          </tr>
-        </thead>
-        <tbody id="slaOpTableV461"></tbody>
-      </table>
-    </div>
-  </div>
-
-</section>
-
-
-<section class="view" id="view-retificacao">
-      <div class="kpis" id="kpis-retificacao-pendentes"></div>
-
-      <div class="ret36-analyst-grid" id="retAnalystCardsV361"></div>
-
-      <div class="kpis ret34-kpis" id="kpis-retificacao-grouped"></div>
-
-      <div class="panel" id="retGroupedPanelV341">
-        <div class="panel-head">
-          <div>
-            <h2>Aging do Estoque de Retificação</h2>
-            <small>Visão agrupada por Classificação + Job + Empresa. Status Retificação = Pendente por padrão.</small>
-          </div>
-        </div>
-
-        <div class="filters" style="grid-template-columns:1.4fr 1fr 1fr 1fr 1fr 1fr 1fr">
-          <input id="retGroupSearch" placeholder="Buscar empresa ou Job">
-          <select id="retGroupAnalyst"><option value="">Todos os analistas</option></select>
-          <select id="retGroupMethod">
-            <option value="">Todos os métodos</option>
-            <option value="Compensação">Compensação</option>
-            <option value="Pedido de Restituição">Pedido de Restituição</option>
-            <option value="Misto">Misto</option>
-          </select>
-          <select id="retGroupStatus">
-            <option value="">Todos os status</option>
-            <option value="Pendente" selected>Pendente</option>
-            <option value="Em Andamento">Em Andamento</option>
-            <option value="Concluído">Concluído</option>
-            <option value="Múltiplos">Múltiplos</option>
-          </select>
-          <select id="retGroupEntryMonth"><option value="">Competência entrada</option></select>
-          <select id="retGroupExitMonth"><option value="">Competência saída</option></select>
-          <select id="retGroupAging">
-            <option value="">Todos os aging</option>
-            <option value="0-7">0–7 dias</option>
-            <option value="8-15">8–15 dias</option>
-            <option value="16-30">16–30 dias</option>
-            <option value="31-60">31–60 dias</option>
-            <option value="60+">60+ dias</option>
-          </select>
-        </div>
-
-        <div class="panel-body">
-          <div class="ret34-aging-grid" id="retAgingMatrixV341"></div>
-        </div>
-
-        <div class="table-scroll">
-          <table class="ret34-group-table">
-            <thead>
-              <tr>
-                <th>Job</th>
-                <th class="company-cell">Empresa</th>
-                <th>Classificação</th>
-                <th>Analista</th>
-                <th>Status Retificação</th>
-                <th>Status Pedido Restituição</th>
-                <th>Método</th>
-                <th>Valor</th>
-                <th>Honorário %</th>
-                <th>Honorário R$</th>
-                <th>Entrada</th>
-                <th>Aging</th>
-                <th>Valor Retificação</th>
-                <th>Honorário Retificação</th>
-                <th>Saída Retificação</th>
-                <th>Tempo de Ciclo</th>
-                <th>Certificado Digital</th>
-                <th>Prazo Procuração</th>
-                <th>Observações</th>
-              </tr>
-            </thead>
-            <tbody id="retGroupTableV341"></tbody>
-          </table>
-        </div>
-      </div>
-
-
-      <div class="panel" id="ret39ReportPanel">
-        <div class="panel-head">
-          <div>
-            <h2>Reporte Gerencial da Retificação</h2>
-            <small>Entradas, entregas e estoque atual com valor e honorários por modalidade.</small>
-          </div>
-        </div>
-
-        <div class="ret39-report-shell">
-
-          <div class="ret39-report-filters">
-
-            <div class="ret39-filter-card">
-              <label>Entrada no estoque</label>
-              <div class="ret39-date-grid">
-                <input id="ret39EntryFrom" type="date" onchange="renderRet39Report()">
-                <input id="ret39EntryTo" type="date" onchange="renderRet39Report()">
-              </div>
-              <div class="ret39-quick-row">
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('entry','today')">Hoje</button>
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('entry','week')">Semana</button>
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('entry','month')">Mês</button>
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('entry','clear')">Limpar</button>
-              </div>
-            </div>
-
-            <div class="ret39-filter-card">
-              <label>Saída da retificação</label>
-              <div class="ret39-date-grid">
-                <input id="ret39ExitFrom" type="date" onchange="renderRet39Report()">
-                <input id="ret39ExitTo" type="date" onchange="renderRet39Report()">
-              </div>
-              <div class="ret39-quick-row">
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('exit','today')">Hoje</button>
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('exit','week')">Semana</button>
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('exit','month')">Mês</button>
-                <button class="ret39-quick" type="button" onclick="ret39SetPeriod('exit','clear')">Limpar</button>
-              </div>
-            </div>
-
-            <div class="ret39-filter-card">
-              <label>Filtros do reporte</label>
-              <select id="ret40Status" onchange="renderRet39Report()">
-                <option value="">Todos os status</option>
-                <option value="Concluído">Concluído</option>
-                <option value="Pendente">Pendente</option>
-                <option value="Em Andamento">Em Andamento</option>
-              </select>
-              <select id="ret39Analyst" onchange="renderRet39Report()">
-                <option value="">Todos os analistas</option>
-              </select>
-              <select id="ret39Class" onchange="renderRet39Report()">
-                <option value="">Todas as classificações</option>
-              </select>
-            </div>
-
-          </div>
-
-          <div class="ret44-total-company-wrap">
-            <div class="ret44-total-company-card">
-              <span>Total de Empresas</span>
-              <b id="ret44TotalCompanies">0</b>
-              <small>empresas únicas nos filtros selecionados</small>
-            </div>
-          </div>
-
-          <div class="ret40-summary-wrap">
-            <div class="ret40-method-box">
-              <div class="ret40-method-head">Compensação</div>
-              <div id="ret40CompSummary"></div>
-            </div>
-
-            <div class="ret40-method-box">
-              <div class="ret40-method-head">Pedido de Restituição</div>
-              <div id="ret40RefundSummary"></div>
-            </div>
-          </div>
-
           <div class="ret39-report-note" id="ret39ReportNote"></div>
 
           <div class="ret39-report-table">
@@ -5780,12 +4798,6 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
             <option value="Stand-by">Stand-by</option>
             <option value="Concluído">Concluído</option>
           </select>
-          <select id="retRefundStatus">
-            <option value="">Pedido: todos</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Em Andamento">Em Andamento</option>
-            <option value="Concluído">Concluído</option>
-          </select>
           <select id="retTheme"><option value="">Todos os temas</option></select>
           <select id="retRobot"><option value="">Todos os robôs</option></select>
           <button class="btn secondary small" data-add-filter="retificacao">+ Filtro</button>
@@ -5808,9 +4820,6 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
                 <th class="sortable" data-table="retificacao" data-key="Status Retificação">Status Retificação</th>
                 <th class="sortable" data-table="retificacao" data-key="__retDays">Dias / Prazo Retificação</th>
                 <th class="sortable" data-table="retificacao" data-key="Data Finalização Retificação">Finalização Retificação</th>
-                <th class="sortable" data-table="retificacao" data-key="Status Pedido de Restituição">Status Pedido Restituição</th>
-                <th class="sortable" data-table="retificacao" data-key="__refundDays">Dias / Prazo Pedido</th>
-                <th class="sortable" data-table="retificacao" data-key="Data Finalização Pedido de Restituição">Finalização Pedido</th>
                 <th class="sortable" data-table="retificacao" data-key="Honorário %">Honorário %</th>
                 <th class="sortable" data-table="retificacao" data-key="Honorário $">Honorário $</th>
                 <th class="sortable" data-table="retificacao" data-key="Robô">Robô</th>
@@ -6836,6 +5845,25 @@ function norm(v){
     .trim();
 }
 
+function retIsStandbyV474(value){
+  const n=norm(value)
+    .replace(/[\s_]+/g,'-')
+    .replace(/-+/g,'-');
+
+  return n==='stand-by' || n==='standby';
+}
+
+function retIsOpenPendingV474(value){
+  const n=norm(value);
+
+  return (
+    !!n &&
+    !done(value) &&
+    !retIsStandbyV474(value)
+  );
+}
+
+
 
 const COLABORADORES_PADRAO_V352 = [
   'Luiz Neto',
@@ -7502,7 +6530,7 @@ function refundDays(r){
 
 function retOverdue(r){
   const d=retificationDays(r);
-  return !done(r['Status Retificação']||r['Retificação']) && d!==null && d>30;
+  return retIsOpenPendingV474(r['Status Retificação']||r['Retificação']) && d!==null && d>30;
 }
 
 function refundOverdue(r){
@@ -8141,7 +7169,16 @@ function overviewRetCompanyGroupsV365(){
         r=>done(r['Status Retificação']||r['Retificação'])
       );
 
-    const pending=!concluded;
+    const hasStandby=
+      rows.some(
+        r=>retIsStandbyV474(
+          r['Status Retificação']||r['Retificação']
+        )
+      );
+
+    const pending=
+      !concluded &&
+      !hasStandby;
 
     const compensationRows=rows.filter(
       r=>norm(r['Método']).includes('compens')
@@ -8267,7 +7304,7 @@ function renderGeral(){
       {
         l:'ESTOQUE RETIFICAÇÃO',
         v:overviewRetV365.pending.length,
-        s:'empresas pendentes por Status Retificação',
+        s:'empresas pendentes por Status Retificação (Stand-by fora do total)',
         c:overviewRetV365.pending.length ? 'yellow' : 'green'
       },
       {
@@ -8617,9 +7654,15 @@ function renderGeral(){
   // tratamos a retificação da empresa como concluída e evitamos
   // que linhas de tema sem status inflem a contagem.
   const retNaoConcluidaCompanies=retCompanyGroups.filter(
-    companyRows=>!companyRows.some(
-      r=>done(r['Status Retificação']||r['Retificação'])
-    )
+    companyRows=>
+      !companyRows.some(
+        r=>done(r['Status Retificação']||r['Retificação'])
+      ) &&
+      !companyRows.some(
+        r=>retIsStandbyV474(
+          r['Status Retificação']||r['Retificação']
+        )
+      )
   );
 
   // Para Pedido de Restituição, consideramos somente empresas que
@@ -8686,6 +7729,11 @@ function renderGeral(){
         ([company,rows])=>
           !rows.some(
             r=>done(r['Status Retificação']||r['Retificação'])
+          ) &&
+          !rows.some(
+            r=>retIsStandbyV474(
+              r['Status Retificação']||r['Retificação']
+            )
           )
       )
       .map(
@@ -12858,12 +11906,6 @@ function renderRetGroupedV341(){
             </select>
           </td>
 
-          <td>
-            <select class="status-select ${norm(g.statusRefund)==='concluido'?'done':'pending'}" data-ret34-key="${esc(g.key)}" onchange="ret34ChangeStatus(this,'refund')">
-              ${ret34StatusOptions(g.statusRefund)}
-            </select>
-          </td>
-
           <td><div style="display:flex;align-items:center;gap:5px">
             <select class="status-select gray ret36-method-select" data-ret36-key="${esc(g.displayKey)}" onchange="ret36ChangeMethodV361(this)">
               ${ret36MethodOptionsV361(g.displayMethod)}
@@ -14476,7 +13518,6 @@ function filterRetificacao(){
   const theme=document.getElementById('retTheme').value;
   const method=document.getElementById('retMethod').value;
   const retStatus=document.getElementById('retRetStatus').value;
-  const refundStatus=document.getElementById('retRefundStatus').value;
   const robot=document.getElementById('retRobot').value;
 
   let rows=DATA.retificacao.filter(
@@ -14486,7 +13527,6 @@ function filterRetificacao(){
       (!theme || r['Tema']===theme) &&
       (!method || r['Método']===method) &&
       (!retStatus || norm(r['Status Retificação']||r['Retificação'])===norm(retStatus)) &&
-      (!refundStatus || norm(r['Status Pedido de Restituição']||r['Pedido de Restituição'])===norm(refundStatus)) &&
       (!robot || norm(r['Robô'])===norm(robot))
   );
 
@@ -14499,8 +13539,7 @@ function filterRetificacao(){
     r=>({
       ...r,
       __retEntry:retEntryValue(r),
-      __retDays:retificationDays(r),
-      __refundDays:refundDays(r)
+      __retDays:retificationDays(r)
     })
   );
 
@@ -14513,7 +13552,6 @@ function filterRetificacao(){
       ? rows.map(
           r=>{
             const rd=retificationDays(r);
-            const pd=refundDays(r);
             return `
               <tr>
                 <td class="nowrap">${clip(r['Número do Job']||'-')}</td>
@@ -14539,13 +13577,6 @@ function filterRetificacao(){
                 </td>
                 <td><span class="sla-badge ${slaClass(rd,done(r['Status Retificação']||r['Retificação']))}">${esc(slaText(rd,done(r['Status Retificação']||r['Retificação'])))}</span></td>
                 <td class="nowrap">${clip(r['Data Finalização Retificação']||'-')}</td>
-                <td>
-                  <select class="status-select ${selectableClassV5(r['Status Pedido de Restituição']||r['Pedido de Restituição'])} ret-status-select" data-row="${Number(r.__row)}" data-campo="Status Pedido de Restituição">
-                    ${retStatusOptions(r['Status Pedido de Restituição']||r['Pedido de Restituição'])}
-                  </select>
-                </td>
-                <td><span class="sla-badge ${slaClass(pd,done(r['Status Pedido de Restituição']||r['Pedido de Restituição']))}">${esc(slaText(pd,done(r['Status Pedido de Restituição']||r['Pedido de Restituição'])))}</span></td>
-                <td class="nowrap">${clip(r['Data Finalização Pedido de Restituição']||'-')}</td>
                 <td>${clip(r['Honorário %']||'-')}</td>
                 <td class="money">${money(r['Honorário $'])?brl(money(r['Honorário $'])):'-'}</td>
                 <td>${clip(r['Robô']||'-')}</td>
@@ -14554,7 +13585,7 @@ function filterRetificacao(){
               </tr>`;
           }
         ).join('')
-      : '<tr><td colspan="19" class="empty">Nenhum registro encontrado.</td></tr>';
+      : '<tr><td colspan="16" class="empty">Nenhum registro encontrado.</td></tr>';
 }
 
 
