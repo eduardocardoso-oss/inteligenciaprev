@@ -3043,17 +3043,57 @@
     }
 
   
-    .ret36-analyst-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
-    .ret36-analyst-card{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:15px 16px;box-shadow:var(--shadow-soft)}
-    .ret36-analyst-card h3{margin:0 0 12px;font-size:14px;font-weight:950}
+
+    .ret36-analyst-toolbar-v477{
+      display:flex;
+      justify-content:flex-start;
+      margin:0 0 12px;
+    }
+
+    .ret36-analyst-filter-v477{
+      width:min(360px,100%);
+    }
+
+    .ret36-analyst-filter-v477 label{
+      display:block;
+      margin:0 0 5px;
+      font-size:9px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--muted);
+    }
+
+    .ret36-analyst-filter-v477 select{
+      width:100%;
+      min-height:40px;
+    }
+
+    .ret36-analyst-filter-v477 small{
+      display:block;
+      margin-top:5px;
+      font-size:9px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+
+    .ret36-analyst-grid{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:10px;
+      margin-bottom:14px;
+    }
+    .ret36-analyst-card{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:13px 13px;box-shadow:var(--shadow-soft);min-width:0}
+    .ret36-analyst-card h3{margin:0 0 10px;font-size:13px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .ret36-analyst-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px}
     .ret36-analyst-stat{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--panel-soft)}
-    .ret36-analyst-stat b{display:block;font-size:22px;line-height:1;margin-bottom:5px}
+    .ret36-analyst-stat b{display:block;font-size:20px;line-height:1;margin-bottom:5px}
     .ret36-analyst-stat small{font-size:9px;color:var(--muted);font-weight:800;text-transform:uppercase}
     .ret36-analyst-stat.pending b{color:var(--yellow)}
     .ret36-analyst-stat.done b{color:var(--green)}
     .ret36-method-select{min-width:165px}
-    @media(max-width:1200px){.ret36-analyst-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:1320px){.ret36-analyst-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:980px){.ret36-analyst-grid{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:700px){.ret36-analyst-grid{grid-template-columns:1fr}}
 
 
@@ -3603,7 +3643,16 @@
     }
 
     #kpis-retificacao-pendentes{
-      grid-template-columns:minmax(280px,360px);
+      width:min(760px,100%);
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+    }
+
+    @media(max-width:720px){
+      #kpis-retificacao-pendentes{
+        width:100%;
+        grid-template-columns:1fr;
+      }
     }
 
     @media(max-width:1100px){
@@ -5570,6 +5619,18 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
 <section class="view" id="view-retificacao">
       <div class="kpis" id="kpis-retificacao-pendentes"></div>
 
+      <div class="ret36-analyst-toolbar-v477">
+        <div class="ret36-analyst-filter-v477">
+          <label for="retAnalystDeliveryCompetenceV477">Competência de entrega das metas</label>
+          <select id="retAnalystDeliveryCompetenceV477" onchange="renderRetAnalystCardsV361()">
+            <option value="">Todas as competências de entrega</option>
+          </select>
+          <small>
+            Concluídos pela Data Finalização Retificação. Pendentes representam o estoque atual.
+          </small>
+        </div>
+      </div>
+
       <div class="ret36-analyst-grid" id="retAnalystCardsV361"></div>
 
       <div class="kpis ret34-kpis" id="kpis-retificacao-grouped"></div>
@@ -5595,6 +5656,8 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
             <option value="">Todos os status</option>
             <option value="Pendente" selected>Pendente</option>
             <option value="Em Andamento">Em Andamento</option>
+            <option value="Sem Procuração">Sem Procuração</option>
+            <option value="Stand-by">Stand-by</option>
             <option value="Concluído">Concluído</option>
             <option value="Múltiplos">Múltiplos</option>
           </select>
@@ -5691,6 +5754,8 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
                 <option value="Concluído">Concluído</option>
                 <option value="Pendente">Pendente</option>
                 <option value="Em Andamento">Em Andamento</option>
+                <option value="Sem Procuração">Sem Procuração</option>
+                <option value="Stand-by">Stand-by</option>
               </select>
               <select id="ret39Analyst" onchange="renderRet39Report()">
                 <option value="">Todos os analistas</option>
@@ -12695,25 +12760,204 @@ function ret36RowDoneV361(row){
     row['Retificação']
   );
 }
+function ret36MonthKeyV477(value){
+  const d=parseDate(value);
+  if(!d)return '';
+
+  return (
+    d.getFullYear()+
+    '-'+
+    String(d.getMonth()+1).padStart(2,'0')
+  );
+}
+
+function ret36MonthLabelV477(key){
+  const m=String(key||'').match(/^(\d{4})-(\d{2})$/);
+  if(!m)return key||'';
+
+  const d=new Date(
+    Number(m[1]),
+    Number(m[2])-1,
+    1
+  );
+
+  return d.toLocaleDateString(
+    'pt-BR',
+    {
+      month:'long',
+      year:'numeric'
+    }
+  ).replace(/^./,c=>c.toUpperCase());
+}
+
+function fillRetAnalystDeliveryCompetenceV477(){
+  const el=document.getElementById(
+    'retAnalystDeliveryCompetenceV477'
+  );
+
+  if(!el)return;
+
+  const current=el.value;
+
+  const values=unique(
+    (DATA.retificacao||[])
+      .map(
+        r=>ret36MonthKeyV477(
+          r['Data Finalização Retificação']
+        )
+      )
+      .filter(Boolean)
+  ).sort().reverse();
+
+  el.innerHTML=
+    '<option value="">Todas as competências de entrega</option>'+
+    values.map(
+      key=>
+        `<option value="${esc(key)}">${esc(ret36MonthLabelV477(key))}</option>`
+    ).join('');
+
+  if(
+    current &&
+    values.includes(current)
+  ){
+    el.value=current;
+  }
+}
+
+function ret36GroupDeliveryMonthV477(group){
+  const dates=(group||[])
+    .map(
+      r=>parseDate(
+        r['Data Finalização Retificação']
+      )
+    )
+    .filter(Boolean)
+    .sort(
+      (a,b)=>a.getTime()-b.getTime()
+    );
+
+  if(!dates.length)return '';
+
+  const last=dates[dates.length-1];
+
+  return (
+    last.getFullYear()+
+    '-'+
+    String(last.getMonth()+1).padStart(2,'0')
+  );
+}
+
+function ret36GroupPendingV477(group){
+  if(!group || !group.length)return false;
+
+  const concluded=
+    group.every(ret36RowDoneV361);
+
+  if(concluded)return false;
+
+  const hasSemProcuracao=
+    group.some(
+      r=>retIsSemProcuracaoV476(
+        r['Status Retificação']||
+        r['Retificação']
+      )
+    );
+
+  if(hasSemProcuracao)return false;
+
+  const allStandby=
+    group.every(
+      r=>retIsStandbyV4741(
+        r['Status Retificação']||
+        r['Retificação']
+      )
+    );
+
+  return !allStandby;
+}
+
 function renderRetAnalystCardsV361(){
   const el=document.getElementById('retAnalystCardsV361');
   if(!el)return;
-  const analysts=['Felipe Silva','Ellen Rogowski','Letícia da Silva'];
-  el.innerHTML=analysts.map(a=>{
-    const rows=(DATA.retificacao||[]).filter(r=>norm(r['Analista'])===norm(a));
-    const groups={};
-    rows.forEach(r=>{
-      const k=ret36CompanyKeyV361(r); if(!k)return;
-      (groups[k]||(groups[k]=[])).push(r);
-    });
-    const gs=Object.values(groups);
-    const conclu=gs.filter(g=>g.length && g.every(ret36RowDoneV361)).length;
-    const pend=gs.length-conclu;
-    return `<div class="ret36-analyst-card"><h3>${esc(a)}</h3><div class="ret36-analyst-stats">
-      <div class="ret36-analyst-stat pending"><b>${pend}</b><small>Pendentes</small></div>
-      <div class="ret36-analyst-stat done"><b>${conclu}</b><small>Concluídos</small></div>
-    </div></div>`;
-  }).join('');
+
+  fillRetAnalystDeliveryCompetenceV477();
+
+  const competence=String(
+    document.getElementById(
+      'retAnalystDeliveryCompetenceV477'
+    )?.value||''
+  ).trim();
+
+  const analysts=[
+    'Luiz Neto',
+    'Letícia Oliveira',
+    'Brenda Guterres',
+    'Ellen Rogowski',
+    'Letícia da Silva'
+  ];
+
+  el.innerHTML=analysts.map(
+    a=>{
+      const rows=(DATA.retificacao||[]).filter(
+        r=>norm(r['Analista'])===norm(a)
+      );
+
+      const groups={};
+
+      rows.forEach(
+        r=>{
+          const k=ret36CompanyKeyV361(r);
+          if(!k)return;
+
+          (groups[k]||(groups[k]=[])).push(r);
+        }
+      );
+
+      const gs=Object.values(groups);
+
+      const pend=gs.filter(
+        ret36GroupPendingV477
+      ).length;
+
+      const concludedGroups=gs.filter(
+        g=>
+          g.length &&
+          g.every(ret36RowDoneV361)
+      );
+
+      const conclu=
+        competence
+          ? concludedGroups.filter(
+              g=>
+                ret36GroupDeliveryMonthV477(g)===
+                competence
+            ).length
+          : concludedGroups.length;
+
+      const deliveryLabel=
+        competence
+          ? ret36MonthLabelV477(competence)
+          : 'Todas';
+
+      return `
+        <div class="ret36-analyst-card">
+          <h3 title="${esc(a)}">${esc(a)}</h3>
+
+          <div class="ret36-analyst-stats">
+            <div class="ret36-analyst-stat pending">
+              <b>${pend}</b>
+              <small>Pendentes atuais</small>
+            </div>
+
+            <div class="ret36-analyst-stat done">
+              <b>${conclu}</b>
+              <small>Concluídos • ${esc(deliveryLabel)}</small>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  ).join('');
 }
 
 function hideLegacyRetPanelsV361(){
