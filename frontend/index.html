@@ -5626,7 +5626,7 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
             <option value="">Todas as competências de entrega</option>
           </select>
           <small>
-            Concluídos pela Data Finalização Retificação. Pendentes representam o estoque atual.
+            Concluídos = empresas únicas com entrega na competência selecionada. Pendentes representam o estoque atual.
           </small>
         </div>
       </div>
@@ -12919,20 +12919,38 @@ function renderRetAnalystCardsV361(){
         ret36GroupPendingV477
       ).length;
 
-      const concludedGroups=gs.filter(
-        g=>
-          g.length &&
-          g.every(ret36RowDoneV361)
+      /*
+       * Meta de entregas:
+       * conta empresas únicas que tiveram ao menos uma linha concluída
+       * na competência selecionada. Não exige que todo o histórico da
+       * empresa esteja concluído, pois isso eliminava entregas válidas
+       * quando existia uma linha antiga ainda aberta.
+       */
+      const deliveredCompanies=new Set();
+
+      rows.forEach(
+        r=>{
+          if(!ret36RowDoneV361(r))return;
+
+          const deliveryMonth=ret36MonthKeyV477(
+            r['Data Finalização Retificação']
+          );
+
+          if(
+            competence &&
+            deliveryMonth!==competence
+          ){
+            return;
+          }
+
+          const companyKey=ret36CompanyKeyV361(r);
+          if(companyKey){
+            deliveredCompanies.add(companyKey);
+          }
+        }
       );
 
-      const conclu=
-        competence
-          ? concludedGroups.filter(
-              g=>
-                ret36GroupDeliveryMonthV477(g)===
-                competence
-            ).length
-          : concludedGroups.length;
+      const conclu=deliveredCompanies.size;
 
       const deliveryLabel=
         competence
