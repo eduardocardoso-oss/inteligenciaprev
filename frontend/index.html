@@ -4934,7 +4934,7 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
               <small>Pendências operacionais e prazos do estoque</small>
             </div>
           </div>
-          <div class="mini-grid four" id="overviewRetGrid"></div>
+          <div class="mini-grid" id="overviewRetGrid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))"></div>
           <div class="details-toggle">
             <button class="btn secondary small" id="toggleRetCompanies" type="button">Ver empresas</button>
           </div>
@@ -5776,6 +5776,7 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
             <option value="Pendente">Pendente</option>
             <option value="Em Andamento">Em Andamento</option>
             <option value="Aguardando Cadastro">Aguardando Cadastro</option>
+            <option value="Sem Procuração">Sem Procuração</option>
             <option value="Stand-by">Stand-by</option>
             <option value="Concluído">Concluído</option>
           </select>
@@ -6266,6 +6267,39 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
 </div>
 
 
+
+
+<div class="modal-bg" id="retSemProcuracaoModalV475">
+  <div class="modal" style="width:min(460px,100%)">
+    <div class="modal-head">
+      <h3>Justificativa — Sem Procuração</h3>
+      <button class="x" type="button" onclick="closeRetSemProcuracaoModalV475()">×</button>
+    </div>
+
+    <div class="form" style="grid-template-columns:1fr">
+      <div class="field full">
+        <label>Observação</label>
+        <textarea
+          id="retSemProcuracaoReasonV475"
+          placeholder="Informe a situação da procuração e/ou pendência com o cliente"
+          style="min-height:120px"
+        ></textarea>
+      </div>
+
+      <div class="field full">
+        <div class="field-hint">
+          A observação é obrigatória e será <b>acrescentada</b> ao final da coluna
+          <b>Observações</b> do Sheets. O conteúdo já existente será preservado.
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" onclick="closeRetSemProcuracaoModalV475()">Cancelar</button>
+      <button class="btn primary" type="button" onclick="confirmRetSemProcuracaoModalV475()">Confirmar Sem Procuração</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal-bg" id="retStandbyModalV472">
   <div class="modal" style="width:min(460px,100%)">
@@ -6834,13 +6868,18 @@ function retIsStandbyV4741(value){
   return n==='stand-by' || n==='standby';
 }
 
+function retIsSemProcuracaoV476(value){
+  return norm(value)==='sem procuracao';
+}
+
 function retIsPendingV4741(value){
   const n=norm(value);
 
   return (
     !!n &&
     !done(value) &&
-    !retIsStandbyV4741(value)
+    !retIsStandbyV4741(value) &&
+    !retIsSemProcuracaoV476(value)
   );
 }
 
@@ -8164,9 +8203,17 @@ function overviewRetCompanyGroupsV365(){
         )
       );
 
+    const semProcuracao=
+      rows.some(
+        r=>retIsSemProcuracaoV476(
+          r['Status Retificação']||r['Retificação']
+        )
+      );
+
     const pending=
       !concluded &&
-      !standby;
+      !standby &&
+      !semProcuracao;
 
     const compensationRows=rows.filter(
       r=>norm(r['Método']).includes('compens')
@@ -8180,6 +8227,7 @@ function overviewRetCompanyGroupsV365(){
       ...group,
       concluded,
       standby,
+      semProcuracao,
       pending,
       hasCompensation:compensationRows.length>0,
       hasRefund:refundRows.length>0,
@@ -8194,6 +8242,7 @@ function overviewRetSummaryV365(){
   const groups=overviewRetCompanyGroupsV365();
 
   const concluded=groups.filter(g=>g.concluded);
+  const semProcuracao=groups.filter(g=>g.semProcuracao);
   const pending=groups.filter(g=>g.pending);
   const pendingComp=pending.filter(g=>g.hasCompensation);
   const pendingRefund=pending.filter(g=>g.hasRefund);
@@ -8201,6 +8250,7 @@ function overviewRetSummaryV365(){
   return {
     groups,
     concluded,
+    semProcuracao,
     pending,
     pendingComp,
     pendingRefund,
@@ -8293,7 +8343,9 @@ function renderGeral(){
       {
         l:'ESTOQUE RETIFICAÇÃO',
         v:overviewRetV365.pending.length,
-        s:'empresas pendentes (Stand-by fora do total)',
+        s:
+          overviewRetV365.semProcuracao.length+
+          ' sem procuração • Stand-by fora do total',
         c:overviewRetV365.pending.length ? 'yellow' : 'green'
       },
       {
@@ -8657,7 +8709,14 @@ function renderGeral(){
           )
         );
 
-      return !hasConcluded && !allStandby;
+      const hasSemProcuracao=
+        companyRows.some(
+          r=>retIsSemProcuracaoV476(
+            r['Status Retificação']||r['Retificação']
+          )
+        );
+
+      return !hasConcluded && !allStandby && !hasSemProcuracao;
     }
   );
 
@@ -8693,6 +8752,12 @@ function renderGeral(){
       <b>${overviewRetV365.pending.length}</b>
       <span>Empresas pendentes</span>
       <small class="overview-ret-fee">${brl(overviewRetV365.feePending)} em honorários</small>
+    </div>
+
+    <div class="mini-card">
+      <b>${overviewRetV365.semProcuracao.length}</b>
+      <span>Sem Procuração</span>
+      <small class="overview-ret-fee">empresas únicas</small>
     </div>
 
     <div class="mini-card blue">
@@ -8736,7 +8801,14 @@ function renderGeral(){
               )
             );
 
-          return !hasConcluded && !allStandby;
+          const hasSemProcuracao=
+            rows.some(
+              r=>retIsSemProcuracaoV476(
+                r['Status Retificação']||r['Retificação']
+              )
+            );
+
+          return !hasConcluded && !allStandby && !hasSemProcuracao;
         }
       )
       .map(
@@ -12423,6 +12495,7 @@ function ret34StatusOptions(current,allowStandby=false){
   const base=[
     'Pendente',
     'Em Andamento',
+    'Sem Procuração',
     ...(allowStandby ? ['Stand-by'] : []),
     'Concluído'
   ];
@@ -13017,6 +13090,58 @@ function ret34ChangeAnalyst(el){
 
 
 
+
+let RET_SEM_PROCURACAO_CONTEXT_V475=null;
+
+function openRetSemProcuracaoModalV475(context){
+  RET_SEM_PROCURACAO_CONTEXT_V475=context;
+
+  const input=document.getElementById('retSemProcuracaoReasonV475');
+  if(input)input.value='';
+
+  document
+    .getElementById('retSemProcuracaoModalV475')
+    ?.classList.add('show');
+
+  setTimeout(()=>input?.focus(),50);
+}
+
+function closeRetSemProcuracaoModalV475(){
+  document
+    .getElementById('retSemProcuracaoModalV475')
+    ?.classList.remove('show');
+
+  const context=RET_SEM_PROCURACAO_CONTEXT_V475;
+  RET_SEM_PROCURACAO_CONTEXT_V475=null;
+
+  if(context && context.onCancel){
+    context.onCancel();
+  }
+}
+
+function confirmRetSemProcuracaoModalV475(){
+  const context=RET_SEM_PROCURACAO_CONTEXT_V475;
+  if(!context)return;
+
+  const reason=String(
+    document.getElementById('retSemProcuracaoReasonV475')?.value||''
+  ).trim();
+
+  if(!reason){
+    toast('Informe uma observação para o status Sem Procuração.');
+    document.getElementById('retSemProcuracaoReasonV475')?.focus();
+    return;
+  }
+
+  document
+    .getElementById('retSemProcuracaoModalV475')
+    ?.classList.remove('show');
+
+  RET_SEM_PROCURACAO_CONTEXT_V475=null;
+
+  context.onConfirm(reason);
+}
+
 let RET_STANDBY_CONTEXT_V472=null;
 
 function openRetStandbyModalV472(context){
@@ -13194,6 +13319,29 @@ function ret34ChangeStatus(el,type){
     type==='refund'
       ? 'Status Pedido de Restituição'
       : 'Status Retificação';
+
+  if(
+    field==='Status Retificação' &&
+    norm(status)==='sem procuracao'
+  ){
+    openRetSemProcuracaoModalV475({
+      onConfirm:(reason)=>{
+        executeRet34StatusChangeV38(
+          el,
+          group,
+          status,
+          field,
+          null,
+          reason
+        );
+      },
+      onCancel:()=>{
+        renderRetGroupedV341();
+      }
+    });
+
+    return;
+  }
 
   if(
     field==='Status Retificação' &&
@@ -14326,6 +14474,12 @@ function renderRetificacao(){
         v:retPendingSummaryV416.pending.length,
         s:'agrupadas por nome da empresa',
         c:retPendingSummaryV416.pending.length ? 'yellow' : 'green'
+      },
+      {
+        l:'SEM PROCURAÇÃO',
+        v:retPendingSummaryV416.semProcuracao.length,
+        s:'empresas únicas',
+        c:retPendingSummaryV416.semProcuracao.length ? 'red' : 'green'
       }
     ]
   );
@@ -14501,6 +14655,7 @@ function retStatusOptions(current,allowStandby=false){
     'Pendente',
     'Em Andamento',
     'Aguardando Cadastro',
+    'Sem Procuração',
     ...(allowStandby ? ['Stand-by'] : []),
     'Concluído'
   ];
@@ -14722,6 +14877,21 @@ function salvarStatusRetificacaoV15(el){
         observacoes
       );
   };
+
+  if(
+    campo==='Status Retificação' &&
+    norm(status)==='sem procuracao'
+  ){
+    openRetSemProcuracaoModalV475({
+      onConfirm:(reason)=>execute({
+        valor:null,
+        observacoes:reason
+      }),
+      onCancel:()=>loadData()
+    });
+
+    return;
+  }
 
   if(
     campo==='Status Retificação' &&
