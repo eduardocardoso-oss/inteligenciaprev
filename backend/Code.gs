@@ -1,5 +1,5 @@
 const SPREADSHEET_ID = '1D1gQe09kytZ5GYBEzCySNl5ICNq7cwCaBNLmm7KP9kU';
-const BACKEND_VERSION = 'v47.4-STANDBY-NEUTRO-SEM-STATUS-PEDIDO';
+const BACKEND_VERSION = 'v47.6-SEM-PROCURACAO-SEPARADO';
 
 const COLABORADORES_ATIVOS = [
   'Luiz Neto',
@@ -3740,19 +3740,8 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
 
   try {
     const row = Number(rowNumber);
-    let status = String(novoStatus || '').trim();
+    const status = String(novoStatus || '').trim();
     const campoRecebido = String(campo || '').trim();
-
-    const statusNormStandby = normalizarNomeAbaDashboard_(status)
-      .replace(/[\s_]+/g, '-')
-      .replace(/-+/g, '-');
-
-    if (
-      statusNormStandby === 'stand-by' ||
-      statusNormStandby === 'standby'
-    ) {
-      status = 'Stand-by';
-    }
 
     if (!Number.isInteger(row) || row < 2) {
       throw new Error('Linha inválida: ' + rowNumber);
@@ -3844,7 +3833,7 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
 
     const validos =
       campoStatus === 'Status Retificação'
-        ? ['Pendente', 'Em Andamento', 'Aguardando Cadastro', 'Stand-by', 'Concluído']
+        ? ['Pendente', 'Em Andamento', 'Aguardando Cadastro', 'Sem Procuração', 'Stand-by', 'Concluído']
         : (
             getValidationOptions_(sh, campoStatus).length
               ? getValidationOptions_(sh, campoStatus)
@@ -3870,6 +3859,16 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
 
     let valorRetificacaoNumero = null;
     const obsRecebida = String(observacoesRetificacao || '').trim();
+
+    if (
+      campoStatus === 'Status Retificação' &&
+      normalizeStatus_(status) === 'sem procuracao' &&
+      !obsRecebida
+    ) {
+      throw new Error(
+        'Informe uma observação para o status Sem Procuração.'
+      );
+    }
 
     if (
       campoStatus === 'Status Retificação' &&
@@ -3949,6 +3948,42 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
       }
     } else {
       celulaData.clearContent();
+    }
+
+    if (
+      campoStatus === 'Status Retificação' &&
+      normalizeStatus_(status) === 'sem procuracao' &&
+      obsRecebida &&
+      colObservacoes > 0
+    ) {
+      etapa = 'gravando observação sem procuração';
+
+      const obsCell = sh.getRange(row, colObservacoes);
+      retPrepareFreeTextCellV411_(obsCell);
+
+      const obsAnterior = String(
+        obsCell.getDisplayValue() || ''
+      ).trim();
+
+      const tz =
+        Session.getScriptTimeZone() ||
+        'America/Sao_Paulo';
+
+      const marcador =
+        '[Sem Procuração ' +
+        Utilities.formatDate(
+          new Date(),
+          tz,
+          'dd/MM/yyyy HH:mm'
+        ) +
+        '] ' +
+        obsRecebida;
+
+      obsCell.setValue(
+        obsAnterior
+          ? obsAnterior + '\n\n' + marcador
+          : marcador
+      );
     }
 
     if (
