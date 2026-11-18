@@ -1,5 +1,5 @@
 const SPREADSHEET_ID = '1D1gQe09kytZ5GYBEzCySNl5ICNq7cwCaBNLmm7KP9kU';
-const BACKEND_VERSION = 'v46.4-RESULTADOS-EQUIPE-TV';
+const BACKEND_VERSION = 'v47.2-STANDBY-RETIFICACAO';
 
 const COLABORADORES_ATIVOS = [
   'Luiz Neto',
@@ -3838,7 +3838,7 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
 
     const validos =
       campoStatus === 'Status Retificação'
-        ? ['Pendente', 'Em Andamento', 'Aguardando Cadastro', 'Concluído']
+        ? ['Pendente', 'Em Andamento', 'Aguardando Cadastro', 'Stand-by', 'Concluído']
         : (
             getValidationOptions_(sh, campoStatus).length
               ? getValidationOptions_(sh, campoStatus)
@@ -3863,6 +3863,17 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
     const registroRetificacao = valorRegistro_(sh, row, headers);
 
     let valorRetificacaoNumero = null;
+    const obsRecebida = String(observacoesRetificacao || '').trim();
+
+    if (
+      campoStatus === 'Status Retificação' &&
+      normalizeStatus_(status) === 'stand-by' &&
+      !obsRecebida
+    ) {
+      throw new Error(
+        'Informe a justificativa para colocar a retificação em Stand-by.'
+      );
+    }
 
     if (
       campoStatus === 'Status Retificação' &&
@@ -3912,10 +3923,8 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
           .setValue(valorRetificacaoNumero)
           .setNumberFormat('R$ #,##0.00');
 
-        const obs = String(observacoesRetificacao || '').trim();
-
-        if (obs && colObservacoes > 0) {
-          etapa = 'gravando observações';
+        if (obsRecebida && colObservacoes > 0) {
+          etapa = 'gravando observações da conclusão';
 
           const obsCell = sh.getRange(row, colObservacoes);
           retPrepareFreeTextCellV411_(obsCell);
@@ -3925,15 +3934,56 @@ function alterarStatusRetificacaoV15(rowNumber, campo, novoStatus, authToken, va
           ).trim();
 
           const obsNovo =
-            obsAnterior && obsAnterior !== obs
-              ? obsAnterior + '\n\n' + obs
-              : obs;
+            obsAnterior && obsAnterior !== obsRecebida
+              ? obsAnterior + '\n\n' + obsRecebida
+              : obsRecebida;
 
           obsCell.setValue(obsNovo);
         }
       }
     } else {
       celulaData.clearContent();
+    }
+
+    /*
+     * Stand-by: a justificativa é obrigatória e é SEMPRE anexada
+     * ao conteúdo existente da coluna Observações.
+     * Nunca substitui a observação anterior.
+     */
+    if (
+      campoStatus === 'Status Retificação' &&
+      normalizeStatus_(status) === 'stand-by' &&
+      obsRecebida &&
+      colObservacoes > 0
+    ) {
+      etapa = 'gravando justificativa do stand-by';
+
+      const obsCell = sh.getRange(row, colObservacoes);
+      retPrepareFreeTextCellV411_(obsCell);
+
+      const obsAnterior = String(
+        obsCell.getDisplayValue() || ''
+      ).trim();
+
+      const tz =
+        Session.getScriptTimeZone() ||
+        'America/Sao_Paulo';
+
+      const marcador =
+        '[Stand-by ' +
+        Utilities.formatDate(
+          new Date(),
+          tz,
+          'dd/MM/yyyy HH:mm'
+        ) +
+        '] ' +
+        obsRecebida;
+
+      obsCell.setValue(
+        obsAnterior
+          ? obsAnterior + '\n\n' + marcador
+          : marcador
+      );
     }
 
     SpreadsheetApp.flush();
