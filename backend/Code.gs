@@ -1,5 +1,5 @@
 const SPREADSHEET_ID = '1D1gQe09kytZ5GYBEzCySNl5ICNq7cwCaBNLmm7KP9kU';
-const BACKEND_VERSION = 'v46.4-2026-11-18-TV-OTIMIZADA-STANDBY';
+const BACKEND_VERSION = 'v47.3-SEM-TV-STANDBY';
 
 const COLABORADORES_ATIVOS = [
   'Luiz Neto',
@@ -149,9 +149,6 @@ function parseAbasPermitidas_(raw) {
     'temas': 'temas',
     'temas previdenciarios': 'temas',
     'diretoria': 'diretoria',
-    'resultados equipe': 'resultadosEquipe',
-    'resultados da equipe': 'resultadosEquipe',
-    'tv equipe': 'resultadosEquipe',
     'diretoria / performance': 'diretoria',
     'diretoria/performance': 'diretoria',
     'performance': 'diretoria'
@@ -1758,18 +1755,16 @@ function getDashboardData(authToken) {
   const carregarChecklist =
     precisaBasesGerenciais ||
     pode('checklist') ||
-    pode('slaOperacao') ||
-    pode('resultadosEquipe');
+    pode('slaOperacao');
 
   const carregarOperacao =
     precisaBasesGerenciais ||
     pode('operacao') ||
-    pode('slaOperacao') ||
-    pode('resultadosEquipe');
+    pode('slaOperacao');
 
-  const carregarRetificacao = precisaBasesGerenciais || pode('retificacao') || pode('resultadosEquipe');
+  const carregarRetificacao = precisaBasesGerenciais || pode('retificacao');
   const carregarTemas = pode('temas');
-  const carregarCreditos = precisaBasesGerenciais || pode('creditos') || pode('resultadosEquipe');
+  const carregarCreditos = precisaBasesGerenciais || pode('creditos');
   const carregarPrazoValidacao = pode('prazoValidacao');
   const carregarMetas = pode('diretoria') || pode('geral');
 
