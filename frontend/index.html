@@ -5573,6 +5573,306 @@ html[data-theme] .login-error{color:var(--red)!important;font-size:12px}
 @media (prefers-reduced-motion:reduce){
   html[data-theme] *{transition:none!important;animation:none!important}
 }
+
+/* =====================================================================
+   v51 — ajustes solicitados
+   ===================================================================== */
+
+/* "Visão Geral" no menu com a mesma tipografia dos grupos */
+html[data-theme] .nav > button[data-view="geral"]{
+  text-transform:uppercase;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.06em;
+  padding:9px 12px;
+}
+html[data-theme] .nav > button[data-view="geral"]:not(.active){opacity:.85}
+html[data-theme] .nav > button[data-view="geral"]:not(.active):hover{opacity:1}
+@media (max-width:780px){
+  html[data-theme] .nav > button[data-view="geral"]{font-size:11px!important}
+}
+
+/* Faixa de atualização com 5 estoques */
+@media (min-width:1101px){
+  html[data-theme] .overview-stock-update-strip{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+
+/* Indicadores do mês por etapa */
+html[data-theme] #monthlyPerformanceTable{
+  border:0!important;
+  background:transparent!important;
+  overflow:visible!important;
+  border-radius:0!important;
+}
+.month-split-v51{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+}
+@media (max-width:1280px){.month-split-v51{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.month-split-v51{grid-template-columns:1fr}}
+.month-card-v51{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:var(--panel);
+  overflow:hidden;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+}
+.month-card-head-v51{
+  padding:12px 16px 0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.month-card-head-v51::before{
+  content:"";
+  width:8px;height:8px;border-radius:2px;
+  background:var(--gold);
+}
+.month-card-v51.ck .month-card-head-v51::before{background:var(--blue)}
+.month-card-v51.op .month-card-head-v51::before{background:var(--yellow)}
+.month-card-v51.ret .month-card-head-v51::before{background:var(--green)}
+.month-card-v51.pv .month-card-head-v51::before{background:var(--muted)}
+.month-card-head-v51 h3{
+  margin:0;
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink);
+}
+.month-card-hero-v51{
+  padding:8px 16px 14px;
+  border-bottom:1px solid var(--line);
+}
+.month-card-hero-v51 b{
+  display:block;
+  font-size:28px;
+  font-weight:600;
+  letter-spacing:-.025em;
+  line-height:1.1;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.month-card-hero-v51 small{
+  display:block;
+  margin-top:3px;
+  font-size:12px;
+  color:var(--muted);
+}
+.month-row-v51{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  padding:9px 16px;
+  border-top:1px solid var(--line);
+  font-size:12.5px;
+}
+.month-row-v51:first-child{border-top:0}
+.month-row-v51 > span{color:var(--ink-2);min-width:0}
+.month-row-v51 > span small{display:block;margin-top:2px;font-size:11px;color:var(--muted)}
+.month-row-v51 > b{
+  font-weight:600;
+  color:var(--ink);
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  text-align:right;
+}
+
+/* Filtros de período (Checklist, Operação, Retificação) */
+html[data-theme] .ret39-filter-card{
+  border-color:var(--line)!important;
+  background:var(--panel)!important;
+  border-radius:12px;
+  padding:12px;
+  gap:8px;
+  align-content:start;
+}
+html[data-theme] .ret39-filter-card > label{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.05em;
+  color:var(--muted);
+}
+html[data-theme] .ret39-filter-card input,
+html[data-theme] .ret39-filter-card select{height:36px}
+html[data-theme] .ret39-quick{
+  background:var(--panel-2)!important;
+  border:1px solid var(--line)!important;
+  color:var(--ink-2)!important;
+  border-radius:999px;
+  padding:4px 11px;
+  font-size:11.5px;
+  font-weight:500;
+}
+html[data-theme] .ret39-quick:hover{border-color:var(--line-strong)!important;color:var(--ink)!important}
+.op-totals-filter-v51{margin-bottom:14px}
+
+/* Retificação — bloco "Entregas por competência" */
+.ret51-delivery-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.ret51-delivery-head > div:first-child{flex:1 1 320px;min-width:0}
+html[data-theme] .ret51-delivery-head .ret36-analyst-toolbar-v477{margin:0}
+html[data-theme] .ret51-delivery-head .ret36-analyst-filter-v477{width:min(300px,100%)}
+html[data-theme] .ret36-analyst-filter-v477 label{
+  font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--muted)!important;
+}
+.ret51-delivery-body{display:grid;gap:14px}
+
+/* Comparativo de automação em formato compacto (linhas) */
+html[data-theme] .ret51-delivery-panel .ret-robot-compare-v479{
+  margin:0;
+  border:1px solid var(--line)!important;
+  border-radius:12px;
+  background:var(--panel-2)!important;
+  box-shadow:none!important;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-compare-head-v479{
+  background:transparent!important;
+  border-bottom:1px solid var(--line);
+  padding:10px 14px;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-compare-head-v479 h3{font-size:12.5px;font-weight:600}
+html[data-theme] .ret51-delivery-panel .ret-robot-compare-head-v479 small{font-size:11.5px;margin-top:2px}
+html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
+  grid-template-columns:1fr;
+  gap:0;
+  padding:0;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-card-v479{
+  display:grid;
+  grid-template-columns:minmax(170px,1.1fr) 3fr;
+  align-items:center;
+  gap:14px;
+  border:0!important;
+  border-top:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  padding:10px 14px;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-card-v479 + .ret-robot-card-v479{border-top:1px solid var(--line)!important}
+html[data-theme] .ret51-delivery-panel .ret-robot-card-title-v479{
+  margin:0;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:4px 8px;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-card-title-v479 strong{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+html[data-theme] .ret51-delivery-panel .ret-robot-card-title-v479 strong::before{
+  content:"";width:8px;height:8px;border-radius:50%;background:var(--green);
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-card-v479.external .ret-robot-card-title-v479 strong::before{background:var(--gold)}
+html[data-theme] .ret51-delivery-panel .ret-robot-badge-v479{
+  background:transparent;
+  padding:0;
+  font-size:11px;
+  font-weight:500;
+  text-transform:none;
+  letter-spacing:0;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-metrics-v479{gap:10px}
+html[data-theme] .ret51-delivery-panel .ret-robot-metric-v479{
+  border:0;
+  background:transparent;
+  padding:0;
+  display:flex;
+  flex-direction:column-reverse;
+  gap:2px;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-metric-v479 b{
+  font-size:15px;
+  font-weight:600;
+  margin:0;
+  font-variant-numeric:tabular-nums;
+}
+html[data-theme] .ret51-delivery-panel .ret-robot-metric-v479 span{
+  font-size:11px;
+  font-weight:500;
+  text-transform:none;
+  letter-spacing:0;
+}
+@media (max-width:760px){
+  html[data-theme] .ret51-delivery-panel .ret-robot-card-v479{grid-template-columns:1fr;gap:8px}
+}
+
+/* Cartões por analista */
+html[data-theme] .ret36-analyst-grid{margin:0}
+html[data-theme] .ret36-analyst-card{
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+}
+html[data-theme] .ret36-analyst-card h3{font-size:13px;font-weight:600}
+html[data-theme] .ret36-analyst-stat{
+  background:var(--panel-2)!important;
+  border-color:var(--line)!important;
+  border-radius:10px;
+}
+html[data-theme] .ret36-analyst-stat b{font-weight:600;font-size:22px}
+html[data-theme] .ret36-analyst-stat small{
+  font-size:11px;font-weight:500;text-transform:none;letter-spacing:0;
+}
+
+/* Subtítulos internos e rótulos de seção */
+.ret51-subhead{display:grid;gap:2px}
+.ret51-subhead h3{
+  margin:0;
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink);
+}
+.ret51-subhead small{font-size:12px;color:var(--muted);line-height:1.4}
+.ret51-section-label{
+  margin:26px 0 10px;
+  padding-left:2px;
+  display:grid;
+  gap:2px;
+}
+.ret51-section-label h3{
+  margin:0;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:-.01em;
+  color:var(--ink);
+}
+.ret51-section-label small{font-size:12.5px;color:var(--muted)}
+html[data-theme] .ret51-delivery-panel{margin-bottom:0}
+.ret51-aging-body{display:grid;gap:12px}
+html[data-theme] .ret51-aging-body .kpis{margin-bottom:6px}
+html[data-theme] .ret51-aging-body .kpi{background:var(--panel-2)!important;box-shadow:none!important}
+html[data-theme] .ret34-aging-cell{
+  background:var(--panel-2)!important;
+  border:1px solid var(--line)!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+}
+html[data-theme] .ret34-aging-cell small{font-size:11.5px;color:var(--muted)}
+html[data-theme] .ret34-aging-cell b{font-weight:600;font-variant-numeric:tabular-nums}
+html[data-theme] .ret44-total-company-card{
+  background:var(--panel-2)!important;
+  border:1px solid var(--line)!important;
+  border-top:1px solid var(--line)!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+}
+html[data-theme] .ret40-method-box{
+  border-color:var(--line)!important;
+  border-radius:12px!important;
+  background:var(--panel)!important;
+  box-shadow:none!important;
+}
+html[data-theme] .ret40-method-head{
+  background:var(--panel-2)!important;
+  color:var(--ink)!important;
+  font-weight:600;
+}
 </style>
 
 </head>
@@ -6291,13 +6591,39 @@ html[data-theme] .login-error{color:var(--red)!important;font-size:12px}
         <div class="panel-head">
           <div>
             <h2>Dados Totais da Operação</h2>
-            <small>Histórico consolidado ou competência pela Data Finalização Revisão.</small>
-          </div>
-          <div style="min-width:220px">
-            <select id="operationTotalsMonth" style="width:100%;height:40px;border:1px solid #ded5c8;border-radius:10px;padding:0 10px;background:#fff"></select>
+            <small id="opTotalsScopeV51">Sem filtro de datas: histórico completo da operação.</small>
           </div>
         </div>
         <div class="panel-body">
+          <div class="checklist-date-filter-grid op-totals-filter-v51">
+            <div class="ret39-filter-card">
+              <label>Entrada na Operação</label>
+              <div class="ret39-date-grid">
+                <input id="opTotEntryFrom" type="date" onchange="renderOperationTotalsV23()" aria-label="Entrada na operação: de">
+                <input id="opTotEntryTo" type="date" onchange="renderOperationTotalsV23()" aria-label="Entrada na operação: até">
+              </div>
+              <div class="ret39-quick-row">
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('entry','today')">Hoje</button>
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('entry','week')">Semana</button>
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('entry','month')">Mês</button>
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('entry','clear')">Limpar</button>
+              </div>
+            </div>
+
+            <div class="ret39-filter-card">
+              <label>Saída (Finalização da Revisão)</label>
+              <div class="ret39-date-grid">
+                <input id="opTotExitFrom" type="date" onchange="renderOperationTotalsV23()" aria-label="Finalização da revisão: de">
+                <input id="opTotExitTo" type="date" onchange="renderOperationTotalsV23()" aria-label="Finalização da revisão: até">
+              </div>
+              <div class="ret39-quick-row">
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('exit','today')">Hoje</button>
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('exit','week')">Semana</button>
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('exit','month')">Mês</button>
+                <button class="ret39-quick" type="button" onclick="operationTotalsSetPeriodV51('exit','clear')">Limpar</button>
+              </div>
+            </div>
+          </div>
           <div class="operation-total-grid" id="operationTotalsGrid"></div>
         </div>
       </div>
@@ -6406,38 +6732,55 @@ html[data-theme] .login-error{color:var(--red)!important;font-size:12px}
 
 
 <section class="view" id="view-retificacao">
-      <div class="kpis" id="kpis-retificacao-pendentes"></div>
 
-      <div class="ret36-analyst-toolbar-v477">
-        <div class="ret36-analyst-filter-v477">
-          <label for="retAnalystDeliveryCompetenceV477">Competência de entrega das metas</label>
-          <select id="retAnalystDeliveryCompetenceV477" onchange="renderRetAnalystCardsV361();renderRetRobotCompareV479()">
-            <option value="">Todas as competências de entrega</option>
-          </select>
-          <small>
-            Concluídos = empresas únicas com entrega na competência selecionada. Pendentes representam o estoque atual.
-          </small>
-        </div>
-      </div>
-
-      <div class="ret36-analyst-grid" id="retAnalystCardsV361"></div>
-
-      <div class="ret-robot-compare-v479">
-        <div class="ret-robot-compare-head-v479">
+      <!-- v51: bloco 1 — o que foi entregue na competência escolhida -->
+      <div class="panel ret51-delivery-panel">
+        <div class="panel-head ret51-delivery-head">
           <div>
-            <h3>Comparativo de Automação</h3>
-            <small>
-              Empresas únicas, crédito retificado e honorários por tecnologia utilizada.
-              Respeita a competência de entrega selecionada acima.
-            </small>
+            <h2>Entregas por competência</h2>
+            <small>Concluídos = empresas únicas com entrega na competência selecionada. Pendentes representam o estoque atual.</small>
+          </div>
+          <div class="ret36-analyst-toolbar-v477">
+            <div class="ret36-analyst-filter-v477">
+              <label for="retAnalystDeliveryCompetenceV477">Competência de entrega das metas</label>
+              <select id="retAnalystDeliveryCompetenceV477" onchange="renderRetAnalystCardsV361();renderRetRobotCompareV479()">
+                <option value="">Todas as competências de entrega</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <div class="ret-robot-compare-grid-v479" id="retRobotCompareGridV479"></div>
+        <div class="panel-body ret51-delivery-body">
+          <div class="ret-robot-compare-v479">
+            <div class="ret-robot-compare-head-v479">
+              <div>
+                <h3>Comparativo de Automação</h3>
+                <small>
+                  Empresas únicas, crédito retificado e honorários por tecnologia utilizada.
+                  Respeita a competência de entrega selecionada acima.
+                </small>
+              </div>
+            </div>
+
+            <div class="ret-robot-compare-grid-v479" id="retRobotCompareGridV479"></div>
+          </div>
+
+          <div class="ret51-subhead">
+            <h3>Por analista</h3>
+            <small>Pendentes atuais (estoque de hoje) e concluídos na competência de entrega.</small>
+          </div>
+          <div class="ret36-analyst-grid" id="retAnalystCardsV361"></div>
+        </div>
       </div>
 
-      <div class="kpis ret34-kpis" id="kpis-retificacao-grouped"></div>
+      <!-- v51: bloco 2 — fotografia do estoque hoje -->
+      <div class="ret51-section-label">
+        <h3>Estoque pendente hoje</h3>
+        <small>Fotografia atual do estoque, agrupada por empresa. Não depende da competência de entrega.</small>
+      </div>
+      <div class="kpis" id="kpis-retificacao-pendentes"></div>
 
+      <!-- v51: bloco 3 — aging, com os honorários que dependem destes filtros -->
       <div class="panel" id="retGroupedPanelV341">
         <div class="panel-head">
           <div>
@@ -6476,7 +6819,17 @@ html[data-theme] .login-error{color:var(--red)!important;font-size:12px}
           </select>
         </div>
 
-        <div class="panel-body">
+        <div class="panel-body ret51-aging-body">
+          <div class="ret51-subhead">
+            <h3 id="ret51GroupedTitle">Honorários pendentes</h3>
+            <small id="ret51GroupedScope">Soma dos registros da tabela abaixo, conforme os filtros acima.</small>
+          </div>
+          <div class="kpis ret34-kpis" id="kpis-retificacao-grouped"></div>
+
+          <div class="ret51-subhead">
+            <h3>Honorários por tempo em estoque</h3>
+            <small>Mesma seleção da tabela, distribuída por faixa de aging.</small>
+          </div>
           <div class="ret34-aging-grid" id="retAgingMatrixV341"></div>
         </div>
 
@@ -8609,10 +8962,10 @@ function daysBetweenDates(a,b){
 
 function operationDeadlineStatusesV23(){
   return [
-    'Entrega Hoje',
-    'Vence Esse FDS',
-    'Vence Amanhã',
     'No Prazo',
+    'Entrega Hoje',
+    'Vence Amanhã',
+    'Vence Esse FDS',
     'Atrasado',
     'Aguardando Preenchimento'
   ];
@@ -8899,29 +9252,88 @@ function operationTotalsAvailableMonthsV5(){
   return keys;
 }
 
+function operationTotalsSetPeriodV51(type,period){
+  const prefix=
+    type==='exit'
+      ? 'opTotExit'
+      : 'opTotEntry';
+
+  const from=document.getElementById(prefix+'From');
+  const to=document.getElementById(prefix+'To');
+
+  if(!from || !to)return;
+
+  if(period==='clear'){
+    from.value='';
+    to.value='';
+    renderOperationTotalsV23();
+    return;
+  }
+
+  const range=ret39PeriodRange(period);
+
+  from.value=ret39IsoDate(range.start);
+  to.value=ret39IsoDate(range.end);
+
+  renderOperationTotalsV23();
+}
+
+function operationTotalsRangeTextV51(label,from,to){
+  const br=v=>v ? v.split('-').reverse().join('/') : '';
+  if(from && to)return `${label} de ${br(from)} a ${br(to)}`;
+  if(from)return `${label} a partir de ${br(from)}`;
+  if(to)return `${label} até ${br(to)}`;
+  return '';
+}
+
 function renderOperationTotalsV23(){
   const el=document.getElementById('operationTotalsGrid');
   if(!el)return;
 
-  const select=document.getElementById('operationTotalsMonth');
-  const months=operationTotalsAvailableMonthsV5();
-  if(select){
-    const current=select.value;
-    select.innerHTML='<option value="">Histórico total</option>'+months.map(key=>{
-      const [y,m]=key.split('-').map(Number);
-      const label=new Date(y,m-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
-      return `<option value="${esc(key)}">${esc(label)}</option>`;
-    }).join('');
-    if(current && months.includes(current))select.value=current;
-  }
-  const selected=select?select.value:'';
+  const val=id=>String(document.getElementById(id)?.value||'').trim();
+
+  const entryFrom=val('opTotEntryFrom');
+  const entryTo=val('opTotEntryTo');
+  const exitFrom=val('opTotExitFrom');
+  const exitTo=val('opTotExitTo');
 
   let rows=(DATA.operacao||[]).filter(r=>r['Número do Job'] || r['Nome da Empresa']);
-  if(selected){
-    rows=rows.filter(r=>{
-      const d=parseDate(r['Data Finalização Revisão']);
-      return d && `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`===selected;
-    });
+
+  // Entrada: Data da Entrada na Operação
+  if(entryFrom || entryTo){
+    rows=rows.filter(
+      r=>ret39DateInRange(
+        ret39DateOnly(r['Data da Entrada na Operação']),
+        entryFrom,
+        entryTo
+      )
+    );
+  }
+
+  // Saída: Data Finalização Revisão (mesma data usada antes na seleção por competência)
+  if(exitFrom || exitTo){
+    rows=rows.filter(
+      r=>ret39DateInRange(
+        ret39DateOnly(r['Data Finalização Revisão']),
+        exitFrom,
+        exitTo
+      )
+    );
+  }
+
+  const hasFilter=!!(entryFrom || entryTo || exitFrom || exitTo);
+
+  const scope=document.getElementById('opTotalsScopeV51');
+  if(scope){
+    const parts=[
+      operationTotalsRangeTextV51('Entrada na operação',entryFrom,entryTo),
+      operationTotalsRangeTextV51('Finalização da revisão',exitFrom,exitTo)
+    ].filter(Boolean);
+
+    scope.textContent=
+      hasFilter
+        ? parts.join(' • ')
+        : 'Sem filtro de datas: histórico completo da operação.';
   }
 
   const finalInside=rows.filter(r=>norm(r['Status Prazo'])==='finalizado no prazo');
@@ -8931,7 +9343,7 @@ function renderOperationTotalsV23(){
   const avg=durations.length?durations.reduce((a,b)=>a+b,0)/durations.length:0;
 
   el.innerHTML=`
-    <div class="mini-card blue"><b>${rows.length}</b><span>${selected?'Jobs na competência':'Quantidade total de jobs'}</span></div>
+    <div class="mini-card blue"><b>${rows.length}</b><span>${hasFilter?'Jobs no período':'Quantidade total de jobs'}</span></div>
     <div class="mini-card green"><b>${finalInside.length}</b><span>Finalizados no prazo</span></div>
     <div class="mini-card red"><b>${finalOutside.length}</b><span>Finalizados fora do prazo</span></div>
     <div class="mini-card yellow"><b>${avg.toFixed(1)} d</b><span>Média de dias para entrega</span></div>
@@ -8943,7 +9355,8 @@ const OVERVIEW_STOCKS_V362=[
   {key:'checklist',label:'Checklist'},
   {key:'operacao',label:'Operação'},
   {key:'retificacao',label:'Retificação'},
-  {key:'prazoValidacao',label:'Prazo de Validação'}
+  {key:'prazoValidacao',label:'Prazo de Validação'},
+  {key:'creditos',label:'Créditos'}
 ];
 
 function todayKeyLocalV362(){
@@ -9610,12 +10023,6 @@ function renderGeral(){
   document.getElementById(
     'overviewRetGrid'
   ).innerHTML=`
-    <div class="mini-card green">
-      <b>${overviewRetV365.concluded.length}</b>
-      <span>Empresas concluídas</span>
-      <small class="overview-ret-fee">${brl(overviewRetV365.feeConcluded)} em honorários</small>
-    </div>
-
     <div class="mini-card yellow">
       <b>${overviewRetV365.pending.length}</b>
       <span>Empresas pendentes</span>
@@ -9817,6 +10224,13 @@ function renderGeral(){
     document.getElementById('performanceWindowLabel').textContent=`Competência: ${selectedMonth.label}`;
   }
 
+  /*
+   * v51 — Indicadores do Mês divididos por etapa.
+   * Operação, Prazo de Validação e as contagens de Retificação mantêm
+   * exatamente as regras anteriores. Checklist e honorários de Retificação
+   * reutilizam as mesmas regras do Reporte Temporal do Checklist e do
+   * Reporte Gerencial da Retificação (bucket "Concluído", filtrado pela saída).
+   */
   const opMonth=(DATA.operacao||[]).filter(r=>inMonth(r['Data Finalização OP'],selectedMonth));
   const durations=opMonth.map(r=>daysBetweenDates(r['Data da Entrada na Operação'],r['Data Finalização OP'])).filter(v=>v!==null);
   const avg=durations.length?(durations.reduce((a,b)=>a+b,0)/durations.length).toFixed(1):'-';
@@ -9826,21 +10240,126 @@ function renderGeral(){
   const retDone=unique((DATA.retificacao||[]).filter(r=>done(r['Status Retificação']||r['Retificação']) && inMonth(r['Data Finalização Retificação'],selectedMonth)).map(r=>r['Nome da Empresa'])).length;
   const refundDone=unique((DATA.retificacao||[]).filter(r=>done(r['Status Pedido de Restituição']||r['Pedido de Restituição']) && inMonth(r['Data Finalização Pedido de Restituição'],selectedMonth)).map(r=>r['Nome da Empresa'])).length;
 
+  const avgOfV51=list=>list.length?(list.reduce((a,b)=>a+b,0)/list.length).toFixed(1):'-';
+  const daysTextV51=v=>v==='-'?'-':`${v} d`;
+
+  // Checklist: concluídos com saída na competência (mesma regra do Reporte Temporal)
+  const ckRowsMonthV51=
+    typeof buildChecklistRowsV317==='function'
+      ? buildChecklistRowsV317()
+      : (DATA.checklist||[]);
+
+  const ckExitValueV51=r=>r['Data Finalização Checkist']||r['Data Finalização Checklist'];
+
+  const ckDoneMonthV51=ckRowsMonthV51.filter(
+    r=>norm(r['Status'])==='concluido' && inMonth(ckExitValueV51(r),selectedMonth)
+  );
+
+  const ckAvgV51=avgOfV51(
+    ckDoneMonthV51
+      .map(r=>daysBetweenDates(r['Data Entrada Checklist'],ckExitValueV51(r)))
+      .filter(v=>v!==null)
+  );
+
+  const ckProfileYesV51=ckDoneMonthV51.filter(r=>norm(r['__perfil'])==='sim').length;
+  // Regra do Reporte Temporal: concluído sem perfil preenchido conta como Perfil = Não
+  const ckProfileNoV51=ckDoneMonthV51.length-ckProfileYesV51;
+  const ckProfilePctV51=(
+    ckDoneMonthV51.length
+      ? (ckProfileYesV51/ckDoneMonthV51.length)*100
+      : 0
+  ).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+
+  // Retificação: grupos concluídos com saída na competência (mesma base do Reporte Gerencial)
+  const retGroupsMonthV51=(
+    typeof ret39ReportGroups==='function'
+      ? ret39ReportGroups()
+      : []
+  ).filter(
+    g=>
+      g.concluded &&
+      ret40StatusBucket(g)==='done' &&
+      g.exit &&
+      g.exit>=selectedMonth.start &&
+      g.exit<=selectedMonth.end
+  );
+
+  const retAvgV51=avgOfV51(
+    retGroupsMonthV51
+      .filter(g=>g.entry && g.exit)
+      .map(g=>Math.max(0,dayDiff(g.entry,g.exit)))
+  );
+
+  const retMethodMonthV51=method=>{
+    const groups=retGroupsMonthV51.filter(g=>norm(g.method)===norm(method));
+    return {
+      companies:new Set(groups.map(g=>norm(g.company||'')).filter(Boolean)).size,
+      fee:groups.reduce((s,g)=>s+g.fee,0)
+    };
+  };
+
+  const retCompMonthV51=retMethodMonthV51('Compensação');
+  const retRefundMonthV51=retMethodMonthV51('Pedido de Restituição');
+
+  const monthCardV51=(title,hero,heroLabel,rowsHtml,css)=>`
+    <div class="month-card-v51 ${css||''}">
+      <div class="month-card-head-v51">
+        <h3>${esc(title)}</h3>
+      </div>
+      <div class="month-card-hero-v51">
+        <b>${esc(hero)}</b>
+        <small>${esc(heroLabel)}</small>
+      </div>
+      <div class="month-card-rows-v51">${rowsHtml}</div>
+    </div>`;
+
+  const monthRowV51=(label,value,hint)=>`
+    <div class="month-row-v51">
+      <span>${esc(label)}${hint?`<small>${esc(hint)}</small>`:''}</span>
+      <b>${value}</b>
+    </div>`;
+
   document.getElementById('monthlyPerformanceTable').innerHTML=`
-    <table>
-      <thead><tr><th>Indicador</th><th class="month-head">${esc(selectedMonth.label)}</th></tr></thead>
-      <tbody>
-        <tr><td><b>Média de dias p/ entrega da operação</b></td><td>${esc(avg)}${avg==='-'?'':' d'}</td></tr>
-        <tr><td><b>Operações finalizadas</b></td><td>${opMonth.length}</td></tr>
-        <tr><td><b>Empresas com crédito — Sim</b></td><td>${opMonth.filter(r=>norm(r['Crédito?'])==='sim').length}</td></tr>
-        <tr><td><b>Empresas com crédito — Não</b></td><td>${opMonth.filter(r=>norm(r['Crédito?'])==='nao').length}</td></tr>
-        <tr><td><b>Entradas no Checklist</b></td><td>${checklistStock}</td></tr>
-        <tr><td><b>Entradas no Prazo de Validação</b></td><td>${pvEntries}</td></tr>
-        <tr><td><b>Prazo de Validação concluídos</b></td><td>${pvDone}</td></tr>
-        <tr><td><b>Empresas com retificação finalizada</b></td><td>${retDone}</td></tr>
-        <tr><td><b>Empresas com pedido de restituição finalizado</b></td><td>${refundDone}</td></tr>
-      </tbody>
-    </table>`;
+    <div class="month-split-v51">
+      ${monthCardV51(
+        'Checklist',
+        daysTextV51(ckAvgV51),
+        'média de dias para entrega',
+        monthRowV51('Checklists concluídos',ckDoneMonthV51.length)+
+        monthRowV51('Com perfil',ckProfileYesV51)+
+        monthRowV51('Sem perfil',ckProfileNoV51,'inclui concluídos sem perfil preenchido')+
+        monthRowV51('% com perfil',esc(ckProfilePctV51))+
+        monthRowV51('Entradas no Checklist',checklistStock),
+        'ck'
+      )}
+      ${monthCardV51(
+        'Operação',
+        daysTextV51(avg),
+        'média de dias para entrega',
+        monthRowV51('Operações finalizadas',opMonth.length)+
+        monthRowV51('Empresas com crédito — Sim',opMonth.filter(r=>norm(r['Crédito?'])==='sim').length)+
+        monthRowV51('Empresas com crédito — Não',opMonth.filter(r=>norm(r['Crédito?'])==='nao').length),
+        'op'
+      )}
+      ${monthCardV51(
+        'Retificação',
+        daysTextV51(retAvgV51),
+        'média de dias para entrega',
+        monthRowV51('Honorário gerado • Compensação',`<span class="money">${brl(retCompMonthV51.fee)}</span>`,`${retCompMonthV51.companies} empresa(s)`)+
+        monthRowV51('Honorário gerado • Pedido de Restituição',`<span class="money">${brl(retRefundMonthV51.fee)}</span>`,`${retRefundMonthV51.companies} empresa(s)`)+
+        monthRowV51('Empresas com retificação finalizada',retDone)+
+        monthRowV51('Empresas com pedido de restituição finalizado',refundDone),
+        'ret'
+      )}
+      ${monthCardV51(
+        'Prazo de Validação',
+        String(pvDone),
+        'concluídos na competência',
+        monthRowV51('Entradas no Prazo de Validação',pvEntries)+
+        monthRowV51('Prazo de Validação concluídos',pvDone),
+        'pv'
+      )}
+    </div>`;
 
   const attentionItems=[
     {
@@ -9855,16 +10374,30 @@ function renderGeral(){
       p:pvPending.length ? `mais antigo: ${pvOldest} dia(s)` : 'Sem pendências',
       c:pvPending.length ? 'yellow' : 'green'
     },
-    {
-      t:'Retificação',
-      s:`${Object.keys(retOpenCompanies).length} empresa(s) no estoque`,
-      p:`${unique(
-        DATA.retificacao
+    (()=>{
+      /*
+       * v51: considera somente empresas pendentes de fato
+       * (mesma regra do quadro Estoque Retificação: fora concluídas,
+       * Sem Procuração e Stand-by).
+       */
+      const pendingKeysV51=new Set(
+        overviewRetV365.pending.map(g=>g.key)
+      );
+
+      const overdueCompaniesV51=unique(
+        (DATA.retificacao||[])
           .filter(r=>retOverdue(r) || refundOverdue(r))
-          .map(r=>r['Nome da Empresa'])
-      ).length} empresa(s) com prazo estourado`,
-      c:(DATA.retificacao.some(retOverdue) || DATA.retificacao.some(refundOverdue)) ? 'red' : (retOpen.length ? 'yellow' : 'green')
-    },
+          .map(r=>norm(String(r['Nome da Empresa']||'').trim()) || norm(String(r['Número do Job']||'').trim()))
+          .filter(k=>k && pendingKeysV51.has(k))
+      ).length;
+
+      return {
+        t:'Retificação',
+        s:`${overviewRetV365.pending.length} empresa(s) pendente(s) • sem procuração e stand-by fora da contagem`,
+        p:`${overdueCompaniesV51} empresa(s) com prazo estourado`,
+        c:overdueCompaniesV51 ? 'red' : (overviewRetV365.pending.length ? 'yellow' : 'green')
+      };
+    })(),
     {
       t:'To-do',
       s:`${taskOpen.length} atividade(s) aberta(s)`,
@@ -11235,7 +11768,7 @@ function renderChecklist(){
 
   const long=
     open.filter(
-      r=>ckDays(r)>5
+      r=>ckDays(r)>3
     );
 
 
@@ -11249,7 +11782,7 @@ function renderChecklist(){
         c:'blue'
       },
       {
-        l:'Acima de 5 Dias',
+        l:'Acima de 3 Dias',
         v:long.length,
         s:'necessitam atenção',
         c:long.length
@@ -14119,6 +14652,58 @@ function ret40EffectiveGroupFee(group){
   },0);
 }
 
+/*
+ * v51 — Explica, logo acima dos quadros de honorários da Retificação,
+ * quais filtros da tabela "Aging do Estoque" estão definindo a soma.
+ * Apenas texto: não altera nenhum cálculo.
+ */
+function ret51UpdateGroupedScope(rows){
+  const scope=document.getElementById('ret51GroupedScope');
+  const title=document.getElementById('ret51GroupedTitle');
+
+  const optionText=id=>{
+    const el=document.getElementById(id);
+    if(!el || !el.value)return '';
+    const opt=el.options ? el.options[el.selectedIndex] : null;
+    return String(opt ? opt.text : el.value).trim();
+  };
+
+  const status=optionText('retGroupStatus');
+  const parts=[status ? `status ${status}` : 'todos os status'];
+
+  const analyst=optionText('retGroupAnalyst');
+  if(analyst)parts.push(`analista ${analyst}`);
+
+  const method=optionText('retGroupMethod');
+  if(method)parts.push(`método ${method}`);
+
+  const entry=optionText('retGroupEntryMonth');
+  if(entry)parts.push(`entrada em ${entry}`);
+
+  const exit=optionText('retGroupExitMonth');
+  if(exit)parts.push(`saída em ${exit}`);
+
+  const aging=optionText('retGroupAging');
+  if(aging)parts.push(`aging ${aging}`);
+
+  const search=String(document.getElementById('retGroupSearch')?.value||'').trim();
+  if(search)parts.push(`busca “${search}”`);
+
+  if(title){
+    title.textContent=
+      norm(status)==='pendente'
+        ? 'Honorários pendentes'
+        : 'Honorários do estoque filtrado';
+  }
+
+  if(scope){
+    scope.textContent=
+      `Soma dos ${(rows||[]).length} registro(s) da tabela abaixo, com ${parts.join(', ')}. `+
+      'Os quadros acompanham qualquer mudança nos filtros.';
+  }
+}
+
+
 function renderRetGroupedV341(){
   const table=document.getElementById('retGroupTableV341');
   const matrix=document.getElementById('retAgingMatrixV341');
@@ -14194,6 +14779,8 @@ function renderRetGroupedV341(){
       {l:'Aging Médio',v:`${avgAging.toFixed(1)} d`,s:'entrada no estoque até hoje',c:avgAging>30?'red':'blue'}
     ]
   );
+
+  ret51UpdateGroupedScope(rows);
 
   matrix.innerHTML=['0-7','8-15','16-30','31-60','60+'].map(bucket=>{
     const subset=rows.filter(r=>ret34Bucket(r.aging)===bucket);
