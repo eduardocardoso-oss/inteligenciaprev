@@ -5873,6 +5873,80 @@ html[data-theme] .ret40-method-head{
   color:var(--ink)!important;
   font-weight:600;
 }
+
+/* v52 — pendentes no topo e comparativo em barras */
+.ret51-section-label.ret52-first{margin-top:0}
+html[data-theme] #view-retificacao .ret51-delivery-panel{margin-top:22px}
+
+html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  padding:14px 14px 16px;
+}
+.rbar-legend-v52{
+  display:grid;
+  grid-template-columns:140px 130px minmax(140px,1fr) 130px;
+  align-items:center;
+  gap:10px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--ink);
+}
+.rbar-key-v52{display:inline-flex;align-items:center;gap:7px}
+.rbar-key-v52::before{content:"";width:9px;height:9px;border-radius:50%}
+.rbar-key-v52.studio::before{background:var(--green)}
+.rbar-key-v52.studio{grid-column:2;justify-self:end;flex-direction:row-reverse}
+.rbar-key-v52.external{grid-column:4}
+.rbar-period-v52{grid-column:3;justify-self:center}
+.rbar-key-v52.external::before{background:var(--gold)}
+.rbar-period-v52{
+  font-size:11px;
+  font-weight:500;
+  color:var(--muted);
+  padding:2px 9px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--panel);
+}
+.rbar-row-v52{
+  display:grid;
+  grid-template-columns:140px 130px minmax(140px,1fr) 130px;
+  align-items:center;
+  gap:12px;
+}
+.rbar-metric-v52{font-size:12px;color:var(--muted)}
+.rbar-val-v52{
+  font-size:13px;
+  font-weight:600;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.rbar-val-v52.studio{text-align:right}
+.rbar-val-v52.external{text-align:left}
+.rbar-track-v52{
+  display:flex;
+  height:8px;
+  border-radius:999px;
+  overflow:hidden;
+  background:var(--panel-3);
+  gap:2px;
+}
+.rbar-track-v52 i{display:block;height:100%;min-width:0;transition:width .3s ease}
+.rbar-track-v52 i.studio{background:var(--green)}
+.rbar-track-v52 i.external{background:var(--gold)}
+.rbar-row-v52.is-empty-v52 .rbar-track-v52 i{background:var(--line-strong);opacity:.5}
+@media (max-width:760px){
+  .rbar-row-v52{grid-template-columns:auto 1fr auto;row-gap:4px}
+  .rbar-legend-v52{grid-template-columns:auto 1fr auto}
+  .rbar-key-v52.studio{grid-column:1;justify-self:start;flex-direction:row}
+  .rbar-period-v52{grid-column:2}
+  .rbar-key-v52.external{grid-column:3}
+  .rbar-metric-v52{grid-column:1 / -1}
+  .rbar-val-v52.studio{text-align:left}
+  .rbar-val-v52.external{text-align:right}
+}
 </style>
 
 </head>
@@ -6733,6 +6807,14 @@ html[data-theme] .ret40-method-head{
 
 <section class="view" id="view-retificacao">
 
+      <!-- v51: bloco 2 — fotografia do estoque hoje -->
+      <div class="ret51-section-label ret52-first">
+        <h3>Estoque pendente hoje</h3>
+        <small>Fotografia atual do estoque, agrupada por empresa. Não depende da competência de entrega.</small>
+      </div>
+      <div class="kpis" id="kpis-retificacao-pendentes"></div>
+
+
       <!-- v51: bloco 1 — o que foi entregue na competência escolhida -->
       <div class="panel ret51-delivery-panel">
         <div class="panel-head ret51-delivery-head">
@@ -6773,12 +6855,6 @@ html[data-theme] .ret40-method-head{
         </div>
       </div>
 
-      <!-- v51: bloco 2 — fotografia do estoque hoje -->
-      <div class="ret51-section-label">
-        <h3>Estoque pendente hoje</h3>
-        <small>Fotografia atual do estoque, agrupada por empresa. Não depende da competência de entrega.</small>
-      </div>
-      <div class="kpis" id="kpis-retificacao-pendentes"></div>
 
       <!-- v51: bloco 3 — aging, com os honorários que dependem destes filtros -->
       <div class="panel" id="retGroupedPanelV341">
@@ -14353,43 +14429,48 @@ function renderRetRobotCompareV479(){
       ? ret36MonthLabelV477(competence)
       : 'Todas as competências';
 
-  const card=(name,type,data)=>`
-    <div class="ret-robot-card-v479 ${type}">
-      <div class="ret-robot-card-title-v479">
-        <strong>${esc(name)}</strong>
-        <span class="ret-robot-badge-v479">${esc(label)}</span>
-      </div>
+  /*
+   * v52 — comparativo em barras: mesmos dados de antes
+   * (empresas únicas, crédito retificado e honorários gerados por tecnologia),
+   * apenas apresentados lado a lado em uma barra de participação.
+   */
+  const shareV52=(a,b)=>{
+    const total=Number(a||0)+Number(b||0);
+    return total>0 ? (Number(a||0)/total)*100 : null;
+  };
 
-      <div class="ret-robot-metrics-v479">
-        <div class="ret-robot-metric-v479">
-          <b>${data.companies}</b>
-          <span>Empresas únicas</span>
-        </div>
+  const pctTextV52=v=>v===null
+    ? '—'
+    : v.toLocaleString('pt-BR',{maximumFractionDigits:0})+'%';
 
-        <div class="ret-robot-metric-v479">
-          <b>${brl(data.credit)}</b>
-          <span>Crédito retificado</span>
-        </div>
+  const rowV52=(metric,studioValue,externalValue,studioText,externalText)=>{
+    const s=shareV52(studioValue,externalValue);
+    const e=s===null ? null : 100-s;
+    const empty=s===null;
 
-        <div class="ret-robot-metric-v479">
-          <b>${brl(data.fees)}</b>
-          <span>Honorários gerados</span>
+    return `
+      <div class="rbar-row-v52${empty?' is-empty-v52':''}">
+        <span class="rbar-metric-v52">${esc(metric)}</span>
+        <span class="rbar-val-v52 studio" title="Robô Studio: ${esc(pctTextV52(s))}">${studioText}</span>
+        <div class="rbar-track-v52" role="img"
+             aria-label="${esc(metric)}: Robô Studio ${esc(pctTextV52(s))}, Automação Externa ${esc(pctTextV52(e))}">
+          <i class="studio" style="width:${empty?50:s}%"></i>
+          <i class="external" style="width:${empty?50:e}%"></i>
         </div>
-      </div>
+        <span class="rbar-val-v52 external" title="Automação Externa: ${esc(pctTextV52(e))}">${externalText}</span>
+      </div>`;
+  };
+
+  el.innerHTML=`
+    <div class="rbar-legend-v52">
+      <span class="rbar-key-v52 studio">Robô Studio</span>
+      <span class="rbar-period-v52">${esc(label)}</span>
+      <span class="rbar-key-v52 external">Automação Externa</span>
     </div>
+    ${rowV52('Empresas únicas',studio.companies,external.companies,String(studio.companies),String(external.companies))}
+    ${rowV52('Crédito retificado',studio.credit,external.credit,brl(studio.credit),brl(external.credit))}
+    ${rowV52('Honorários gerados',studio.fees,external.fees,brl(studio.fees),brl(external.fees))}
   `;
-
-  el.innerHTML=
-    card(
-      'Robô Studio',
-      'studio',
-      studio
-    )+
-    card(
-      'Automação Externa',
-      'external',
-      external
-    );
 }
 
 function renderRetAnalystCardsV361(){
