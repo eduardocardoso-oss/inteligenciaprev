@@ -3044,6 +3044,120 @@
 
   
 
+
+    .ret-robot-compare-v479{
+      margin:4px 0 14px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:var(--panel);
+      box-shadow:var(--shadow-soft);
+      overflow:hidden;
+    }
+
+    .ret-robot-compare-head-v479{
+      padding:13px 15px 11px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.18));
+    }
+
+    .ret-robot-compare-head-v479 h3{
+      margin:0;
+      font-size:13px;
+      font-weight:950;
+      color:var(--text);
+    }
+
+    .ret-robot-compare-head-v479 small{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:9px;
+      line-height:1.35;
+    }
+
+    .ret-robot-compare-grid-v479{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      padding:14px;
+    }
+
+    .ret-robot-card-v479{
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--surface);
+      padding:14px;
+      min-width:0;
+    }
+
+    .ret-robot-card-v479.studio{border-top:4px solid #4b8b68}
+    .ret-robot-card-v479.external{border-top:4px solid #9a7446}
+
+    .ret-robot-card-title-v479{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .ret-robot-card-title-v479 strong{
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .ret-robot-badge-v479{
+      padding:5px 8px;
+      border-radius:999px;
+      background:rgba(120,90,55,.08);
+      font-size:8px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.05em;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+
+    .ret-robot-metrics-v479{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:9px;
+    }
+
+    .ret-robot-metric-v479{
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px;
+      background:rgba(255,255,255,.42);
+      min-width:0;
+    }
+
+    .ret-robot-metric-v479 b{
+      display:block;
+      font-size:18px;
+      line-height:1.05;
+      margin-bottom:5px;
+      overflow-wrap:anywhere;
+    }
+
+    .ret-robot-metric-v479 span{
+      display:block;
+      font-size:8px;
+      color:var(--muted);
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      line-height:1.25;
+    }
+
+    @media(max-width:980px){
+      .ret-robot-compare-grid-v479{grid-template-columns:1fr}
+    }
+
+    @media(max-width:620px){
+      .ret-robot-metrics-v479{grid-template-columns:1fr}
+    }
+
     .ret36-analyst-toolbar-v477{
       display:flex;
       justify-content:flex-start;
@@ -5622,7 +5736,7 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
       <div class="ret36-analyst-toolbar-v477">
         <div class="ret36-analyst-filter-v477">
           <label for="retAnalystDeliveryCompetenceV477">Competência de entrega das metas</label>
-          <select id="retAnalystDeliveryCompetenceV477" onchange="renderRetAnalystCardsV361()">
+          <select id="retAnalystDeliveryCompetenceV477" onchange="renderRetAnalystCardsV361();renderRetRobotCompareV479()">
             <option value="">Todas as competências de entrega</option>
           </select>
           <small>
@@ -5632,6 +5746,20 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
       </div>
 
       <div class="ret36-analyst-grid" id="retAnalystCardsV361"></div>
+
+      <div class="ret-robot-compare-v479">
+        <div class="ret-robot-compare-head-v479">
+          <div>
+            <h3>Comparativo de Automação</h3>
+            <small>
+              Empresas únicas, crédito retificado e honorários por tecnologia utilizada.
+              Respeita a competência de entrega selecionada acima.
+            </small>
+          </div>
+        </div>
+
+        <div class="ret-robot-compare-grid-v479" id="retRobotCompareGridV479"></div>
+      </div>
 
       <div class="kpis ret34-kpis" id="kpis-retificacao-grouped"></div>
 
@@ -12876,6 +13004,186 @@ function ret36GroupPendingV477(group){
   return !allStandby;
 }
 
+
+function retRobotValueV479(row){
+  return String(
+    row['Robo Utilizado'] ||
+    row['Robô Utilizado'] ||
+    row['Robo'] ||
+    row['Robô'] ||
+    ''
+  ).trim();
+}
+
+function retRobotTypeV479(value){
+  const n=norm(value);
+
+  if(!n)return '';
+
+  if(n==='studio' || n.includes('studio')){
+    return 'studio';
+  }
+
+  return 'external';
+}
+
+function retValorRetificadoV479(row){
+  return money(
+    row['Valor Retificação'] ||
+    row['Valor Retificacao'] ||
+    row['Valor Retificado'] ||
+    row['Valor Retificado (R$)'] ||
+    0
+  );
+}
+
+function retHonorarioPctV479(row){
+  const raw=String(
+    row['Honorário %'] ||
+    row['Honorario %'] ||
+    ''
+  ).trim();
+
+  if(!raw)return 0;
+
+  const n=money(raw);
+  if(!Number.isFinite(n))return 0;
+
+  return n>1 ? n/100 : n;
+}
+
+function retRobotSummaryV479(type,competence){
+  const rows=(DATA.retificacao||[]).filter(
+    r=>{
+      if(
+        retRobotTypeV479(
+          retRobotValueV479(r)
+        )!==type
+      ){
+        return false;
+      }
+
+      if(!ret36RowDoneV361(r)){
+        return false;
+      }
+
+      const deliveryMonth=ret36MonthKeyV477(
+        r['Data Finalização Retificação']
+      );
+
+      if(!deliveryMonth){
+        return false;
+      }
+
+      if(
+        competence &&
+        deliveryMonth!==competence
+      ){
+        return false;
+      }
+
+      return true;
+    }
+  );
+
+  const companies=new Set();
+  let credit=0;
+  let fees=0;
+
+  rows.forEach(
+    r=>{
+      const company=norm(
+        r['Nome da Empresa']||''
+      );
+
+      if(company){
+        companies.add(company);
+      }
+
+      const value=retValorRetificadoV479(r);
+      const pct=retHonorarioPctV479(r);
+
+      credit+=value;
+      fees+=value*pct;
+    }
+  );
+
+  return {
+    companies:companies.size,
+    credit,
+    fees
+  };
+}
+
+function renderRetRobotCompareV479(){
+  const el=document.getElementById(
+    'retRobotCompareGridV479'
+  );
+
+  if(!el)return;
+
+  const competence=String(
+    document.getElementById(
+      'retAnalystDeliveryCompetenceV477'
+    )?.value||''
+  ).trim();
+
+  const studio=
+    retRobotSummaryV479(
+      'studio',
+      competence
+    );
+
+  const external=
+    retRobotSummaryV479(
+      'external',
+      competence
+    );
+
+  const label=
+    competence
+      ? ret36MonthLabelV477(competence)
+      : 'Todas as competências';
+
+  const card=(name,type,data)=>`
+    <div class="ret-robot-card-v479 ${type}">
+      <div class="ret-robot-card-title-v479">
+        <strong>${esc(name)}</strong>
+        <span class="ret-robot-badge-v479">${esc(label)}</span>
+      </div>
+
+      <div class="ret-robot-metrics-v479">
+        <div class="ret-robot-metric-v479">
+          <b>${data.companies}</b>
+          <span>Empresas únicas</span>
+        </div>
+
+        <div class="ret-robot-metric-v479">
+          <b>${brl(data.credit)}</b>
+          <span>Crédito retificado</span>
+        </div>
+
+        <div class="ret-robot-metric-v479">
+          <b>${brl(data.fees)}</b>
+          <span>Honorários gerados</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  el.innerHTML=
+    card(
+      'Robô Studio',
+      'studio',
+      studio
+    )+
+    card(
+      'Automação Externa',
+      'external',
+      external
+    );
+}
+
 function renderRetAnalystCardsV361(){
   const el=document.getElementById('retAnalystCardsV361');
   if(!el)return;
@@ -14747,6 +15055,7 @@ function renderRetificacao(){
   );
 
   renderRetAnalystCardsV361();
+  renderRetRobotCompareV479();
 
   try{
     renderRetGroupedV341();
