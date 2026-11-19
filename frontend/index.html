@@ -4900,6 +4900,681 @@ body.dark .login-field input{background:#28241f!important;border-color:#4a4138!i
 }
 </style>
 
+
+<!-- =====================================================================
+     REDESIGN v50 — camada exclusivamente visual.
+     Nada de JavaScript, regras de negócio ou estrutura HTML foi alterado.
+     Para voltar ao visual anterior, basta remover este bloco (link + style).
+     ===================================================================== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style id="redesign-v50">
+/* ---------- 1. Tokens por tema ---------- */
+html[data-theme],
+html[data-theme] body{
+  --font-ui:"IBM Plex Sans",Inter,"Segoe UI",Arial,sans-serif;
+
+  --bg:#eceeea; --bg-2:#eceeea;
+  --panel:#ffffff; --panel-2:#f7f8f5; --panel-3:#f1f2ee; --panel-soft:#f7f8f5; --surface:#ffffff;
+  --ink:#151819; --ink-2:#3a3f41; --text:#151819; --muted:#686e6f;
+  --line:#e2e4df; --line-strong:#cbcfc8;
+  --gold:#8f6229; --gold-2:#b7863f; --gold-soft:#f5ecdf; --brown:#8f6229;
+  --green:#1d7748; --green-soft:#e6f3eb; --green-line:#c7e3d2;
+  --yellow:#8a5f00; --yellow-soft:#fbf1d6; --yellow-line:#efdcaa;
+  --red:#b0373a; --red-soft:#fbe8e7; --red-line:#f1c9c8;
+  --blue:#285f9c; --blue-soft:#e7eff8; --blue-line:#c9dbee;
+  --gray-soft:#f0f1ee; --gray-ink:#5f6566;
+
+  --btn-primary:#8f6229; --btn-primary-hover:#7a5222; --btn-primary-ink:#ffffff;
+  --focus:rgba(143,98,41,.22);
+  --radius:14px;
+  --shadow:0 1px 2px rgba(18,22,20,.05);
+  --shadow-soft:0 1px 2px rgba(18,22,20,.04);
+  --shadow-hover:0 6px 18px rgba(18,22,20,.08);
+  --ring:0 0 0 3px var(--focus);
+
+  --side-bg:#151918; --side-ink:#eef0ed; --side-muted:#8d9592; --side-line:rgba(255,255,255,.08);
+  --side-hover:rgba(255,255,255,.055); --side-active:rgba(214,163,95,.14); --side-active-ink:#f2d3a2; --side-accent:#d6a35f;
+  --head-bg:rgba(236,238,234,.86);
+}
+
+html[data-theme="dark"],
+html[data-theme="dark"] body{
+  --bg:#0e1110; --bg-2:#0e1110;
+  --panel:#161a19; --panel-2:#1b201e; --panel-3:#212725; --panel-soft:#1b201e; --surface:#161a19;
+  --ink:#eceeea; --ink-2:#c4c9c6; --text:#eceeea; --muted:#8e9693;
+  --line:#262c2a; --line-strong:#353d3a;
+  --gold:#e3b06b; --gold-2:#e3b06b; --gold-soft:#2a2319; --brown:#e3b06b;
+  --green:#6fca98; --green-soft:#132820; --green-line:#24473a;
+  --yellow:#e5bb55; --yellow-soft:#2a2414; --yellow-line:#4b3f1f;
+  --red:#f08886; --red-soft:#2d1a1a; --red-line:#4f2c2c;
+  --blue:#84b4e6; --blue-soft:#152233; --blue-line:#263d58;
+  --gray-soft:#202524; --gray-ink:#aab1ae;
+
+  --btn-primary:#e3b06b; --btn-primary-hover:#eec081; --btn-primary-ink:#1a1307;
+  --focus:rgba(227,176,107,.28);
+  --shadow:0 1px 2px rgba(0,0,0,.35);
+  --shadow-soft:0 1px 2px rgba(0,0,0,.3);
+  --shadow-hover:0 8px 22px rgba(0,0,0,.4);
+
+  --side-bg:#090b0b; --side-ink:#eceeea; --side-muted:#7f8784; --side-line:rgba(255,255,255,.07);
+  --side-hover:rgba(255,255,255,.045); --side-active:rgba(227,176,107,.13); --side-active-ink:#f2d3a2; --side-accent:#e3b06b;
+  --head-bg:rgba(14,17,16,.84);
+}
+
+html[data-theme="blue"],
+html[data-theme="blue"] body{
+  --bg:#e6edf2; --bg-2:#e6edf2;
+  --panel:#ffffff; --panel-2:#f4f7fa; --panel-3:#edf2f6; --panel-soft:#f4f7fa; --surface:#ffffff;
+  --ink:#0e2434; --ink-2:#2b4457; --text:#0e2434; --muted:#5b7182;
+  --line:#d9e2e9; --line-strong:#bccbd7;
+  --gold:#1c6aa5; --gold-2:#1c6aa5; --gold-soft:#e2eef8; --brown:#1c6aa5;
+  --blue:#1c6aa5; --blue-soft:#e2eef8; --blue-line:#c3d9ec;
+
+  --btn-primary:#1c6aa5; --btn-primary-hover:#155889; --btn-primary-ink:#ffffff;
+  --focus:rgba(28,106,165,.2);
+  --shadow:0 1px 2px rgba(14,36,52,.06);
+  --shadow-hover:0 6px 18px rgba(14,36,52,.1);
+
+  --side-bg:#0d2536; --side-ink:#eef5fa; --side-muted:#8fa9bc; --side-line:rgba(255,255,255,.09);
+  --side-hover:rgba(255,255,255,.06); --side-active:rgba(111,179,230,.16); --side-active-ink:#cfe7fa; --side-accent:#6fb3e6;
+  --head-bg:rgba(230,237,242,.86);
+}
+
+/* ---------- 2. Base ---------- */
+html[data-theme],
+html[data-theme] body{
+  background:var(--bg)!important;
+  color:var(--ink)!important;
+}
+html[data-theme] body{
+  font-family:var(--font-ui);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+}
+html[data-theme] button,
+html[data-theme] input,
+html[data-theme] select,
+html[data-theme] textarea{font-family:var(--font-ui)}
+html[data-theme] ::selection{background:var(--gold-soft);color:var(--ink)}
+
+/* Números sempre alinhados em colunas */
+html[data-theme] .kpi .val,
+html[data-theme] .mini-card b,
+html[data-theme] .status-card b,
+html[data-theme] .stage b,
+html[data-theme] .director-kpi b,
+html[data-theme] td,
+html[data-theme] .money,
+html[data-theme] .bonus-value strong{font-variant-numeric:tabular-nums}
+
+/* Scrollbars discretas */
+html[data-theme] *{scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+html[data-theme] ::-webkit-scrollbar{width:10px;height:10px}
+html[data-theme] ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:10px;border:3px solid transparent;background-clip:padding-box}
+html[data-theme] ::-webkit-scrollbar-track{background:transparent}
+
+/* Foco visível para teclado */
+html[data-theme] :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* ---------- 3. Barra lateral ---------- */
+html[data-theme] .app{grid-template-columns:248px minmax(0,1fr)}
+html[data-theme] .side{
+  background:var(--side-bg)!important;
+  border-right:0!important;
+  box-shadow:none!important;
+  color:var(--side-ink);
+  padding:22px 14px 18px;
+  gap:18px;
+}
+html[data-theme] .brand{
+  border-bottom:1px solid var(--side-line)!important;
+  padding:4px 10px 18px;
+  position:relative;
+}
+html[data-theme] .brand b{
+  color:var(--side-ink)!important;
+  font-size:17px;
+  font-weight:600;
+  letter-spacing:-.01em;
+  line-height:1.2;
+}
+html[data-theme] .brand small{
+  color:var(--side-muted)!important;
+  font-size:12px;
+  margin-top:6px;
+  line-height:1.45;
+}
+html[data-theme] .nav{gap:2px}
+html[data-theme] .nav button{
+  position:relative;
+  color:var(--side-muted)!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:8px;
+  padding:9px 12px;
+  font-size:13px;
+  font-weight:500;
+  transform:none!important;
+  transition:background .15s ease,color .15s ease;
+}
+html[data-theme] .nav button:hover{background:var(--side-hover)!important;color:var(--side-ink)!important}
+html[data-theme] .nav button.active{
+  background:var(--side-active)!important;
+  color:var(--side-active-ink)!important;
+  font-weight:600;
+}
+html[data-theme] .nav button.active::before{
+  left:0;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--side-accent)!important;
+}
+html[data-theme] .nav-group,
+html[data-theme] .nav-group[open]{
+  background:transparent!important;
+  border:0!important;
+  border-radius:0;
+  margin-top:10px;
+}
+html[data-theme] .nav-group summary{
+  color:var(--side-muted)!important;
+  background:transparent!important;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.06em;
+  padding:8px 12px 6px;
+  opacity:.85;
+}
+html[data-theme] .nav-group summary:hover{color:var(--side-ink)!important;opacity:1}
+html[data-theme] .nav-group-arrow{color:var(--side-muted)!important;font-size:13px}
+html[data-theme] .nav-group-items{padding:0;gap:2px}
+html[data-theme] .nav-group-items button{padding:8px 12px 8px 24px;font-size:13px}
+html[data-theme] .nav-group-items button::after{left:12px;width:4px;height:4px;background:var(--side-line)!important;box-shadow:0 0 0 1px var(--side-muted);opacity:.5}
+html[data-theme] .nav-group-items button.active::after{background:var(--side-accent)!important;box-shadow:none;opacity:1}
+
+html[data-theme] .foot{color:var(--side-muted)!important;font-size:11.5px;padding:10px}
+html[data-theme] .foot #lastUpdate{border-top-color:var(--side-line)!important;font-size:11px;color:var(--side-muted)}
+html[data-theme] .session-chip{color:var(--side-ink)!important}
+html[data-theme] .session-chip button{
+  color:var(--side-ink)!important;
+  background:var(--side-hover)!important;
+  border:1px solid var(--side-line)!important;
+  border-radius:8px!important;
+  font-weight:500;
+  font-size:12px;
+}
+html[data-theme] .session-chip button:hover{background:rgba(255,255,255,.1)!important;transform:none}
+
+/* ---------- 4. Área principal e cabeçalho ---------- */
+html[data-theme] .main{padding:0 32px 56px}
+html[data-theme] .top{
+  align-items:center;
+  margin:0 -32px 24px;
+  padding:22px 32px 18px;
+  border-bottom:1px solid var(--line);
+}
+@media (min-width:781px){
+  html[data-theme] .top{
+    position:sticky;
+    top:0;
+    z-index:60;
+    background:var(--head-bg);
+    -webkit-backdrop-filter:saturate(1.4) blur(12px);
+    backdrop-filter:saturate(1.4) blur(12px);
+  }
+}
+html[data-theme] .top h1{
+  font-size:26px;
+  font-weight:600;
+  letter-spacing:-.022em;
+  line-height:1.15;
+  color:var(--ink)!important;
+}
+html[data-theme] .top p{
+  color:var(--muted)!important;
+  font-size:13.5px;
+  margin-top:5px;
+}
+html[data-theme] .top-actions{gap:8px}
+html[data-theme] .load{
+  font-size:12px;
+  font-weight:500;
+  color:var(--muted);
+}
+
+/* ---------- 5. Botões ---------- */
+html[data-theme] .btn{
+  border-radius:9px;
+  padding:9px 14px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:0;
+  box-shadow:none!important;
+  transform:none!important;
+  transition:background .15s ease,border-color .15s ease,color .15s ease;
+}
+html[data-theme] .btn.primary{
+  background:var(--btn-primary)!important;
+  color:var(--btn-primary-ink)!important;
+  border:1px solid var(--btn-primary)!important;
+}
+html[data-theme] .btn.primary:hover{background:var(--btn-primary-hover)!important;border-color:var(--btn-primary-hover)!important}
+html[data-theme] .btn.secondary{
+  background:var(--panel)!important;
+  color:var(--ink-2)!important;
+  border:1px solid var(--line-strong)!important;
+}
+html[data-theme] .btn.secondary:hover{background:var(--panel-3)!important;color:var(--ink)!important}
+html[data-theme] .btn.small{padding:6px 11px;font-size:12px;border-radius:8px}
+html[data-theme] .btn:active{transform:translateY(1px)!important}
+html[data-theme] .theme-toggle,
+html[data-theme] .icon-theme-btn,
+html[data-theme] .gs-theme-btn{
+  width:38px!important;min-width:38px!important;height:38px!important;border-radius:9px!important;font-size:17px!important;font-weight:500!important;
+}
+html[data-theme] .gs-theme-btn{font-size:11px!important;font-weight:700!important;letter-spacing:.06em}
+html[data-theme] .gs-theme-btn.active{
+  background:var(--btn-primary)!important;color:var(--btn-primary-ink)!important;border-color:var(--btn-primary)!important;
+}
+html[data-theme] .x{
+  background:var(--panel-3)!important;
+  color:var(--ink)!important;
+  border-radius:9px!important;
+  width:32px;height:32px;
+}
+
+/* ---------- 6. Superfícies (painéis e cartões) ---------- */
+html[data-theme] .panel,
+html[data-theme] .director-section,
+html[data-theme] .director-toolbar-card,
+html[data-theme] .study-top-filter-card{
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;
+  border-radius:16px!important;
+  box-shadow:var(--shadow)!important;
+  color:var(--ink)!important;
+}
+html[data-theme] .panel-head,
+html[data-theme] .director-head{
+  background:transparent!important;
+  border-bottom:1px solid var(--line)!important;
+}
+html[data-theme] .panel-head h2,
+html[data-theme] .director-head h2,
+html[data-theme] .overview-section-title h2{
+  color:var(--ink)!important;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:-.01em;
+}
+html[data-theme] .panel-head small,
+html[data-theme] .director-head small,
+html[data-theme] .overview-section-title small,
+html[data-theme] .panel-head p,
+html[data-theme] .director-head p{color:var(--muted)!important;font-size:12.5px}
+
+/* Cartões internos */
+html[data-theme] .overview-block,
+html[data-theme] .mini-card,
+html[data-theme] .status-card,
+html[data-theme] .stage,
+html[data-theme] .performance-card,
+html[data-theme] .person-row,
+html[data-theme] .summary-method-card,
+html[data-theme] .director-kpi,
+html[data-theme] .director-stage,
+html[data-theme] .director-chart,
+html[data-theme] .director-evo-card,
+html[data-theme] .bonus-card,
+html[data-theme] .study-card,
+html[data-theme] .study-box,
+html[data-theme] .month-delivery-card,
+html[data-theme] .overview-stock-update-item{
+  background:var(--panel-2)!important;
+  border:1px solid var(--line)!important;
+  border-radius:12px!important;
+  box-shadow:none!important;
+  color:var(--ink)!important;
+}
+html[data-theme] .overview-block{background:var(--panel)!important;border-radius:14px!important}
+html[data-theme] .overview-block-head h3{
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.05em;
+  color:var(--ink-2)!important;
+}
+html[data-theme] .overview-block-head small{color:var(--muted)!important;font-size:12px}
+
+html[data-theme] .mini-card b,
+html[data-theme] .status-card b,
+html[data-theme] .stage b{
+  font-weight:600;
+  letter-spacing:-.02em;
+  color:var(--ink);
+}
+html[data-theme] .mini-card span,
+html[data-theme] .mini-card small,
+html[data-theme] .status-card span,
+html[data-theme] .status-card small{color:var(--muted)}
+
+/* Cartões coloridos por situação: fundo tingido + número na cor da situação */
+html[data-theme] .mini-card.green,  html[data-theme] .status-card.green,  html[data-theme] #deadlineStatusGrid .status-card.green{background:var(--green-soft)!important;border-color:var(--green-line)!important}
+html[data-theme] .mini-card.yellow, html[data-theme] .status-card.yellow, html[data-theme] #deadlineStatusGrid .status-card.yellow{background:var(--yellow-soft)!important;border-color:var(--yellow-line)!important}
+html[data-theme] .mini-card.red,    html[data-theme] .status-card.red,    html[data-theme] #deadlineStatusGrid .status-card.red{background:var(--red-soft)!important;border-color:var(--red-line)!important}
+html[data-theme] .mini-card.blue,   html[data-theme] .status-card.blue,   html[data-theme] #deadlineStatusGrid .status-card.blue{background:var(--blue-soft)!important;border-color:var(--blue-line)!important}
+html[data-theme] .mini-card.green b,  html[data-theme] .status-card.green b,  html[data-theme] #deadlineStatusGrid .status-card.green b{color:var(--green)!important}
+html[data-theme] .mini-card.yellow b, html[data-theme] .status-card.yellow b, html[data-theme] #deadlineStatusGrid .status-card.yellow b{color:var(--yellow)!important}
+html[data-theme] .mini-card.red b,    html[data-theme] .status-card.red b,    html[data-theme] #deadlineStatusGrid .status-card.red b{color:var(--red)!important}
+html[data-theme] .mini-card.blue b,   html[data-theme] .status-card.blue b,   html[data-theme] #deadlineStatusGrid .status-card.blue b{color:var(--blue)!important}
+html[data-theme] #deadlineStatusGrid .status-card span{color:var(--muted)!important}
+html[data-theme] #deadlineStatusGrid .status-card::before{display:none}
+html[data-theme] .mini-card.click-card,
+html[data-theme] .status-card.click-card,
+html[data-theme] .deadline-card-open{cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease}
+html[data-theme] .click-card:hover,
+html[data-theme] #deadlineStatusGrid .status-card:hover{transform:none!important;box-shadow:var(--shadow-hover)!important;border-color:var(--line-strong)!important}
+
+/* ---------- 7. KPIs (faixa de destaque) ---------- */
+html[data-theme] .kpis{gap:12px;margin-bottom:22px}
+html[data-theme] .kpi{
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;
+  border-radius:14px!important;
+  box-shadow:var(--shadow)!important;
+  padding:16px 18px 16px 20px;
+  transform:none!important;
+}
+html[data-theme] .kpi:hover{border-color:var(--line-strong)!important}
+html[data-theme] .kpi::before{
+  width:3px!important;top:16px!important;bottom:16px!important;border-radius:0 3px 3px 0;
+}
+html[data-theme] .kpi .lbl{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.06em;
+  color:var(--muted)!important;
+}
+html[data-theme] .kpi .val{
+  font-size:28px;
+  font-weight:600;
+  letter-spacing:-.025em;
+  line-height:1.05;
+  margin-top:10px;
+  color:var(--ink)!important;
+}
+html[data-theme] .kpi .sub{font-size:12px;margin-top:8px;color:var(--muted)!important;line-height:1.4}
+
+/* ---------- 8. Faixa de atualização dos estoques ---------- */
+html[data-theme] .overview-stock-update-strip{gap:12px;margin-bottom:12px}
+html[data-theme] .overview-stock-update-item{
+  background:var(--panel)!important;
+  border-radius:12px!important;
+  min-height:54px;
+  padding:10px 14px;
+}
+html[data-theme] .overview-stock-update-copy b{font-size:12.5px;font-weight:600;color:var(--ink)}
+html[data-theme] .overview-stock-update-copy small{font-size:11px;margin-top:2px}
+html[data-theme] .overview-stock-update-check{
+  border-radius:6px;
+  background:var(--panel-3)!important;
+  border-color:var(--line-strong)!important;
+}
+html[data-theme] .overview-stock-update-check.done{
+  background:var(--green-soft)!important;color:var(--green)!important;border-color:var(--green-line)!important;
+}
+
+/* ---------- 9. Filtros e campos ---------- */
+html[data-theme] .filters,
+html[data-theme] .custom-filter-area{
+  background:var(--panel-2)!important;
+  border-color:var(--line)!important;
+}
+html[data-theme] .filters label,
+html[data-theme] .field label,
+html[data-theme] .director-toolbar-card label,
+html[data-theme] .study-top-filter-card label,
+html[data-theme] .checklist-filter-field label{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.05em;
+  color:var(--muted)!important;
+}
+html[data-theme] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+html[data-theme] select:not([class*="status-select"]),
+html[data-theme] textarea,
+html[data-theme] .multi-filter-trigger{
+  background:var(--panel)!important;
+  color:var(--ink)!important;
+  border:1px solid var(--line-strong)!important;
+  border-radius:9px!important;
+  box-shadow:none!important;
+  font-size:13px;
+  transition:border-color .15s ease,box-shadow .15s ease;
+}
+html[data-theme] input::placeholder,
+html[data-theme] textarea::placeholder{color:var(--muted)!important;opacity:.85}
+html[data-theme] input:not([type="checkbox"]):not([type="radio"]):focus,
+html[data-theme] select:focus,
+html[data-theme] textarea:focus,
+html[data-theme] .multi-filter-trigger:focus{
+  outline:none!important;
+  border-color:var(--gold)!important;
+  box-shadow:var(--ring)!important;
+}
+html[data-theme] input[type="checkbox"],
+html[data-theme] input[type="radio"]{accent-color:var(--gold)}
+html[data-theme] .multi-filter-panel{
+  background:var(--panel)!important;
+  border:1px solid var(--line-strong)!important;
+  border-radius:12px!important;
+  box-shadow:var(--shadow-hover)!important;
+  color:var(--ink)!important;
+}
+html[data-theme] .multi-mode button{
+  background:var(--panel-2)!important;
+  border-color:var(--line)!important;
+  color:var(--ink-2)!important;
+  border-radius:7px!important;
+}
+html[data-theme] .multi-mode button.active{background:var(--gold-soft)!important;color:var(--gold)!important;border-color:var(--gold)!important}
+html[data-theme] .multi-filter-trigger b{color:var(--gold)!important}
+html[data-theme] .filter-chip{
+  background:var(--gold-soft)!important;
+  color:var(--gold)!important;
+  border-color:transparent!important;
+  border-radius:999px!important;
+}
+
+/* Seletores de status dentro das tabelas: mantêm a cor da situação */
+html[data-theme] [class*="status-select"]{
+  border-radius:8px!important;
+  font-weight:600!important;
+  font-size:11px!important;
+  background:var(--panel)!important;
+  color:var(--ink)!important;
+  border:1px solid var(--line-strong)!important;
+  box-shadow:none!important;
+}
+html[data-theme] [class*="status-select"].done{background:var(--green-soft)!important;color:var(--green)!important;border-color:var(--green-line)!important}
+html[data-theme] [class*="status-select"].pending{background:var(--yellow-soft)!important;color:var(--yellow)!important;border-color:var(--yellow-line)!important}
+html[data-theme] [class*="status-select"].progress{background:var(--blue-soft)!important;color:var(--blue)!important;border-color:var(--blue-line)!important}
+html[data-theme] [class*="status-select"].gray{background:var(--gray-soft)!important;color:var(--gray-ink)!important;border-color:var(--line)!important}
+html[data-theme] [class*="status-select"]:focus{outline:none!important;box-shadow:var(--ring)!important}
+
+/* ---------- 10. Tabelas ---------- */
+html[data-theme] .table-scroll,
+html[data-theme] .compact-table,
+html[data-theme] .monthly-table,
+html[data-theme] .details-box{
+  border-radius:12px!important;
+  background:var(--panel)!important;
+  border-color:var(--line)!important;
+}
+html[data-theme] table{font-size:12px}
+html[data-theme] th{
+  background:var(--panel-2)!important;
+  color:var(--muted)!important;
+  border-bottom:1px solid var(--line)!important;
+  font-size:10.5px!important;
+  font-weight:600!important;
+  letter-spacing:.04em;
+  padding-top:11px;
+  padding-bottom:11px;
+}
+html[data-theme] th.sortable:hover,
+html[data-theme] th.sortable-v4632:hover{color:var(--ink)!important;background:var(--panel-3)!important}
+html[data-theme] td{
+  color:var(--ink-2)!important;
+  border-bottom:1px solid var(--line)!important;
+}
+html[data-theme] tbody tr{transition:background .12s ease}
+html[data-theme] tbody tr:hover{background:var(--panel-2)!important}
+html[data-theme] tbody tr:last-child td{border-bottom-color:transparent!important}
+
+html[data-theme] td select,
+html[data-theme] td input:not([type="checkbox"]):not([type="radio"]){font-size:11.5px!important}
+
+/* Rótulos pequenos ficam legíveis */
+html[data-theme] .mini-card span,
+html[data-theme] .mini-card small,
+html[data-theme] .status-card span,
+html[data-theme] .stage span{font-size:11.5px;line-height:1.35}
+html[data-theme] .mini-card b,
+html[data-theme] .status-card b{font-size:24px}
+html[data-theme] .director-kpi-label{font-size:12px!important;color:var(--muted)!important}
+
+/* ---------- 11. Etiquetas (pills) ---------- */
+html[data-theme] .pill{
+  border-radius:999px;
+  padding:3px 9px;
+  font-size:11px;
+  font-weight:600;
+  box-shadow:none!important;
+  border:1px solid transparent!important;
+}
+html[data-theme] .pill.green{background:var(--green-soft)!important;color:var(--green)!important}
+html[data-theme] .pill.yellow{background:var(--yellow-soft)!important;color:var(--yellow)!important}
+html[data-theme] .pill.red{background:var(--red-soft)!important;color:var(--red)!important}
+html[data-theme] .pill.blue{background:var(--blue-soft)!important;color:var(--blue)!important}
+html[data-theme] .pill.gray{background:var(--gray-soft)!important;color:var(--gray-ink)!important}
+
+/* ---------- 12. Diretoria ---------- */
+html[data-theme] .director-meta-title,
+html[data-theme] .director-stage h3{
+  background:transparent!important;
+  color:var(--ink)!important;
+  border-bottom:1px solid var(--line);
+  font-size:11.5px!important;
+  font-weight:600!important;
+  letter-spacing:.06em!important;
+  position:relative;
+}
+html[data-theme] .director-meta-title::before{
+  content:"";display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--gold);margin-right:8px;vertical-align:1px;
+}
+html[data-theme] .director-meta,
+html[data-theme] .director-meta-cell{border-color:var(--line)!important}
+html[data-theme] .director-meta{background:var(--panel-2)!important;border-radius:12px!important;overflow:hidden}
+html[data-theme] .director-kpi b{font-weight:600;letter-spacing:-.02em}
+html[data-theme] .director-info{background:var(--gold-soft)!important;color:var(--gold)!important}
+html[data-theme] .director-bar-track{background:var(--panel-3)!important}
+html[data-theme] .director-bar-fill{background:var(--gold)!important}
+html[data-theme] .month-head,
+html[data-theme] .director-evo-card strong,
+html[data-theme] .director-methodology-legend .method-name,
+html[data-theme] .study-box h3,
+html[data-theme] .bonus-card .bonus-value strong{color:var(--gold)!important}
+html[data-theme] .director-kpi b,
+html[data-theme] .kpi .val{color:var(--ink)!important}
+
+/* ---------- 13. Barras de progresso ---------- */
+html[data-theme] .bonus-progress,
+html[data-theme] .review-goal-progress{background:var(--panel-3)!important;border-radius:999px}
+
+/* ---------- 14. Modais, avisos e toasts ---------- */
+html[data-theme] .modal-bg{background:rgba(10,13,12,.55)!important;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+html[data-theme] .modal{
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;
+  border-radius:18px!important;
+  box-shadow:0 24px 60px rgba(0,0,0,.22)!important;
+  color:var(--ink)!important;
+}
+html[data-theme] .modal-head{
+  background:transparent!important;
+  border-bottom:1px solid var(--line)!important;
+}
+html[data-theme] .modal-head h2,
+html[data-theme] .modal-head h3{font-weight:600;letter-spacing:-.01em}
+html[data-theme] .toast{
+  background:var(--ink)!important;
+  color:var(--bg)!important;
+  border-radius:10px!important;
+  font-size:13px!important;
+  box-shadow:0 12px 32px rgba(0,0,0,.25)!important;
+}
+html[data-theme] .review-goal-card{border-radius:12px!important}
+
+/* ---------- 15. Login ---------- */
+html[data-theme] .login-overlay{
+  background:var(--side-bg)!important;
+}
+html[data-theme] .login-card{
+  background:var(--panel)!important;
+  border:1px solid var(--line)!important;
+  border-radius:20px!important;
+  box-shadow:0 30px 80px rgba(0,0,0,.35)!important;
+  color:var(--ink)!important;
+}
+html[data-theme] .login-card:before{background:var(--gold)!important;height:3px!important}
+html[data-theme] .login-brand{
+  background:var(--gold-soft)!important;
+  color:var(--gold)!important;
+  box-shadow:none!important;
+  border-radius:12px!important;
+}
+html[data-theme] .login-card h1{color:var(--ink)!important;font-size:24px;font-weight:600;letter-spacing:-.02em}
+html[data-theme] .login-card p{color:var(--muted)!important}
+html[data-theme] .login-field label{font-size:12px;font-weight:600;color:var(--ink-2)}
+html[data-theme] .login-field input{
+  background:var(--panel)!important;
+  border:1px solid var(--line-strong)!important;
+  color:var(--ink)!important;
+  border-radius:10px!important;
+}
+html[data-theme] .login-btn{
+  background:var(--btn-primary)!important;
+  color:var(--btn-primary-ink)!important;
+  border-radius:10px!important;
+  box-shadow:none!important;
+  font-weight:600;
+  transform:none!important;
+}
+html[data-theme] .login-btn:hover{background:var(--btn-primary-hover)!important}
+html[data-theme] .login-note{background:var(--panel-2)!important;border-color:var(--line)!important;color:var(--muted)!important}
+html[data-theme] .login-error{color:var(--red)!important;font-size:12px}
+
+/* ---------- 16. Celular ---------- */
+@media (max-width:780px){
+  html[data-theme] .main{padding:12px 10px 28px!important}
+  html[data-theme] .top{margin:0 0 14px!important;padding:0 0 12px!important;border-bottom:1px solid var(--line)}
+  html[data-theme] .side{border-bottom:1px solid var(--side-line)!important;box-shadow:0 6px 18px rgba(0,0,0,.18)!important}
+  html[data-theme] .nav button{font-size:12px!important}
+  html[data-theme] .nav-group{margin-top:0}
+  html[data-theme] .nav-group-items button::after{display:none}
+  html[data-theme] .kpi .val{font-size:24px}
+  html[data-theme] .top-actions #refresh{grid-column:3}
+  html[data-theme] .top-actions #exportExcelActive{grid-column:4;width:100%}
+  html[data-theme] .top-actions #newTask{grid-column:1 / -1}
+}
+
+@media (prefers-reduced-motion:reduce){
+  html[data-theme] *{transition:none!important;animation:none!important}
+}
+</style>
+
 </head>
 
 <body>
