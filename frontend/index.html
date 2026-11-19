@@ -5947,6 +5947,126 @@ html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
   .rbar-val-v52.studio{text-align:left}
   .rbar-val-v52.external{text-align:right}
 }
+
+/* v53 — topo da Retificação: 2 quadros + comparativo ocupando a largura de 2 */
+.ret53-top-row{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  align-items:stretch;
+  margin-bottom:22px;
+}
+html[data-theme] .ret53-top-row #kpis-retificacao-pendentes{display:contents}
+html[data-theme] .ret53-top-row .kpi{margin:0;height:100%}
+.ret53-robot-card{
+  grid-column:span 2;
+  min-width:0;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+  padding:14px 18px 14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  gap:8px;
+}
+.ret53-robot-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.ret53-robot-title{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+html[data-theme] #retRobotCompetenceV53{
+  height:28px;
+  padding:0 26px 0 9px;
+  font-size:12px!important;
+  border-radius:999px!important;
+  max-width:190px;
+  background-color:var(--panel-2)!important;
+}
+.r53-bar-row{
+  display:grid;
+  grid-template-columns:auto minmax(60px,1fr) auto;
+  align-items:center;
+  gap:12px;
+}
+.r53-side{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.r53-side b{
+  font-size:24px;
+  font-weight:600;
+  letter-spacing:-.02em;
+  line-height:1;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.r53-name{font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
+.r53-side.studio .r53-name::before,
+.r53-side.external .r53-name::after{content:"";width:8px;height:8px;border-radius:50%}
+.r53-side.studio .r53-name::before{background:var(--green)}
+.r53-side.external .r53-name::after{background:var(--gold)}
+.r53-bar-row .rbar-track-v52{height:8px}
+.r53-bar-row.is-empty-v52 .rbar-track-v52 i{background:var(--line-strong);opacity:.5}
+.r53-caption{
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+  margin-top:-4px;
+}
+.r53-figs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px;
+  border-top:1px solid var(--line);
+  padding-top:8px;
+}
+.r53-fig{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  column-gap:10px;
+  row-gap:2px;
+  align-items:baseline;
+  font-size:12px;
+}
+.r53-fig span{color:var(--muted)}
+.r53-fig b{
+  font-weight:600;
+  color:var(--ink);
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.r53-fig.external{grid-template-columns:1fr auto}
+.r53-fig.external span{order:0}
+@media (max-width:1100px){
+  .ret53-top-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:700px){
+  .ret53-top-row{grid-template-columns:1fr}
+  .ret53-robot-card{grid-column:auto}
+  .r53-figs{grid-template-columns:1fr}
+  .r53-name{font-size:11px}
+  .r53-fig.external{grid-template-columns:auto 1fr}
+  .r53-fig::before{grid-column:1 / -1;font-size:11px;font-weight:600;color:var(--ink-2);margin-bottom:2px}
+  .r53-fig.studio::before{content:"Robô Studio"}
+  .r53-fig.external::before{content:"Automação Externa"}
+}
+
+/* v53 — percentual nos indicadores do mês */
+.month-pct-v53{
+  margin-left:6px;
+  font-weight:500;
+  color:var(--muted);
+  font-size:11.5px;
+}
+.ret53-aging-fee-panel{margin-top:4px}
 </style>
 
 </head>
@@ -6807,12 +6927,24 @@ html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
 
 <section class="view" id="view-retificacao">
 
-      <!-- v51: bloco 2 — fotografia do estoque hoje -->
+      <!-- v53: pendentes, sem procuração e comparativo de automação lado a lado -->
       <div class="ret51-section-label ret52-first">
-        <h3>Estoque pendente hoje</h3>
-        <small>Fotografia atual do estoque, agrupada por empresa. Não depende da competência de entrega.</small>
+        <h3>Visão rápida</h3>
+        <small>Pendentes e sem procuração mostram o estoque de hoje. O comparativo usa a competência escolhida dentro do próprio quadro.</small>
       </div>
-      <div class="kpis" id="kpis-retificacao-pendentes"></div>
+      <div class="ret53-top-row">
+        <div class="kpis" id="kpis-retificacao-pendentes"></div>
+
+        <div class="ret53-robot-card" title="Empresas únicas, crédito retificado e honorários por tecnologia utilizada, pela competência de entrega (Data Finalização Retificação).">
+          <div class="ret53-robot-head">
+            <span class="ret53-robot-title">Comparativo de automação</span>
+            <select id="retRobotCompetenceV53" onchange="renderRetRobotCompareV479()" aria-label="Competência de entrega do comparativo de automação">
+              <option value="">Todas as competências</option>
+            </select>
+          </div>
+          <div id="retRobotCompareGridV479"></div>
+        </div>
+      </div>
 
 
       <!-- v51: bloco 1 — o que foi entregue na competência escolhida -->
@@ -6825,7 +6957,7 @@ html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
           <div class="ret36-analyst-toolbar-v477">
             <div class="ret36-analyst-filter-v477">
               <label for="retAnalystDeliveryCompetenceV477">Competência de entrega das metas</label>
-              <select id="retAnalystDeliveryCompetenceV477" onchange="renderRetAnalystCardsV361();renderRetRobotCompareV479()">
+              <select id="retAnalystDeliveryCompetenceV477" onchange="renderRetAnalystCardsV361()">
                 <option value="">Todas as competências de entrega</option>
               </select>
             </div>
@@ -6833,20 +6965,6 @@ html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
         </div>
 
         <div class="panel-body ret51-delivery-body">
-          <div class="ret-robot-compare-v479">
-            <div class="ret-robot-compare-head-v479">
-              <div>
-                <h3>Comparativo de Automação</h3>
-                <small>
-                  Empresas únicas, crédito retificado e honorários por tecnologia utilizada.
-                  Respeita a competência de entrega selecionada acima.
-                </small>
-              </div>
-            </div>
-
-            <div class="ret-robot-compare-grid-v479" id="retRobotCompareGridV479"></div>
-          </div>
-
           <div class="ret51-subhead">
             <h3>Por analista</h3>
             <small>Pendentes atuais (estoque de hoje) e concluídos na competência de entrega.</small>
@@ -6901,12 +7019,6 @@ html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
             <small id="ret51GroupedScope">Soma dos registros da tabela abaixo, conforme os filtros acima.</small>
           </div>
           <div class="kpis ret34-kpis" id="kpis-retificacao-grouped"></div>
-
-          <div class="ret51-subhead">
-            <h3>Honorários por tempo em estoque</h3>
-            <small>Mesma seleção da tabela, distribuída por faixa de aging.</small>
-          </div>
-          <div class="ret34-aging-grid" id="retAgingMatrixV341"></div>
         </div>
 
         <div class="table-scroll">
@@ -7184,6 +7296,19 @@ html[data-theme] .ret51-delivery-panel .ret-robot-compare-grid-v479{
         <div class="panel-body ret-monthly-wrap">
           <div class="monthly-table" id="retMonthlyTable"></div>
           <div class="monthly-table" id="retAnalystMonthlyTable"></div>
+        </div>
+      </div>
+
+      <!-- v53: honorários por tempo em estoque no final da aba -->
+      <div class="panel ret53-aging-fee-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Honorários por tempo em estoque</h2>
+            <small>Mesma seleção da tabela “Aging do Estoque de Retificação”, distribuída por faixa de aging. Os filtros daquele painel valem aqui.</small>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="ret34-aging-grid" id="retAgingMatrixV341"></div>
         </div>
       </div>
 
@@ -10377,6 +10502,13 @@ function renderGeral(){
   const retCompMonthV51=retMethodMonthV51('Compensação');
   const retRefundMonthV51=retMethodMonthV51('Pedido de Restituição');
 
+  // v53: quantidade + percentual sobre as operações finalizadas na competência (base = Operações finalizadas)
+  const opCreditValueV53=answer=>{
+    const count=opMonth.filter(r=>norm(r['Crédito?'])===answer).length;
+    const pct=opMonth.length ? (count/opMonth.length)*100 : 0;
+    return `${count} <span class="month-pct-v53">${esc(pct.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1}))}%</span>`;
+  };
+
   const monthCardV51=(title,hero,heroLabel,rowsHtml,css)=>`
     <div class="month-card-v51 ${css||''}">
       <div class="month-card-head-v51">
@@ -10413,8 +10545,8 @@ function renderGeral(){
         daysTextV51(avg),
         'média de dias para entrega',
         monthRowV51('Operações finalizadas',opMonth.length)+
-        monthRowV51('Empresas com crédito — Sim',opMonth.filter(r=>norm(r['Crédito?'])==='sim').length)+
-        monthRowV51('Empresas com crédito — Não',opMonth.filter(r=>norm(r['Crédito?'])==='nao').length),
+        monthRowV51('Empresas com crédito — Sim',opCreditValueV53('sim'))+
+        monthRowV51('Empresas com crédito — Não',opCreditValueV53('nao')),
         'op'
       )}
       ${monthCardV51(
@@ -10423,8 +10555,7 @@ function renderGeral(){
         'média de dias para entrega',
         monthRowV51('Honorário gerado • Compensação',`<span class="money">${brl(retCompMonthV51.fee)}</span>`,`${retCompMonthV51.companies} empresa(s)`)+
         monthRowV51('Honorário gerado • Pedido de Restituição',`<span class="money">${brl(retRefundMonthV51.fee)}</span>`,`${retRefundMonthV51.companies} empresa(s)`)+
-        monthRowV51('Empresas com retificação finalizada',retDone)+
-        monthRowV51('Empresas com pedido de restituição finalizado',refundDone),
+        monthRowV51('Empresas com retificação finalizada',retDone),
         'ret'
       )}
       ${monthCardV51(
@@ -14399,6 +14530,32 @@ function retRobotSummaryV479(type,competence){
   };
 }
 
+function fillRetRobotCompetenceV53(){
+  const el=document.getElementById('retRobotCompetenceV53');
+  if(!el)return '';
+
+  const current=el.value;
+
+  // Mesmas competências do filtro de entregas: Data Finalização Retificação
+  const values=unique(
+    (DATA.retificacao||[])
+      .map(r=>ret36MonthKeyV477(r['Data Finalização Retificação']))
+      .filter(Boolean)
+  ).sort().reverse();
+
+  el.innerHTML=
+    '<option value="">Todas as competências</option>'+
+    values.map(
+      key=>`<option value="${esc(key)}">${esc(ret36MonthLabelV477(key))}</option>`
+    ).join('');
+
+  if(current && values.includes(current)){
+    el.value=current;
+  }
+
+  return String(el.value||'').trim();
+}
+
 function renderRetRobotCompareV479(){
   const el=document.getElementById(
     'retRobotCompareGridV479'
@@ -14406,11 +14563,8 @@ function renderRetRobotCompareV479(){
 
   if(!el)return;
 
-  const competence=String(
-    document.getElementById(
-      'retAnalystDeliveryCompetenceV477'
-    )?.value||''
-  ).trim();
+  // v53: o comparativo tem filtro de competência próprio, dentro do quadro
+  const competence=fillRetRobotCompetenceV53();
 
   const studio=
     retRobotSummaryV479(
@@ -14424,54 +14578,42 @@ function renderRetRobotCompareV479(){
       competence
     );
 
-  const label=
-    competence
-      ? ret36MonthLabelV477(competence)
-      : 'Todas as competências';
-
-  /*
-   * v52 — comparativo em barras: mesmos dados de antes
-   * (empresas únicas, crédito retificado e honorários gerados por tecnologia),
-   * apenas apresentados lado a lado em uma barra de participação.
-   */
-  const shareV52=(a,b)=>{
-    const total=Number(a||0)+Number(b||0);
-    return total>0 ? (Number(a||0)/total)*100 : null;
-  };
-
-  const pctTextV52=v=>v===null
-    ? '—'
-    : v.toLocaleString('pt-BR',{maximumFractionDigits:0})+'%';
-
-  const rowV52=(metric,studioValue,externalValue,studioText,externalText)=>{
-    const s=shareV52(studioValue,externalValue);
-    const e=s===null ? null : 100-s;
-    const empty=s===null;
-
-    return `
-      <div class="rbar-row-v52${empty?' is-empty-v52':''}">
-        <span class="rbar-metric-v52">${esc(metric)}</span>
-        <span class="rbar-val-v52 studio" title="Robô Studio: ${esc(pctTextV52(s))}">${studioText}</span>
-        <div class="rbar-track-v52" role="img"
-             aria-label="${esc(metric)}: Robô Studio ${esc(pctTextV52(s))}, Automação Externa ${esc(pctTextV52(e))}">
-          <i class="studio" style="width:${empty?50:s}%"></i>
-          <i class="external" style="width:${empty?50:e}%"></i>
-        </div>
-        <span class="rbar-val-v52 external" title="Automação Externa: ${esc(pctTextV52(e))}">${externalText}</span>
-      </div>`;
-  };
+  const total=studio.companies+external.companies;
+  const studioPct=total ? (studio.companies/total)*100 : null;
+  const externalPct=studioPct===null ? null : 100-studioPct;
+  const pctText=v=>v===null ? '—' : v.toLocaleString('pt-BR',{maximumFractionDigits:0})+'%';
 
   el.innerHTML=`
-    <div class="rbar-legend-v52">
-      <span class="rbar-key-v52 studio">Robô Studio</span>
-      <span class="rbar-period-v52">${esc(label)}</span>
-      <span class="rbar-key-v52 external">Automação Externa</span>
+    <div class="r53-bar-row${studioPct===null?' is-empty-v52':''}">
+      <span class="r53-side studio">
+        <span class="r53-name">Robô Studio</span>
+        <b title="${esc(pctText(studioPct))} das empresas únicas">${studio.companies}</b>
+      </span>
+      <div class="rbar-track-v52" role="img"
+           aria-label="Empresas únicas: Robô Studio ${esc(pctText(studioPct))}, Automação Externa ${esc(pctText(externalPct))}">
+        <i class="studio" style="width:${studioPct===null?50:studioPct}%"></i>
+        <i class="external" style="width:${externalPct===null?50:externalPct}%"></i>
+      </div>
+      <span class="r53-side external">
+        <b title="${esc(pctText(externalPct))} das empresas únicas">${external.companies}</b>
+        <span class="r53-name">Automação Externa</span>
+      </span>
     </div>
-    ${rowV52('Empresas únicas',studio.companies,external.companies,String(studio.companies),String(external.companies))}
-    ${rowV52('Crédito retificado',studio.credit,external.credit,brl(studio.credit),brl(external.credit))}
-    ${rowV52('Honorários gerados',studio.fees,external.fees,brl(studio.fees),brl(external.fees))}
+    <div class="r53-caption">Empresas únicas</div>
+
+    <div class="r53-figs">
+      <div class="r53-fig studio">
+        <span>Crédito retificado</span><b>${brl(studio.credit)}</b>
+        <span>Honorários gerados</span><b>${brl(studio.fees)}</b>
+      </div>
+      <div class="r53-fig external">
+        <span>Crédito retificado</span><b>${brl(external.credit)}</b>
+        <span>Honorários gerados</span><b>${brl(external.fees)}</b>
+      </div>
+    </div>
   `;
 }
+
 
 function renderRetAnalystCardsV361(){
   const el=document.getElementById('retAnalystCardsV361');
