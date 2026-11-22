@@ -6519,7 +6519,9 @@ html[data-theme] #retRobotCompetenceV53{
 
                 <th class="sortable company-cell" data-table="checklist" data-key="Nome da Empresa">Empresa</th>
 
-                <th class="sortable" data-table="checklist" data-key="__diasPendentes">Dias no Estoque</th>
+                <th class="sortable" data-table="checklist" data-key="__diasPendentes">Dias Úteis</th>
+
+                <th class="sortable" data-table="checklist" data-key="__diasCorridos">Dias Corridos</th>
 
                 <th class="sortable" data-table="checklist" data-key="__jaOperacao">Já na Operação?</th>
 
@@ -6642,7 +6644,8 @@ html[data-theme] #retRobotCompetenceV53{
                 <th class="sortable-v4632" data-ck-sort="tipo" onclick="setChecklistTemporalSortV4632('tipo')">Tipo de Empresa</th>
                 <th class="sortable-v4632" data-ck-sort="entrada" onclick="setChecklistTemporalSortV4632('entrada')">Entrada Checklist</th>
                 <th class="sortable-v4632" data-ck-sort="saida" onclick="setChecklistTemporalSortV4632('saida')">Saída Checklist</th>
-                <th class="sortable-v4632" data-ck-sort="dias" onclick="setChecklistTemporalSortV4632('dias')">Dias no Checklist</th>
+                <th class="sortable-v4632" data-ck-sort="dias" onclick="setChecklistTemporalSortV4632('dias')">Dias Úteis</th>
+                <th class="sortable-v4632" data-ck-sort="diasCorridos" onclick="setChecklistTemporalSortV4632('diasCorridos')">Dias Corridos</th>
               </tr>
             </thead>
             <tbody id="ckTemporalTableV463"></tbody>
@@ -6911,7 +6914,7 @@ html[data-theme] #retRobotCompetenceV53{
             <th class="sortable-v4632" data-sla-sort="entradaChecklist" onclick="setSlaOperacaoSortV4632('entradaChecklist')">Entrada Checklist</th>
             <th class="sortable-v4632" data-sla-sort="entradaOperacao" onclick="setSlaOperacaoSortV4632('entradaOperacao')">Entrada Operação</th>
             <th class="sortable-v4632" data-sla-sort="finalizacaoRevisao" onclick="setSlaOperacaoSortV4632('finalizacaoRevisao')">Finalização Revisão</th>
-            <th class="sortable-v4632" data-sla-sort="tempoChecklist" onclick="setSlaOperacaoSortV4632('tempoChecklist')">Tempo Checklist</th>
+            <th class="sortable-v4632" data-sla-sort="tempoChecklist" onclick="setSlaOperacaoSortV4632('tempoChecklist')">Tempo Checklist (úteis)</th>
             <th class="sortable-v4632" data-sla-sort="tempoOperacao" onclick="setSlaOperacaoSortV4632('tempoOperacao')">Tempo Operação</th>
             <th class="sortable-v4632" data-sla-sort="tempoTotal" onclick="setSlaOperacaoSortV4632('tempoTotal')">Tempo Total</th>
             <th class="sortable-v4632" data-sla-sort="credito" onclick="setSlaOperacaoSortV4632('credito')">Crédito?</th>
@@ -8703,7 +8706,162 @@ function barList(target,entries,formatter=v=>v){
       : '<div class="empty">Sem dados para exibir.</div>';
 }
 
-function ckDays(r){
+/*
+ * v54 — Dias úteis do Checklist
+ * Regra: o dia da entrada não conta; conta cada dia útil seguinte até a
+ * finalização (ou até hoje, se ainda em estoque). Sábados, domingos e
+ * feriados nacionais não contam. Carnaval é dia útil (decisão do time).
+ * Corpus Christi é ponto facultativo nacional, não feriado: para tratá-lo
+ * como feriado, troque a constante abaixo para true.
+ */
+const CK_CORPUS_CHRISTI_FERIADO_V54=false;
+const CK_HOLIDAY_CACHE_V54={};
+
+function ckDateKeyV54(d){
+  return d.getFullYear()+'-'+
+    String(d.getMonth()+1).padStart(2,'0')+'-'+
+    String(d.getDate()).padStart(2,'0');
+}
+
+// Domingo de Páscoa (algoritmo de Meeus/Jones/Butcher, calendário gregoriano)
+function ckEasterV54(y){
+  const a=y%19, b=Math.floor(y/100), c=y%100;
+  const d=Math.floor(b/4), e=b%4;
+  const f=Math.floor((b+8)/25), g=Math.floor((b-f+1)/3);
+  const h=(19*a+b-d-g+15)%30;
+  const i=Math.floor(c/4), k=c%4;
+  const l=(32+2*e+2*i-h-k)%7;
+  const m=Math.floor((a+11*h+22*l)/451);
+  const month=Math.floor((h+l-7*m+114)/31);
+  const day=((h+l-7*m+114)%31)+1;
+  return new Date(y,month-1,day,12);
+}
+
+function ckNationalHolidaysV54(y){
+  if(CK_HOLIDAY_CACHE_V54[y])return CK_HOLIDAY_CACHE_V54[y];
+
+  const set=new Set();
+
+  [
+    '01-01', // Confraternização Universal
+    '04-21', // Tiradentes
+    '05-01', // Dia do Trabalho
+    '09-07', // Independência
+    '10-12', // Nossa Senhora Aparecida
+    '11-02', // Finados
+    '11-15', // Proclamação da República
+    '12-25'  // Natal
+  ].forEach(md=>set.add(`${y}-${md}`));
+
+  // Dia Nacional de Zumbi e da Consciência Negra (Lei 14.759/2023)
+  if(y>=2024)set.add(`${y}-11-20`);
+
+  const easter=ckEasterV54(y);
+  const fromEaster=offset=>{
+    const d=new Date(easter);
+    d.setDate(d.getDate()+offset);
+    set.add(ckDateKeyV54(d));
+  };
+
+  fromEaster(-2); // Sexta-feira Santa
+  if(CK_CORPUS_CHRISTI_FERIADO_V54)fromEaster(60);
+
+  CK_HOLIDAY_CACHE_V54[y]=set;
+  return set;
+}
+
+function ckIsBusinessDayV54(d){
+  const w=d.getDay();
+  if(w===0 || w===6)return false;
+  return !ckNationalHolidaysV54(d.getFullYear()).has(ckDateKeyV54(d));
+}
+
+/*
+ * v55 — Entrada após as 18h conta como entrada no dia seguinte (somente dias úteis/SLA).
+ * Aceita "19/11/2026 15:22:05", "2026-11-19 15:22", ISO com fuso e serial do Sheets.
+ * 18:00:00 em ponto ainda é o mesmo dia; qualquer horário depois disso vira o dia seguinte.
+ */
+const CK_ENTRY_CUTOFF_SECONDS_V55=18*3600;
+
+function ckEntrySecondsV55(raw){
+  if(raw instanceof Date){
+    return raw.getHours()*3600+raw.getMinutes()*60+raw.getSeconds();
+  }
+
+  const s=String(raw||'').trim();
+  if(!s)return null;
+
+  // Serial do Sheets com fração de dia (ex.: 46345.79)
+  if(/^\d{4,6}[.,]\d+$/.test(s)){
+    const frac=Number(s.replace(',','.'))%1;
+    return Math.round(frac*86400);
+  }
+
+  // ISO com fuso (Z ou ±hh:mm): usa o horário local
+  if(/T\d{1,2}:\d{2}.*(Z|[+-]\d{2}:?\d{2})$/i.test(s)){
+    const d=new Date(s);
+    if(!isNaN(d))return d.getHours()*3600+d.getMinutes()*60+d.getSeconds();
+  }
+
+  const m=s.match(/(?:^|[\sT])(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  return m ? (+m[1])*3600+(+m[2])*60+(+(m[3]||0)) : null;
+}
+
+function ckSlaEntryDateV55(raw){
+  if(raw===null || raw===undefined || raw==='')return null;
+
+  let base=parseDate(raw);
+
+  // ISO com fuso: a data local pode ser diferente do prefixo do texto
+  const s=String(raw).trim();
+  if(/T\d{1,2}:\d{2}.*(Z|[+-]\d{2}:?\d{2})$/i.test(s)){
+    const d=new Date(s);
+    if(!isNaN(d))base=d;
+  }
+
+  if(!base)return null;
+
+  const day=new Date(base.getFullYear(),base.getMonth(),base.getDate(),12);
+  const secs=ckEntrySecondsV55(raw);
+
+  if(secs!==null && secs>CK_ENTRY_CUTOFF_SECONDS_V55){
+    day.setDate(day.getDate()+1);
+  }
+
+  return day;
+}
+
+function ckBusinessDaysBetweenV54(a,b){
+  if(!a || !b)return null;
+
+  const start=new Date(a.getFullYear(),a.getMonth(),a.getDate(),12);
+  const end=new Date(b.getFullYear(),b.getMonth(),b.getDate(),12);
+
+  if(end<=start)return 0;
+
+  let count=0;
+  const cursor=new Date(start);
+
+  for(let guard=0; guard<20000; guard++){
+    cursor.setDate(cursor.getDate()+1);
+    if(cursor>end)break;
+    if(ckIsBusinessDayV54(cursor))count++;
+  }
+
+  return count;
+}
+
+// Cor do selo de dias no estoque pela regra de 3 dias úteis
+function ckSlaClassV54(days){
+  if(!Number.isFinite(days))return 'warn';
+  const balance=3-days;
+  if(balance<0)return 'bad';
+  if(balance===0)return 'warn';
+  return 'ok';
+}
+
+// Contagem anterior (dias corridos), mantida para exibição
+function ckCalendarDaysV54(r){
 
   const e=parseDate(
     r['Data Entrada Checklist']
@@ -8715,6 +8873,25 @@ function ckDays(r){
 
   return e
     ? dayDiff(e,f)
+    : (
+        num(
+          r['Dias no Checklist']
+        ) || 0
+      );
+}
+
+function ckDays(r){
+
+  const e=parseDate(
+    r['Data Entrada Checklist']
+  );
+
+  const f=parseDate(
+    r['Data Finalização Checkist']
+  ) || today();
+
+  return e
+    ? ckBusinessDaysBetweenV54(ckSlaEntryDateV55(r['Data Entrada Checklist']),f)
     : (
         num(
           r['Dias no Checklist']
@@ -9986,16 +10163,16 @@ function renderGeral(){
     'overviewChecklistSummary'
   ).textContent=
     `${ckAttention.length} job(s) pendente(s) • `+
-    `${ckOverdue} acima do prazo de 3 dias`;
+    `${ckOverdue} acima do prazo de 3 dias úteis`;
 
   const checklistBalanceBuckets=[
     {
-      label:'2 ou 3 dias restantes',
+      label:'2 ou 3 dias úteis restantes',
       css:'green',
       test:r=>r.__balance>=2
     },
     {
-      label:'1 dia restante',
+      label:'1 dia útil restante',
       css:'green',
       test:r=>r.__balance===1
     },
@@ -10034,8 +10211,9 @@ function renderGeral(){
               <th>Job</th>
               <th>Empresa</th>
               <th>Entrada</th>
-              <th>Dias Decorridos</th>
-              <th>Saldo p/ 3 Dias</th>
+              <th>Dias Úteis</th>
+              <th>Dias Corridos</th>
+              <th>Saldo p/ 3 Dias Úteis</th>
             </tr>
           </thead>
           <tbody>
@@ -10067,6 +10245,7 @@ function renderGeral(){
                       <td class="company-cell">${clip(r['Nome da Empresa'],true)}</td>
                       <td class="nowrap">${esc(r['Data Entrada Checklist']||'-')}</td>
                       <td>${r.__elapsed}</td>
+                      <td>${Math.max(0,ckCalendarDaysV54(r))}</td>
                       <td class="${balanceClass}">${esc(balanceText)}</td>
                     </tr>
                   `;
@@ -10458,7 +10637,7 @@ function renderGeral(){
 
   const ckAvgV51=avgOfV51(
     ckDoneMonthV51
-      .map(r=>daysBetweenDates(r['Data Entrada Checklist'],ckExitValueV51(r)))
+      .map(r=>ckBusinessDaysBetweenV54(ckSlaEntryDateV55(r['Data Entrada Checklist']),parseDate(ckExitValueV51(r))))
       .filter(v=>v!==null)
   );
 
@@ -10532,7 +10711,7 @@ function renderGeral(){
       ${monthCardV51(
         'Checklist',
         daysTextV51(ckAvgV51),
-        'média de dias para entrega',
+        'média de dias úteis para entrega',
         monthRowV51('Checklists concluídos',ckDoneMonthV51.length)+
         monthRowV51('Com perfil',ckProfileYesV51)+
         monthRowV51('Sem perfil',ckProfileNoV51,'inclui concluídos sem perfil preenchido')+
@@ -11989,7 +12168,7 @@ function renderChecklist(){
         c:'blue'
       },
       {
-        l:'Acima de 3 Dias',
+        l:'Acima de 3 Dias Úteis',
         v:long.length,
         s:'necessitam atenção',
         c:long.length
@@ -11999,7 +12178,7 @@ function renderChecklist(){
       {
         l:'Tempo Médio Atual',
         v:`${avg} d`,
-        s:'somente itens em estoque',
+        s:'dias úteis • somente itens em estoque',
         c:'yellow'
       }
     ]
@@ -12025,13 +12204,13 @@ function renderChecklist(){
 
   if(ckSummary){
     ckSummary.textContent=
-      `${ckAttention.length} job(s) pendente(s) • ${ckOverdue} acima do prazo de 3 dias`;
+      `${ckAttention.length} job(s) pendente(s) • ${ckOverdue} acima do prazo de 3 dias úteis`;
   }
 
   if(ckGrid){
     const buckets=[
-      {label:'2 ou 3 dias restantes',css:'green',test:r=>r.__balance>=2},
-      {label:'1 dia restante',css:'green',test:r=>r.__balance===1},
+      {label:'2 ou 3 dias úteis restantes',css:'green',test:r=>r.__balance>=2},
+      {label:'1 dia útil restante',css:'green',test:r=>r.__balance===1},
       {label:'Vence hoje',css:'yellow',test:r=>r.__balance===0},
       {label:'Atrasado',css:'red',test:r=>r.__balance<0}
     ];
@@ -12356,8 +12535,27 @@ function renderChecklistTemporalV463(){
         return entrada
           ? (
               saida
-                ? Math.max(0,dayDiff(entrada,saida))
+                ? ckBusinessDaysBetweenV54(ckSlaEntryDateV55(r['Data Entrada Checklist']),saida)
                 : ckDays(r)
+            )
+          : null;
+      }
+
+      case 'diasCorridos':{
+        const entrada=parseDate(
+          r['Data Entrada Checklist']
+        );
+
+        const saida=parseDate(
+          r['Data Finalização Checkist'] ||
+          r['Data Finalização Checklist']
+        );
+
+        return entrada
+          ? (
+              saida
+                ? Math.max(0,dayDiff(entrada,saida))
+                : ckCalendarDaysV54(r)
             )
           : null;
       }
@@ -12377,7 +12575,7 @@ function renderChecklistTemporalV463(){
           checklistTemporalSortValueV4632(b)
         );
       }
-      else if(ckSort.key==='dias'){
+      else if(ckSort.key==='dias' || ckSort.key==='diasCorridos'){
         cmp=compareNumberV4632(
           checklistTemporalSortValueV4632(a),
           checklistTemporalSortValueV4632(b)
@@ -12415,8 +12613,17 @@ function renderChecklistTemporalV463(){
               entradaDate
                 ? (
                     saidaDate
-                      ? Math.max(0,dayDiff(entradaDate,saidaDate))
+                      ? ckBusinessDaysBetweenV54(ckSlaEntryDateV55(r['Data Entrada Checklist']),saidaDate)
                       : ckDays(r)
+                  )
+                : null;
+
+            const diasCorridos=
+              entradaDate
+                ? (
+                    saidaDate
+                      ? Math.max(0,dayDiff(entradaDate,saidaDate))
+                      : ckCalendarDaysV54(r)
                   )
                 : null;
 
@@ -12437,11 +12644,12 @@ function renderChecklistTemporalV463(){
                 <td class="nowrap">${esc(entrada)}</td>
                 <td class="nowrap">${esc(saida)}</td>
                 <td>${Number.isFinite(dias)?dias+' d':'-'}</td>
+                <td>${Number.isFinite(diasCorridos)?diasCorridos+' d':'-'}</td>
               </tr>
             `;
           }
         ).join('')
-      : '<tr><td colspan="9" class="empty">Nenhuma empresa encontrada para o período selecionado.</td></tr>';
+      : '<tr><td colspan="10" class="empty">Nenhuma empresa encontrada para o período selecionado.</td></tr>';
 }
 
 function filterChecklist(){
@@ -12499,7 +12707,11 @@ function filterChecklist(){
       __diasPendentes:
         r['Data Finalização Checkist']
           ? null
-          : ckDays(r)
+          : ckDays(r),
+      __diasCorridos:
+        r['Data Finalização Checkist']
+          ? null
+          : Math.max(0,ckCalendarDaysV54(r))
     })
   );
 
@@ -12549,9 +12761,10 @@ function filterChecklist(){
                   ${
                     r['Data Finalização Checkist']
                       ? '-'
-                      : `<span class="sla-badge ${slaClass(r.__diasPendentes,false)}">${r.__diasPendentes} d</span>`
+                      : `<span class="sla-badge ${ckSlaClassV54(r.__diasPendentes)}">${r.__diasPendentes} d</span>`
                   }
                 </td>
+                <td class="nowrap">${r.__diasCorridos===null ? '-' : r.__diasCorridos+' d'}</td>
                 <td>${pill(r['__jaOperacao'])}</td>
                 <td>
                   <select
@@ -12644,7 +12857,7 @@ function filterChecklist(){
         ).join('')
       : `
           <tr>
-            <td colspan="15" class="empty">
+            <td colspan="16" class="empty">
               Nenhum registro encontrado.
             </td>
           </tr>
@@ -19223,11 +19436,14 @@ function buildSlaOperacaoRowsV461(){
           r['Data Finalização Revisão']||''
         ).trim();
 
+        // v54: etapa Checklist em dias úteis (Operação e Total seguem corridos)
         const checklistDays=
-          slaOperacaoDiffDaysV462(
-            entryRaw,
-            operationEntryRaw
-          );
+          slaOperacaoDiffDaysV462(entryRaw,operationEntryRaw)===null
+            ? null
+            : ckBusinessDaysBetweenV54(
+                ckSlaEntryDateV55(entryRaw),
+                parseDate(operationEntryRaw)
+              );
 
         const operationDays=
           slaOperacaoDiffDaysV462(
@@ -19434,7 +19650,7 @@ function renderSlaOperacaoV461(){
       {
         l:'Média no Checklist',
         v:slaOperacaoFormatDaysV462(avgChecklist),
-        s:'Entrada Checklist → Entrada Operação',
+        s:'Entrada Checklist → Entrada Operação • dias úteis',
         c:'yellow'
       },
       {
