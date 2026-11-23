@@ -6191,7 +6191,19 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
 .tvx-metric{min-width:0;padding:38px 48px 42px;border-radius:30px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 44px rgba(0,0,0,.28)}
 .tvx-metric-label{font-size:30px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#a9bddf}
 .tvx-metric-value{margin-top:10px;font-size:190px;line-height:1.05;font-weight:700;letter-spacing:-.03em;white-space:nowrap;font-variant-numeric:tabular-nums}
-.tvx-metric:nth-child(2) .tvx-metric-value{color:var(--tvx-accent)}
+.tvx-metric:nth-child(even) .tvx-metric-value{color:var(--tvx-accent)}
+.tvx-metrics.n1{align-content:center}
+.tvx-metrics.n3,.tvx-metrics.n4{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.tvx-metrics.n3 .tvx-metric,.tvx-metrics.n4 .tvx-metric{padding:30px 34px 34px}
+.tvx-metrics.n3 .tvx-metric-label,.tvx-metrics.n4 .tvx-metric-label{font-size:23px;letter-spacing:.07em;min-height:56px}
+.tvx-metrics.n3 .tvx-metric-value,.tvx-metrics.n4 .tvx-metric-value{font-size:120px}
+.tvx-sum-card.n1,.tvx-sum-card.n2{justify-content:flex-start;gap:6px}
+.tvx-sum-card.n1 .tvx-sum-line,.tvx-sum-card.n2 .tvx-sum-line{margin-top:22px}
+.tvx-sum-card.n3,.tvx-sum-card.n4{padding:18px 26px}
+.tvx-sum-card.n3 .tvx-sum-name,.tvx-sum-card.n4 .tvx-sum-name{font-size:30px}
+.tvx-sum-card.n3 .tvx-sum-line,.tvx-sum-card.n4 .tvx-sum-line{margin-top:6px}
+.tvx-sum-card.n3 .tvx-sum-line b,.tvx-sum-card.n4 .tvx-sum-line b{font-size:32px}
+.tvx-sum-card.n3 .tvx-sum-line span,.tvx-sum-card.n4 .tvx-sum-line span{font-size:13px}
 
 /* rodapé */
 .tvx-foot{position:absolute;left:0;right:0;bottom:0;height:90px;padding:0 90px;display:flex;align-items:center;justify-content:space-between;gap:30px;z-index:3}
@@ -7771,7 +7783,7 @@ body.tvx-tv #view-tv{animation:none!important;transform:none!important}
     <div class="panel-body">
       <div class="table-scroll">
         <table>
-          <thead><tr><th>Colaborador</th><th>Área</th><th>Indicador 1</th><th class="num">Valor</th><th>Indicador 2</th><th class="num">Valor</th><th>Regra de cálculo</th></tr></thead>
+          <thead><tr><th>Colaborador</th><th>Área</th><th colspan="4">Indicadores</th><th>Regra de cálculo</th></tr></thead>
           <tbody id="tvxCheckBody"></tbody>
         </table>
       </div>
@@ -20081,9 +20093,9 @@ const TVX_KINDS={
 
 const TVX_TEAM=[
   {name:'Yasmin Nunes',short:'Yasmin',kind:'checklist',match:v=>{const n=norm(v);return n==='yasmin' || n.startsWith('yasmin ');}},
-  {name:'Luiz Neto',short:'Luiz',kind:'operacao',match:tvxNameIs('luiz','luiz neto')},
-  {name:'Letícia Oliveira',short:'Letícia O.',kind:'operacao',match:tvxNameIs('leticia','leticia oliveira')},
-  {name:'Brenda Guterres',short:'Brenda',kind:'operacao',match:tvxNameIs('brenda','brenda guterres')},
+  {name:'Luiz Neto',short:'Luiz',kind:'operacao',match:tvxNameIs('luiz','luiz neto'),retMatch:tvxNameIs('luiz','luiz neto')},
+  {name:'Letícia Oliveira',short:'Letícia O.',kind:'operacao',match:tvxNameIs('leticia','leticia oliveira'),retMatch:tvxNameIs('leticia oliveira')},
+  {name:'Brenda Guterres',short:'Brenda',kind:'operacao',match:tvxNameIs('brenda','brenda guterres'),retMatch:tvxNameIs('brenda','brenda guterres')},
   {name:'Mayan Sampaio',short:'Mayan',kind:'revisao',match:v=>isMayanReviewerV314(v)},
   {name:'Ellen Rogowski',short:'Ellen',kind:'retificacao',match:tvxNameIs('ellen','ellen rogowski')},
   {name:'Letícia da Silva',short:'Letícia S.',kind:'retificacao',match:tvxNameIs('leticia','leticia da silva','leticia silva','leticia santos')},
@@ -20246,7 +20258,22 @@ function tvxComputePerson(person,ctx){
     v2=rows.reduce((s,r)=>s+tvxRetFee(r),0);
   }
 
-  return {person,kind,rows,v1,v2};
+  const metrics=[
+    {label:kind.label1,value:v1,fmt:'int'},
+    {label:kind.label2,value:v2,fmt:kind.fmt2}
+  ];
+
+  // Quem também faz retificação mostra quantas entregou e os honorários gerados.
+  if(person.retMatch){
+    const retRows=ctx.retDelivered.filter(r=>person.retMatch(r['Analista']));
+    metrics.push({label:'Retificações entregues',value:tvxCompanies(retRows),fmt:'int'});
+    metrics.push({label:'Honorários das retificações',value:retRows.reduce((sum,r)=>sum+tvxRetFee(r),0),fmt:'money'});
+  }
+
+  // Valores em dinheiro zerados não aparecem na tela.
+  const shown=metrics.filter(m=>!(m.fmt==='money' && !(m.value>0)));
+
+  return {person,kind,rows,v1,v2,metrics:shown.length?shown:metrics.slice(0,1),allMetrics:metrics};
 }
 
 /* ---------- slides ---------- */
@@ -20276,11 +20303,10 @@ function tvxSummaryHtml(results){
       <h2 class="tvx-sum-title">Visão geral do time</h2>
       <div class="tvx-sum-grid">
         ${results.map(r=>`
-          <div class="tvx-sum-card">
+          <div class="tvx-sum-card n${r.metrics.length}">
             <div class="tvx-sum-name">${esc(r.person.name)}</div>
             <div class="tvx-sum-area">${esc(r.kind.area)}</div>
-            <div class="tvx-sum-line"><b class="tvx-fit" data-max="350">${esc(tvxFmt(r.v1,'int'))}</b><span>${esc(r.kind.label1)}</span></div>
-            <div class="tvx-sum-line"><b class="tvx-fit" data-max="350">${esc(tvxFmt(r.v2,r.kind.fmt2))}</b><span>${esc(r.kind.label2)}</span></div>
+            ${r.metrics.map(m=>`<div class="tvx-sum-line"><b class="tvx-fit" data-max="350">${esc(tvxFmt(m.value,m.fmt))}</b><span>${esc(m.label)}</span></div>`).join('')}
           </div>`).join('')}
       </div>
     </section>`;
@@ -20295,15 +20321,12 @@ function tvxPersonHtml(r){
           <div class="tvx-name">${esc(r.person.name)}</div>
           <div class="tvx-area">${esc(r.kind.area)}</div>
         </div>
-        <div class="tvx-metrics">
+        <div class="tvx-metrics n${r.metrics.length}">
+          ${r.metrics.map(m=>`
           <div class="tvx-metric">
-            <div class="tvx-metric-label">${esc(r.kind.label1)}</div>
-            <div class="tvx-metric-value tvx-fit" data-max="1000">${esc(tvxFmt(r.v1,'int'))}</div>
-          </div>
-          <div class="tvx-metric">
-            <div class="tvx-metric-label">${esc(r.kind.label2)}</div>
-            <div class="tvx-metric-value tvx-fit" data-max="1000">${esc(tvxFmt(r.v2,r.kind.fmt2))}</div>
-          </div>
+            <div class="tvx-metric-label">${esc(m.label)}</div>
+            <div class="tvx-metric-value tvx-fit" data-max="${r.metrics.length>2?440:1000}">${esc(tvxFmt(m.value,m.fmt))}</div>
+          </div>`).join('')}
         </div>
       </div>
     </section>`;
@@ -20348,11 +20371,8 @@ function renderTvResultados(){
     <tr>
       <td><b>${esc(r.person.name)}</b></td>
       <td>${esc(r.kind.area)}</td>
-      <td>${esc(r.kind.label1)}</td>
-      <td class="num"><b>${esc(tvxFmt(r.v1,'int'))}</b></td>
-      <td>${esc(r.kind.label2)}</td>
-      <td class="num"><b>${esc(tvxFmt(r.v2,r.kind.fmt2))}</b></td>
-      <td class="tvx-rule">${esc(r.kind.rule)}</td>
+      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}</td>
+      <td class="tvx-rule">${esc(r.kind.rule)}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
     </tr>`).join('');
 
   tvxApplyActive();
