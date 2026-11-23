@@ -6068,28 +6068,47 @@ html[data-theme] #retRobotCompetenceV53{
 }
 .ret53-aging-fee-panel{margin-top:4px}
 
-/* ===== v46.6 Acabamento visual: login + quebra/sobreposição de textos (apenas CSS) ===== */
-.login-overlay{overflow:auto}
-.login-card{
-  width:min(420px,100%)!important;
-  padding:36px 32px 30px!important;
-  position:relative;
-  overflow:hidden;
-}
-.login-brand{
-  width:56px!important;height:56px!important;margin:0 auto 18px!important;
-  font-size:24px!important;
-}
-.login-card h1{text-align:center;font-size:24px!important;line-height:1.2;overflow-wrap:anywhere}
-.login-card p{text-align:center;font-size:13px!important;line-height:1.5;margin:8px 0 24px!important}
-.login-field{margin-bottom:16px!important}
-.login-field label{font-size:11px!important;letter-spacing:.06em!important;margin-bottom:7px!important}
-.login-field input{height:46px!important;font-size:14px!important;padding:0 14px!important;transition:border-color .15s,box-shadow .15s}
-.login-field input:focus{outline:none;box-shadow:0 0 0 3px rgba(146,112,68,.18)}
-.login-btn{height:48px!important;font-size:14px!important;margin-top:6px!important;letter-spacing:.01em}
-.login-error{font-size:12px!important;text-align:center;min-height:20px;overflow-wrap:anywhere}
-.login-note{font-size:11px!important;line-height:1.5;overflow-wrap:anywhere}
-@media (max-width:480px){.login-card{padding:28px 20px 24px!important}}
+/* ===== Tela de login (layout da main anterior, autocontido) ===== */
+.lg-overlay{position:fixed;inset:0;z-index:100000;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);background:#f5f7fb;overflow:auto;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#14213a}
+.lg-overlay.hidden{display:none!important}
+.lg-aside{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:44px 52px;color:#fff;overflow:hidden;
+  background:radial-gradient(900px 500px at 110% -10%,rgba(61,125,255,.45),transparent 60%),radial-gradient(700px 480px at -10% 110%,rgba(18,181,160,.28),transparent 60%),linear-gradient(160deg,#0c1e38 0%,#081327 100%)}
+.lg-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.lg-mark{width:38px;height:38px;flex:none;border-radius:10px;box-shadow:0 6px 16px rgba(20,60,160,.45)}
+.lg-brand-text{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.lg-brand-text b{font-size:16.5px;font-weight:700;letter-spacing:-.01em;color:#fff}
+.lg-brand-text b span{font-weight:400;opacity:.92}
+.lg-brand-text small{margin-top:4px;font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#8798b4}
+.lg-copy h2{max-width:460px;margin:0;font-size:clamp(26px,3vw,38px);font-weight:700;letter-spacing:-.03em;line-height:1.15;color:#fff}
+.lg-copy p{max-width:440px;margin:14px 0 0;color:#b6c4dc;font-size:15px;line-height:1.6}
+.lg-points{display:grid;gap:12px;margin:28px 0 0;padding:0;list-style:none}
+.lg-points li{display:flex;align-items:center;gap:12px;color:#dbe5f5;font-size:14px;line-height:1.4}
+.lg-ic{width:34px;height:34px;padding:8px;flex:none;border-radius:9px;background:rgba(255,255,255,.08);color:#8fb1ff;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;box-sizing:border-box}
+.lg-foot{font-size:12.5px;color:#8798b4}
+.lg-main{display:grid;place-items:center;padding:32px 24px}
+.lg-card{width:min(400px,100%)}
+.lg-card .lg-brand{display:none;margin-bottom:28px}
+.lg-card .lg-brand-text b{color:#14213a}
+.lg-card .lg-brand-text small{color:#6b7790}
+.lg-card h1{margin:0;font-size:26px;font-weight:700;letter-spacing:-.025em;color:#14213a}
+.lg-card>p{margin:8px 0 26px;color:#6b7790;font-size:14.5px;line-height:1.5}
+.lg-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.lg-field label{font-size:13px;font-weight:600;color:#33425f}
+.lg-field input{width:100%;box-sizing:border-box;height:46px;padding:0 14px;font-size:15px;border:1px solid #cfd8e6;border-radius:11px;background:#fff;color:#14213a;font-family:inherit}
+.lg-field input:focus{outline:none;border-color:#2457d6;box-shadow:0 0 0 3px rgba(36,87,214,.15)}
+.lg-btn{width:100%;height:46px;margin-top:6px;border:0;border-radius:11px;background:#2457d6;color:#fff;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
+.lg-btn:hover{background:#1b46b4}
+.lg-btn:disabled{opacity:.6;cursor:progress}
+.lg-error{min-height:20px;margin-top:14px;color:#c0392b;font-size:13.5px;font-weight:500;overflow-wrap:anywhere}
+.lg-help{margin-top:22px;padding-top:18px;border-top:1px solid #e1e7f0;color:#6b7790;font-size:12.5px;line-height:1.5}
+html[data-theme="dark"] .lg-overlay{background:#0f1726;color:#e6ecf7}
+html[data-theme="dark"] .lg-card h1,html[data-theme="dark"] .lg-card .lg-brand-text b{color:#f1f5fc}
+html[data-theme="dark"] .lg-card>p,html[data-theme="dark"] .lg-help,html[data-theme="dark"] .lg-card .lg-brand-text small{color:#9aa8c2}
+html[data-theme="dark"] .lg-field label{color:#c3cee3}
+html[data-theme="dark"] .lg-field input{background:#172238;border-color:#2c3a56;color:#f1f5fc}
+html[data-theme="dark"] .lg-help{border-color:#26334d}
+html[data-theme="dark"] .lg-btn{background:#4f83ff;color:#06122b}
+@media (max-width:820px){.lg-overlay{grid-template-columns:1fr}.lg-aside{display:none}.lg-card .lg-brand{display:flex}}
 
 /* Textos: nunca estouram nem se sobrepõem */
 .panel,.panel-head,.panel-body,.mini-card,.field,.filters>*,
@@ -6121,47 +6140,64 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
 
 <body>
 
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-card">
-    <div class="login-brand">🔐</div>
-    <h1>Gestão Previdenciária</h1>
-    <p>
-      Entre com o e-mail cadastrado e o seu PIN de acesso.
-    </p>
+<div class="lg-overlay" id="loginOverlay">
 
-    <form id="loginForm">
-      <div class="login-field">
-        <label>E-mail</label>
-        <input
-          id="loginEmail"
-          type="email"
-          autocomplete="username"
-          placeholder="nome@empresa.com.br"
-          required
-        >
+  <aside class="lg-aside">
+    <div class="lg-brand">
+      <svg class="lg-mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3d7dff"/><stop offset="1" stop-color="#1b46b4"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#lgGrad)"/><path d="M15.5 38V11H25a9 9 0 0 1 0 18h-3.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="20" r="3" fill="#35e0c2"/></svg>
+      <div class="lg-brand-text">
+        <b><span>Inteligência</span> Prev</b>
+        <small>Grupo Studio · Previdenciário</small>
+      </div>
+    </div>
+
+    <div class="lg-copy">
+      <h2>A operação previdenciária inteira em um só painel.</h2>
+      <p>Estoques, prazos, retificações e metas do time, atualizados direto das planilhas da operação.</p>
+      <ul class="lg-points">
+        <li><svg class="lg-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M11 20V4M17 20v-7M2 20h20"/></svg>Indicadores e prazos de cada etapa</li>
+        <li><svg class="lg-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M21.5 20a6.5 6.5 0 0 0-4-6"/></svg>Carga e entregas por analista</li>
+        <li><svg class="lg-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Acesso por e-mail e PIN, com permissão por aba</li>
+      </ul>
+    </div>
+
+    <div class="lg-foot">Grupo Studio · Uso interno</div>
+  </aside>
+
+  <div class="lg-main">
+    <div class="lg-card">
+      <div class="lg-brand">
+        <svg class="lg-mark" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="12" fill="url(#lgGrad)"/><path d="M15.5 38V11H25a9 9 0 0 1 0 18h-3.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="20" r="3" fill="#35e0c2"/></svg>
+        <div class="lg-brand-text">
+          <b><span>Inteligência</span> Prev</b>
+          <small>Grupo Studio · Previdenciário</small>
+        </div>
       </div>
 
-      <div class="login-field">
-        <label>PIN</label>
-        <input
-          id="loginPin"
-          type="password"
-          inputmode="numeric"
-          autocomplete="current-password"
-          placeholder="Digite seu PIN"
-          required
-        >
-      </div>
+      <h1>Entrar</h1>
+      <p>Use o e-mail cadastrado e o seu PIN de acesso.</p>
 
-      <button class="login-btn" id="loginButton" type="submit">
-        Entrar no dashboard
-      </button>
+      <form id="loginForm">
+        <div class="lg-field">
+          <label for="loginEmail">E-mail</label>
+          <input id="loginEmail" type="email" autocomplete="username" placeholder="nome@empresa.com.br" required>
+        </div>
 
-      <div class="login-error" id="loginError"></div>
-    </form>
+        <div class="lg-field">
+          <label for="loginPin">PIN</label>
+          <input id="loginPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Digite seu PIN" required>
+        </div>
+
+        <button class="lg-btn" id="loginButton" type="submit">Entrar no dashboard</button>
+
+        <div class="lg-error" id="loginError" role="alert"></div>
+      </form>
+
+      <div class="lg-help">Sem acesso ou esqueceu o PIN? Fale com a gestão do Previdenciário.</div>
+    </div>
+  </div>
+
 </div>
-</div>
-
 
 <div class="app">
 
