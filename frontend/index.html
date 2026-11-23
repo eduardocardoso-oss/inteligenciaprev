@@ -6137,6 +6137,93 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
 @media (max-width:780px){
   .panel-head,.overview-block-head,.director-head{align-items:flex-start}
 }
+
+/* ===== Apresentação TV (Resultados do Time) ===== */
+#view-tv{--tvx-bg1:#0b1c36;--tvx-bg2:#06101f;--tvx-accent:#35e0c2;--tvx-blue:#4f83ff}
+.tvx-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 16px;margin-bottom:14px}
+.tvx-toolbar-info{min-width:0}
+.tvx-toolbar-info b{display:block;font-size:15px}
+.tvx-toolbar-info small{display:block;margin-top:2px;color:var(--muted);font-size:12px;line-height:1.4}
+.tvx-toolbar-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.tvx-toolbar-actions select{height:36px;border-radius:9px;padding:0 10px}
+.tvx-viewport{position:relative;width:100%;aspect-ratio:16/9;max-height:calc(100vh - 190px);margin:0 auto;overflow:hidden;border-radius:16px;background:#06101f;box-shadow:0 18px 50px rgba(6,16,31,.35)}
+.tvx-stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;font-family:"IBM Plex Sans",Inter,"Segoe UI",Arial,sans-serif;color:#fff;
+  background:radial-gradient(1100px 650px at 105% -10%,rgba(61,125,255,.40),transparent 60%),radial-gradient(900px 600px at -8% 112%,rgba(18,181,160,.26),transparent 60%),linear-gradient(160deg,var(--tvx-bg1) 0%,var(--tvx-bg2) 100%)}
+.tvx-top{position:absolute;left:0;right:0;top:0;height:120px;padding:0 90px;display:flex;align-items:center;justify-content:space-between;z-index:3}
+.tvx-brand{display:flex;align-items:center;gap:20px}
+.tvx-brand svg{width:60px;height:60px;border-radius:16px;box-shadow:0 10px 26px rgba(20,60,160,.5)}
+.tvx-brand b{display:block;font-size:34px;font-weight:700;letter-spacing:-.01em}
+.tvx-brand b span{font-weight:400;opacity:.9}
+.tvx-brand small{display:block;margin-top:4px;font-size:17px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#8ea2c4}
+.tvx-period{font-size:28px;font-weight:600;color:#cfe0ff}
+.tvx-slides{position:absolute;inset:0}
+.tvx-slide{position:absolute;inset:0;padding:150px 90px 130px;opacity:0;visibility:hidden;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease,visibility 0s linear .6s}
+.tvx-slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .6s ease,transform .6s ease}
+
+/* capa */
+.tvx-cover:after{content:"P";position:absolute;right:120px;top:50%;transform:translateY(-50%);font-size:900px;font-weight:700;line-height:1;color:rgba(79,131,255,.10);pointer-events:none}
+.tvx-cover{display:flex;flex-direction:column;justify-content:center;gap:26px}
+.tvx-kicker{font-size:28px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--tvx-accent)}
+.tvx-cover h1{margin:0;font-size:170px;line-height:1;font-weight:700;letter-spacing:-.04em}
+.tvx-cover h1 em{font-style:normal;color:#8fb1ff}
+.tvx-cover-month{font-size:64px;font-weight:500;color:#cfe0ff}
+.tvx-cover-note{font-size:26px;color:#8ea2c4}
+
+/* resumo */
+.tvx-sum-title{font-size:52px;font-weight:700;margin:0 0 30px;letter-spacing:-.02em}
+.tvx-sum-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:24px;height:calc(100% - 100px)}
+.tvx-sum-card{min-width:0;display:flex;flex-direction:column;justify-content:space-between;padding:30px 30px;border-radius:22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+.tvx-sum-name{font-size:34px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvx-sum-area{margin-top:4px;font-size:17px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tvx-accent)}
+.tvx-sum-line{margin-top:16px;display:flex;flex-direction:column;gap:2px}
+.tvx-sum-line b{font-size:58px;line-height:1.05;font-weight:700;white-space:nowrap}
+.tvx-sum-line span{font-size:16px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9fb2d3}
+
+/* colaborador */
+.tvx-person{display:grid;grid-template-columns:520px minmax(0,1fr);gap:80px;align-items:center}
+.tvx-photo-col{display:flex;flex-direction:column;align-items:center;gap:30px}
+.tvx-photo{position:relative;width:440px;height:440px;border-radius:50%;overflow:hidden;background:linear-gradient(145deg,#1d3d78,#0f2347);border:8px solid rgba(255,255,255,.16);box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 0 14px rgba(79,131,255,.12);display:grid;place-items:center}
+.tvx-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tvx-initials{font-size:150px;font-weight:700;letter-spacing:-.02em;color:#cfe0ff}
+.tvx-name{font-size:56px;font-weight:700;letter-spacing:-.02em;text-align:center;line-height:1.1}
+.tvx-area{display:inline-block;padding:10px 26px;border-radius:999px;background:rgba(53,224,194,.14);border:1px solid rgba(53,224,194,.4);color:var(--tvx-accent);font-size:26px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.tvx-metrics{display:grid;gap:32px;min-width:0}
+.tvx-metric{min-width:0;padding:38px 48px 42px;border-radius:30px;background:linear-gradient(160deg,rgba(255,255,255,.10),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.tvx-metric-label{font-size:30px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#a9bddf}
+.tvx-metric-value{margin-top:10px;font-size:190px;line-height:1.05;font-weight:700;letter-spacing:-.03em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tvx-metric:nth-child(2) .tvx-metric-value{color:var(--tvx-accent)}
+
+/* rodapé */
+.tvx-foot{position:absolute;left:0;right:0;bottom:0;height:90px;padding:0 90px;display:flex;align-items:center;justify-content:space-between;gap:30px;z-index:3}
+.tvx-dots{display:flex;gap:12px;align-items:center}
+.tvx-dot{width:16px;height:16px;border-radius:50%;padding:0;border:0;background:rgba(255,255,255,.22);cursor:pointer;transition:all .25s}
+.tvx-dot.active{width:48px;border-radius:9px;background:var(--tvx-accent)}
+.tvx-updated{font-size:20px;color:#8ea2c4}
+.tvx-progress{position:absolute;left:0;bottom:0;height:5px;background:var(--tvx-accent);width:0;z-index:4}
+
+/* controles flutuantes (modo TV) */
+.tvx-ctl-bar{display:none;position:fixed;right:20px;bottom:20px;z-index:100001;gap:8px;transition:opacity .4s}
+.tvx-ctl{width:46px;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:rgba(8,19,39,.75);color:#fff;font-size:20px;cursor:pointer}
+.tvx-ctl:hover{background:rgba(79,131,255,.6)}
+
+/* conferência */
+.tvx-check{margin-top:16px}
+.tvx-check table{width:100%;border-collapse:collapse}
+.tvx-check th,.tvx-check td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+.tvx-check td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tvx-check .tvx-rule{color:var(--muted);font-size:12px;line-height:1.45}
+
+/* modo TV: palco ocupa a tela toda */
+body.tvx-tv{overflow:hidden;background:#06101f}
+body.tvx-tv .side,body.tvx-tv .top,body.tvx-tv .side-backdrop,body.tvx-tv .tvx-toolbar,body.tvx-tv .tvx-check{display:none!important}
+body.tvx-tv .main{margin:0!important;padding:0!important;max-width:none!important}
+body.tvx-tv .app{display:block!important}
+body.tvx-tv .tvx-viewport{position:fixed;inset:0;z-index:99999;width:100vw;height:100vh;max-height:none;aspect-ratio:auto;border-radius:0}
+body.tvx-tv .tvx-ctl-bar{display:flex}
+body.tvx-tv.tvx-idle{cursor:none}
+body.tvx-tv.tvx-idle .tvx-ctl-bar{opacity:0;pointer-events:none}
+@media (max-width:780px){.tvx-viewport{max-height:none}}
+body.tvx-tv #view-tv{animation:none!important;transform:none!important}
 </style>
 
 </head>
@@ -6237,6 +6324,7 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
           <button data-view="slaOperacao">SLA Operação</button>
           <button data-view="diretoria">Diretoria / Performance</button>
           <button data-view="temas">Temas Previdenciários</button>
+          <button data-view="tv">Apresentação TV</button>
         </div>
       </details>
 
@@ -7630,6 +7718,68 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
 
     </section>
 
+<section class="view" id="view-tv">
+
+  <div class="tvx-toolbar">
+    <div class="tvx-toolbar-info">
+      <b id="tvxToolbarMonth">Resultados do Time</b>
+      <small id="tvxToolbarNote">Mês corrente, lido das mesmas planilhas do dashboard.</small>
+    </div>
+    <div class="tvx-toolbar-actions">
+      <label for="tvxInterval" style="font-size:12px;color:var(--muted)">Troca a cada</label>
+      <select id="tvxInterval">
+        <option value="10">10 s</option>
+        <option value="15">15 s</option>
+        <option value="20">20 s</option>
+        <option value="30">30 s</option>
+        <option value="60">60 s</option>
+      </select>
+      <button class="btn secondary" type="button" data-tvx-action="prev" aria-label="Slide anterior">‹</button>
+      <button class="btn secondary" type="button" data-tvx-action="pause" id="tvxPauseBtn">Pausar</button>
+      <button class="btn secondary" type="button" data-tvx-action="next" aria-label="Próximo slide">›</button>
+      <button class="btn primary" type="button" data-tvx-action="tv">Modo TV (tela cheia)</button>
+    </div>
+  </div>
+
+  <div class="tvx-viewport" id="tvxViewport">
+    <div class="tvx-stage" id="tvxStage">
+      <div class="tvx-top">
+        <div class="tvx-brand">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="tvxGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3d7dff"/><stop offset="1" stop-color="#1b46b4"/></linearGradient></defs><rect width="48" height="48" rx="12" fill="url(#tvxGrad)"/><path d="M15.5 38V11H25a9 9 0 0 1 0 18h-3.5" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="20" r="3" fill="#35e0c2"/></svg>
+          <div><b><span>Inteligência</span> Prev</b><small>Grupo Studio · Previdenciário</small></div>
+        </div>
+        <div class="tvx-period" id="tvxPeriod"></div>
+      </div>
+      <div class="tvx-slides" id="tvxSlides"></div>
+      <div class="tvx-foot">
+        <div class="tvx-dots" id="tvxDots"></div>
+        <div class="tvx-updated" id="tvxUpdated"></div>
+      </div>
+      <div class="tvx-progress" id="tvxProgress"></div>
+    </div>
+  </div>
+
+  <div class="tvx-ctl-bar" id="tvxCtlBar">
+    <button class="tvx-ctl" type="button" data-tvx-action="prev" aria-label="Anterior">‹</button>
+    <button class="tvx-ctl" type="button" data-tvx-action="pause" aria-label="Pausar">❚❚</button>
+    <button class="tvx-ctl" type="button" data-tvx-action="next" aria-label="Próximo">›</button>
+    <button class="tvx-ctl" type="button" data-tvx-action="exit" aria-label="Sair do modo TV">✕</button>
+  </div>
+
+  <div class="panel tvx-check">
+    <div class="panel-head"><h3>Conferência dos números</h3></div>
+    <div class="panel-body">
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Colaborador</th><th>Área</th><th>Indicador 1</th><th class="num">Valor</th><th>Indicador 2</th><th class="num">Valor</th><th>Regra de cálculo</th></tr></thead>
+          <tbody id="tvxCheckBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
 <section class="view" id="view-temas">
       <div class="study-top-filters">
         <div class="study-top-filter-card">
@@ -8265,7 +8415,8 @@ const TITLES={
   tarefas:['To-do do Time','Atividades, responsáveis, prazos e conclusão'],
   tecnologia:['To-do Tecnologia','Demandas de tecnologia, responsáveis, prazos e conclusão'],
   temas:['Temas Previdenciários','Ambiente de estudo e consulta técnica dos temas vigentes'],
-  diretoria:['Diretoria / Performance','Indicadores executivos, metas, produção, estoque e metodologia em tempo real']
+  diretoria:['Diretoria / Performance','Indicadores executivos, metas, produção, estoque e metodologia em tempo real'],
+  tv:['Apresentação TV','Resultados do mês de cada colaborador, prontos para a TV do time']
 };
 
 const CK_STEPS=[
@@ -18825,7 +18976,8 @@ const VIEW_ORDER=[
   'prazoValidacao',
   'creditos',
   'temas',
-  'diretoria'
+  'diretoria',
+  'tv'
 ];
 
 function permittedViewsV27(){
@@ -18846,6 +18998,12 @@ function permittedViewsV27(){
     p.push('slaOperacao');
   }
 
+
+  // A apresentação da TV cruza Checklist, Operação, Retificação e Créditos:
+  // fica disponível para quem enxerga Visão Geral ou Diretoria (bases completas).
+  if(!p.includes('tv') && (p.includes('geral') || p.includes('diretoria'))){
+    p.push('tv');
+  }
 
   return p.filter(v=>VIEW_ORDER.includes(v));
 }
@@ -19867,6 +20025,534 @@ function renderSlaOperacaoV461(){
 
 
 
+/* ============================================================
+ * APRESENTAÇÃO TV (Resultados do Time) — v47.7
+ * Capa, resumo do time e um slide por colaborador com o resultado do
+ * mês corrente. Usa as mesmas bases e as mesmas regras de nome/data que
+ * o restante do dashboard (Checklist, Operação, Retificação, Créditos)
+ * e se atualiza junto com o refresh automático de 2 minutos.
+ * ============================================================ */
+
+const TVX_PHOTO_DIR='assets/equipe/';
+const TVX_INTERVALS=[10,15,20,30,60];
+const TVX_INTERVAL_KEY='inteligenciaprev_tvx_interval';
+
+function tvxNameIs(...names){
+  return value=>names.includes(norm(value));
+}
+
+const TVX_KINDS={
+  checklist:{
+    area:'Checklist',
+    label1:'Jobs para a Operação',
+    label2:'Jobs sem perfil',
+    fmt2:'int',
+    rule:'Estoque Checklist com Status Concluído e Data Finalização Checklist no mês, Analista Responsável = pessoa (linhas sem analista também entram). Jobs para a Operação: concluídos com perfil; Jobs sem perfil: concluídos com Perfil = Não. Contagem por empresa.'
+  },
+  operacao:{
+    area:'Operação',
+    label1:'Jobs entregues',
+    label2:'Valores analisados',
+    fmt2:'money',
+    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos para os jobs dessas linhas.'
+  },
+  revisao:{
+    area:'Revisão',
+    label1:'Jobs revisados',
+    label2:'Valor total',
+    fmt2:'money',
+    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos para os jobs dessas linhas.'
+  },
+  retificacao:{
+    area:'Retificação',
+    label1:'Retificações entregues',
+    label2:'Honorários gerados',
+    fmt2:'money',
+    rule:'Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês. Honorários: Valor Retificação × Honorário % (mesma regra da aba Retificação); sem Valor Retificação, usa o Honorário $ da planilha.'
+  },
+  roboStudio:{
+    area:'Automações',
+    label1:'Empresas no Robô Studio',
+    label2:'Honorários gerados',
+    fmt2:'money',
+    rule:'Retificações concluídas no mês (qualquer analista) em que a coluna Robô contém "Studio". Honorários pela mesma regra da Retificação.'
+  }
+};
+
+const TVX_TEAM=[
+  {name:'Yasmin Nunes',short:'Yasmin',kind:'checklist',match:v=>{const n=norm(v);return n==='yasmin' || n.startsWith('yasmin ');}},
+  {name:'Luiz Neto',short:'Luiz',kind:'operacao',match:tvxNameIs('luiz','luiz neto')},
+  {name:'Letícia Oliveira',short:'Letícia O.',kind:'operacao',match:tvxNameIs('leticia','leticia oliveira')},
+  {name:'Brenda Guterres',short:'Brenda',kind:'operacao',match:tvxNameIs('brenda','brenda guterres')},
+  {name:'Mayan Sampaio',short:'Mayan',kind:'revisao',match:v=>isMayanReviewerV314(v)},
+  {name:'Ellen Rogowski',short:'Ellen',kind:'retificacao',match:tvxNameIs('ellen','ellen rogowski')},
+  {name:'Letícia da Silva',short:'Letícia S.',kind:'retificacao',match:tvxNameIs('leticia','leticia da silva','leticia silva','leticia santos')},
+  {name:'Igor Paz',short:'Igor',kind:'roboStudio'}
+];
+
+const TVX={
+  inited:false,index:0,count:0,paused:false,intervalMs:15000,elapsed:0,last:0,
+  monthKey:'',tv:false,fsByUs:false,urlHandled:false,wake:null,idleTimer:null,results:[]
+};
+
+/* ---------- utilitários ---------- */
+
+function tvxMonthKey(d=new Date()){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+}
+
+function tvxMonthLabel(key){
+  const m=String(key||'').match(/^(\d{4})-(\d{2})$/);
+  if(!m)return '';
+  const t=new Date(Number(m[1]),Number(m[2])-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  return t.charAt(0).toUpperCase()+t.slice(1);
+}
+
+function tvxFmt(v,kind){
+  return kind==='money' ? brl(Number(v)||0) : Math.round(Number(v)||0).toLocaleString('pt-BR');
+}
+
+function tvxSlug(name){
+  return norm(name).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+
+function tvxInitials(name){
+  const p=String(name||'').trim().split(/\s+/).filter(Boolean);
+  if(!p.length)return '';
+  return (p[0].charAt(0)+(p.length>1?p[p.length-1].charAt(0):'')).toUpperCase();
+}
+
+function tvxCompanyKey(r){
+  return norm(r['Nome da Empresa']) || norm(r['Número do Job']);
+}
+
+function tvxCompanies(rows){
+  return new Set(rows.map(tvxCompanyKey).filter(Boolean)).size;
+}
+
+/* ---------- crédito pelo número do job ---------- */
+
+function tvxJobBase(job){
+  return slaOperacaoJobBaseV4634(job) || slaOperacaoCanonicalJobV4634(job);
+}
+
+function tvxJobsMatch(a,b){
+  if(slaOperacaoJobMatchScoreV4634(a,b)>=0)return true;
+  const bare=v=>/^\d+$/.test(slaOperacaoCanonicalJobV4634(v));
+  const base=slaOperacaoJobBaseV4634(a);
+  return !!base && base===slaOperacaoJobBaseV4634(b) && (bare(a) || bare(b));
+}
+
+function tvxCreditIndex(){
+  const index=new Map();
+  (DATA.creditos||[]).forEach((row,i)=>{
+    const job=String(row['Número do Job']||'').trim();
+    if(!job)return;
+    const base=tvxJobBase(job);
+    if(!index.has(base))index.set(base,[]);
+    index.get(base).push({id:row.__row!==undefined?row.__row:'i'+i,job,row});
+  });
+  return index;
+}
+
+function tvxCreditForRows(rows,index){
+  const used=new Set();
+  let total=0;
+  const jobs=new Set(rows.map(r=>String(r['Número do Job']||'').trim()).filter(Boolean));
+  jobs.forEach(job=>{
+    (index.get(tvxJobBase(job))||[]).forEach(c=>{
+      if(used.has(c.id) || !tvxJobsMatch(job,c.job))return;
+      used.add(c.id);
+      total+=money(c.row['Valor']);
+    });
+  });
+  return total;
+}
+
+/* ---------- retificação ---------- */
+
+function tvxRobotValue(row){
+  for(const key of Object.keys(row)){
+    const n=norm(key);
+    if(n==='robo utilizado' || n==='robo' || n==='robo usado')return row[key];
+  }
+  return '';
+}
+
+function tvxRetFee(row){
+  if(ret39HasValorRetificacao(row) && ret39HonorarioPercentual(row)>0){
+    return ret39HonorarioRetificacao(row);
+  }
+  return money(row['Honorário $'] || row['Honorário']);
+}
+
+/* ---------- cálculo ---------- */
+
+function tvxComputeAll(key){
+  const checklistSource=
+    typeof buildChecklistRowsV317==='function'
+      ? buildChecklistRowsV317()
+      : (DATA.checklist||[]);
+
+  const ctx={
+    key,
+    creditIndex:tvxCreditIndex(),
+    checklistDone:checklistSource.filter(r=>
+      done(r['Status']) &&
+      directorMonthKeyFromDate(r['Data Finalização Checkist'] || r['Data Finalização Checklist'])===key
+    ),
+    retDelivered:(DATA.retificacao||[]).filter(r=>
+      done(r['Status Retificação'] || r['Retificação']) &&
+      directorMonthKeyFromDate(r['Data Finalização Retificação'])===key
+    )
+  };
+
+  return TVX_TEAM.map(person=>tvxComputePerson(person,ctx));
+}
+
+function tvxComputePerson(person,ctx){
+  const kind=TVX_KINDS[person.kind];
+  let rows=[],v1=0,v2=0;
+
+  if(person.kind==='checklist'){
+    rows=ctx.checklistDone.filter(r=>{
+      const analyst=String(r['Analista Responsável']||'').trim();
+      return analyst ? person.match(analyst) : true;
+    });
+    const semPerfil=r=>norm(r.__perfil || r['Empresa tem Perfil'] || r['Perfil'])==='nao';
+    v1=tvxCompanies(rows.filter(r=>!semPerfil(r)));
+    v2=tvxCompanies(rows.filter(semPerfil));
+  }else if(person.kind==='operacao'){
+    rows=(DATA.operacao||[]).filter(r=>
+      person.match(r['Analista Responsável']) &&
+      directorMonthKeyFromDate(r['Data Finalização Revisão'])===ctx.key
+    );
+    v1=tvxCompanies(rows);
+    v2=tvxCreditForRows(rows,ctx.creditIndex);
+  }else if(person.kind==='revisao'){
+    rows=(DATA.operacao||[]).filter(r=>
+      person.match(r['Revisor']) &&
+      directorMonthKeyFromDate(r['Data Finalização Revisão'])===ctx.key
+    );
+    v1=tvxCompanies(rows);
+    v2=tvxCreditForRows(rows,ctx.creditIndex);
+  }else if(person.kind==='retificacao'){
+    rows=ctx.retDelivered.filter(r=>person.match(r['Analista']));
+    v1=tvxCompanies(rows);
+    v2=rows.reduce((s,r)=>s+tvxRetFee(r),0);
+  }else if(person.kind==='roboStudio'){
+    rows=ctx.retDelivered.filter(r=>norm(tvxRobotValue(r)).includes('studio'));
+    v1=tvxCompanies(rows);
+    v2=rows.reduce((s,r)=>s+tvxRetFee(r),0);
+  }
+
+  return {person,kind,rows,v1,v2};
+}
+
+/* ---------- slides ---------- */
+
+function tvxPhotoHtml(person){
+  const slug=tvxSlug(person.name);
+  return `
+    <div class="tvx-photo">
+      <span class="tvx-initials">${esc(tvxInitials(person.name))}</span>
+      <img src="${TVX_PHOTO_DIR}${slug}.jpg" alt="${esc(person.name)}" onerror="this.remove()">
+    </div>`;
+}
+
+function tvxCoverHtml(key){
+  return `
+    <section class="tvx-slide tvx-cover">
+      <div class="tvx-kicker">Acompanhamento de métricas mensais</div>
+      <h1>Resultados<br>do <em>Time</em></h1>
+      <div class="tvx-cover-month">${esc(tvxMonthLabel(key))}</div>
+      <div class="tvx-cover-note">Equipe Previdenciário · Grupo Studio</div>
+    </section>`;
+}
+
+function tvxSummaryHtml(results){
+  return `
+    <section class="tvx-slide">
+      <h2 class="tvx-sum-title">Visão geral do time</h2>
+      <div class="tvx-sum-grid">
+        ${results.map(r=>`
+          <div class="tvx-sum-card">
+            <div class="tvx-sum-name">${esc(r.person.name)}</div>
+            <div class="tvx-sum-area">${esc(r.kind.area)}</div>
+            <div class="tvx-sum-line"><b class="tvx-fit" data-max="350">${esc(tvxFmt(r.v1,'int'))}</b><span>${esc(r.kind.label1)}</span></div>
+            <div class="tvx-sum-line"><b class="tvx-fit" data-max="350">${esc(tvxFmt(r.v2,r.kind.fmt2))}</b><span>${esc(r.kind.label2)}</span></div>
+          </div>`).join('')}
+      </div>
+    </section>`;
+}
+
+function tvxPersonHtml(r){
+  return `
+    <section class="tvx-slide">
+      <div class="tvx-person">
+        <div class="tvx-photo-col">
+          ${tvxPhotoHtml(r.person)}
+          <div class="tvx-name">${esc(r.person.name)}</div>
+          <div class="tvx-area">${esc(r.kind.area)}</div>
+        </div>
+        <div class="tvx-metrics">
+          <div class="tvx-metric">
+            <div class="tvx-metric-label">${esc(r.kind.label1)}</div>
+            <div class="tvx-metric-value tvx-fit" data-max="1000">${esc(tvxFmt(r.v1,'int'))}</div>
+          </div>
+          <div class="tvx-metric">
+            <div class="tvx-metric-label">${esc(r.kind.label2)}</div>
+            <div class="tvx-metric-value tvx-fit" data-max="1000">${esc(tvxFmt(r.v2,r.kind.fmt2))}</div>
+          </div>
+        </div>
+      </div>
+    </section>`;
+}
+
+/* ---------- render ---------- */
+
+function tvxUpdatedText(){
+  const t=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  return 'Atualizado às '+t+' · dados da planilha';
+}
+
+function renderTvResultados(){
+  const slidesEl=document.getElementById('tvxSlides');
+  if(!slidesEl)return;
+  if(!permittedViewsV27().includes('tv'))return;
+
+  tvxInitOnce();
+
+  const key=tvxMonthKey();
+  if(TVX.monthKey && TVX.monthKey!==key){TVX.index=0;TVX.elapsed=0;}
+  TVX.monthKey=key;
+
+  const results=tvxComputeAll(key);
+  TVX.results=results;
+  TVX.count=results.length+2;
+  if(TVX.index>=TVX.count)TVX.index=0;
+
+  slidesEl.innerHTML=tvxCoverHtml(key)+tvxSummaryHtml(results)+results.map(tvxPersonHtml).join('');
+
+  document.getElementById('tvxDots').innerHTML=
+    Array.from({length:TVX.count},(_,i)=>`<button type="button" class="tvx-dot" data-tvx-go="${i}" aria-label="Slide ${i+1}"></button>`).join('');
+
+  const label=tvxMonthLabel(key);
+  document.getElementById('tvxPeriod').textContent=label;
+  document.getElementById('tvxUpdated').textContent=tvxUpdatedText();
+  document.getElementById('tvxToolbarMonth').textContent='Resultados do Time · '+label;
+  document.getElementById('tvxToolbarNote').textContent=
+    'Mês corrente. '+tvxUpdatedText()+'; atualiza sozinho a cada 2 minutos.';
+
+  document.getElementById('tvxCheckBody').innerHTML=results.map(r=>`
+    <tr>
+      <td><b>${esc(r.person.name)}</b></td>
+      <td>${esc(r.kind.area)}</td>
+      <td>${esc(r.kind.label1)}</td>
+      <td class="num"><b>${esc(tvxFmt(r.v1,'int'))}</b></td>
+      <td>${esc(r.kind.label2)}</td>
+      <td class="num"><b>${esc(tvxFmt(r.v2,r.kind.fmt2))}</b></td>
+      <td class="tvx-rule">${esc(r.kind.rule)}</td>
+    </tr>`).join('');
+
+  tvxApplyActive();
+  tvxFit();
+  tvxHandleUrlOnce();
+}
+
+/* ---------- palco, ajuste de texto e rotação ---------- */
+
+function tvxFitText(){
+  document.querySelectorAll('#tvxStage .tvx-fit').forEach(el=>{
+    el.style.fontSize='';
+    const max=Number(el.dataset.max)||el.parentElement.clientWidth;
+    const base=parseFloat(getComputedStyle(el).fontSize)||100;
+    const w=el.scrollWidth;
+    if(w>max)el.style.fontSize=Math.floor(base*max/w)+'px';
+  });
+}
+
+function tvxFit(){
+  const viewport=document.getElementById('tvxViewport');
+  const stage=document.getElementById('tvxStage');
+  if(!viewport || !stage)return;
+  const w=viewport.clientWidth,h=viewport.clientHeight;
+  if(!w || !h)return;
+  stage.style.transform=`translate(-50%,-50%) scale(${Math.min(w/1920,h/1080)})`;
+  tvxFitText();
+}
+
+function tvxApplyActive(){
+  document.querySelectorAll('#tvxSlides .tvx-slide').forEach((s,i)=>s.classList.toggle('active',i===TVX.index));
+  document.querySelectorAll('#tvxDots .tvx-dot').forEach((d,i)=>d.classList.toggle('active',i===TVX.index));
+}
+
+function tvxGo(target){
+  if(!TVX.count)return;
+  TVX.index=((target%TVX.count)+TVX.count)%TVX.count;
+  TVX.elapsed=0;
+  tvxApplyActive();
+}
+
+function tvxIsRunning(){
+  const view=document.getElementById('view-tv');
+  return !TVX.paused && !document.hidden && TVX.count>1 && !!view && view.classList.contains('active');
+}
+
+function tvxTick(){
+  const now=Date.now();
+  const dt=TVX.last ? now-TVX.last : 0;
+  TVX.last=now;
+
+  const bar=document.getElementById('tvxProgress');
+
+  if(!tvxIsRunning()){
+    if(bar && !TVX.paused)bar.style.width='0';
+    return;
+  }
+
+  TVX.elapsed+=Math.min(dt,1000);
+  if(bar)bar.style.width=Math.min(100,TVX.elapsed/TVX.intervalMs*100)+'%';
+  if(TVX.elapsed>=TVX.intervalMs)tvxGo(TVX.index+1);
+}
+
+function tvxSetPaused(p){
+  TVX.paused=!!p;
+  const btn=document.getElementById('tvxPauseBtn');
+  if(btn)btn.textContent=TVX.paused?'Retomar':'Pausar';
+  document.querySelectorAll('.tvx-ctl[data-tvx-action="pause"]').forEach(b=>{b.textContent=TVX.paused?'▶':'❚❚';});
+}
+
+/* ---------- modo TV ---------- */
+
+async function tvxWakeLock(on){
+  try{
+    if(on){
+      if(!TVX.wake && 'wakeLock' in navigator && !document.hidden){
+        TVX.wake=await navigator.wakeLock.request('screen');
+        TVX.wake.addEventListener('release',()=>{TVX.wake=null;});
+      }
+    }else if(TVX.wake){
+      await TVX.wake.release();
+      TVX.wake=null;
+    }
+  }catch(e){}
+}
+
+function tvxPokeIdle(){
+  document.body.classList.remove('tvx-idle');
+  clearTimeout(TVX.idleTimer);
+  if(TVX.tv)TVX.idleTimer=setTimeout(()=>document.body.classList.add('tvx-idle'),3000);
+}
+
+function tvxEnterTv(requestFullscreen){
+  if(!permittedViewsV27().includes('tv'))return;
+  activateViewV27('tv');
+  document.body.classList.add('tvx-tv');
+  document.body.classList.remove('nav-open');
+  TVX.tv=true;
+
+  const root=document.documentElement;
+  if(requestFullscreen && root.requestFullscreen && !document.fullscreenElement){
+    root.requestFullscreen().then(()=>{TVX.fsByUs=true;}).catch(()=>{});
+  }
+
+  tvxWakeLock(true);
+  tvxPokeIdle();
+  requestAnimationFrame(tvxFit);
+}
+
+function tvxExitTv(){
+  TVX.tv=false;
+  TVX.fsByUs=false;
+  clearTimeout(TVX.idleTimer);
+  document.body.classList.remove('tvx-tv','tvx-idle');
+  if(document.fullscreenElement && document.exitFullscreen)document.exitFullscreen().catch(()=>{});
+  tvxWakeLock(false);
+  requestAnimationFrame(tvxFit);
+}
+
+function tvxUrlWantsTv(){
+  try{
+    const url=new URL(window.location.href);
+    return url.searchParams.has('tv') || norm(url.searchParams.get('modo'))==='tv' || norm(url.hash)==='#tv';
+  }catch(e){return false;}
+}
+
+function tvxHandleUrlOnce(){
+  if(TVX.urlHandled)return;
+  TVX.urlHandled=true;
+  if(tvxUrlWantsTv())tvxEnterTv(false);
+}
+
+function tvxInitOnce(){
+  if(TVX.inited)return;
+  TVX.inited=true;
+
+  try{
+    const saved=Number(localStorage.getItem(TVX_INTERVAL_KEY));
+    if(TVX_INTERVALS.includes(saved))TVX.intervalMs=saved*1000;
+  }catch(e){}
+
+  const select=document.getElementById('tvxInterval');
+  if(select){
+    select.value=String(TVX.intervalMs/1000);
+    select.addEventListener('change',()=>{
+      const s=Number(select.value);
+      if(!TVX_INTERVALS.includes(s))return;
+      TVX.intervalMs=s*1000;
+      try{localStorage.setItem(TVX_INTERVAL_KEY,String(s));}catch(e){}
+    });
+  }
+
+  const view=document.getElementById('view-tv');
+  view.addEventListener('click',e=>{
+    const action=e.target.closest('[data-tvx-action]');
+    if(action){
+      const a=action.dataset.tvxAction;
+      if(a==='prev')tvxGo(TVX.index-1);
+      else if(a==='next')tvxGo(TVX.index+1);
+      else if(a==='pause')tvxSetPaused(!TVX.paused);
+      else if(a==='tv')tvxEnterTv(true);
+      else if(a==='exit')tvxExitTv();
+      return;
+    }
+    const go=e.target.closest('[data-tvx-go]');
+    if(go)tvxGo(Number(go.dataset.tvxGo));
+  });
+
+  const viewport=document.getElementById('tvxViewport');
+  if(viewport && typeof ResizeObserver==='function')new ResizeObserver(()=>tvxFit()).observe(viewport);
+  window.addEventListener('resize',tvxFit);
+  if(document.fonts)document.fonts.ready.then(tvxFit);
+
+  document.addEventListener('keydown',e=>{
+    const v=document.getElementById('view-tv');
+    if(!v || !v.classList.contains('active'))return;
+    const login=document.getElementById('loginOverlay');
+    if(login && !login.classList.contains('hidden'))return;
+    if(document.querySelector('.modal-bg.show'))return;
+    const tag=(e.target && e.target.tagName) || '';
+    if(/^(INPUT|SELECT|TEXTAREA)$/.test(tag))return;
+
+    if(e.key==='ArrowRight'){e.preventDefault();tvxGo(TVX.index+1);}
+    else if(e.key==='ArrowLeft'){e.preventDefault();tvxGo(TVX.index-1);}
+    else if(e.key===' ' && tag!=='BUTTON'){e.preventDefault();tvxSetPaused(!TVX.paused);}
+    else if(e.key==='Escape' && TVX.tv){tvxExitTv();}
+    if(TVX.tv)tvxPokeIdle();
+  });
+
+  document.addEventListener('mousemove',()=>{if(TVX.tv)tvxPokeIdle();});
+  document.addEventListener('fullscreenchange',()=>{
+    if(!document.fullscreenElement && TVX.fsByUs && TVX.tv)tvxExitTv();
+  });
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden && TVX.tv)tvxWakeLock(true);
+  });
+
+  setInterval(tvxTick,250);
+}
+
 function renderAll(){
   safeRender('opções do To-do',populateTaskModalOptions);
   safeRender('Visão Geral',renderGeral);
@@ -19881,6 +20567,7 @@ function renderAll(){
   safeRender('To-do',renderTarefas);
   safeRender('To-do Tecnologia',renderTarefasTecnologiaV37);
   safeRender('Temas Previdenciários',renderTemas);
+  safeRender('Apresentação TV',renderTvResultados);
   safeRender('filtros adicionais',renderCustomFilterChips);
   safeRender('ordenação',updateSortMarks);
 }
