@@ -20167,19 +20167,34 @@ function tvxCreditIndex(){
   return index;
 }
 
-function tvxCreditForRows(rows,index){
+// Valor do crédito: coluna "Valor" do Estoque de Créditos (aceita variações do cabeçalho).
+function tvxCreditValue(row){
+  if(row['Valor']!==undefined)return money(row['Valor']);
+  for(const key of Object.keys(row)){
+    const n=norm(key);
+    if(n==='valor' || n==='valor credito' || n==='valor do credito' || n==='valor total')return money(row[key]);
+  }
+  return 0;
+}
+
+function tvxCreditForRows(rows,index,diag){
   const used=new Set();
   let total=0;
   const jobs=new Set(rows.map(r=>String(r['Número do Job']||'').trim()).filter(Boolean));
+  let matched=0;
   jobs.forEach(job=>{
+    let found=false;
     tvxJobNumbers(job).forEach(num=>{
       (index.get(num)||[]).forEach(c=>{
+        found=true;
         if(used.has(c.id))return;
         used.add(c.id);
-        total+=money(c.row['Valor']);
+        total+=tvxCreditValue(c.row);
       });
     });
+    if(found)matched++;
   });
+  if(diag){diag.jobs=jobs.size;diag.matched=matched;diag.creditRows=(DATA.creditos||[]).length;}
   return total;
 }
 
@@ -20226,7 +20241,7 @@ function tvxComputeAll(key){
 
 function tvxComputePerson(person,ctx){
   const kind=TVX_KINDS[person.kind];
-  let rows=[],v1=0,v2=0;
+  let rows=[],v1=0,v2=0,diag=null;
 
   if(person.kind==='checklist'){
     rows=ctx.checklistDone.filter(r=>{
@@ -20242,14 +20257,16 @@ function tvxComputePerson(person,ctx){
       directorMonthKeyFromDate(r['Data Finalização Revisão'])===ctx.key
     );
     v1=tvxCompanies(rows);
-    v2=tvxCreditForRows(rows,ctx.creditIndex);
+    diag={};
+    v2=tvxCreditForRows(rows,ctx.creditIndex,diag);
   }else if(person.kind==='revisao'){
     rows=(DATA.operacao||[]).filter(r=>
       person.match(r['Revisor']) &&
       directorMonthKeyFromDate(r['Data Finalização Revisão'])===ctx.key
     );
     v1=tvxCompanies(rows);
-    v2=tvxCreditForRows(rows,ctx.creditIndex);
+    diag={};
+    v2=tvxCreditForRows(rows,ctx.creditIndex,diag);
   }else if(person.kind==='retificacao'){
     rows=ctx.retDelivered.filter(r=>person.match(r['Analista']));
     v1=tvxCompanies(rows);
@@ -20275,7 +20292,7 @@ function tvxComputePerson(person,ctx){
   // Valores em dinheiro zerados não aparecem na tela.
   const shown=metrics.filter(m=>!(m.fmt==='money' && !(m.value>0)));
 
-  return {person,kind,rows,v1,v2,metrics:shown.length?shown:metrics.slice(0,1),allMetrics:metrics};
+  return {person,kind,rows,v1,v2,diag,metrics:shown.length?shown:metrics.slice(0,1),allMetrics:metrics};
 }
 
 /* ---------- slides ---------- */
@@ -20373,7 +20390,7 @@ function renderTvResultados(){
     <tr>
       <td><b>${esc(r.person.name)}</b></td>
       <td>${esc(r.kind.area)}</td>
-      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}</td>
+      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}${r.diag ? `<div class="tvx-rule">Cruzamento: ${r.diag.jobs} job(s) na Operação no mês · ${r.diag.matched} encontrado(s) no Estoque de Créditos · ${r.diag.creditRows} linha(s) no Estoque de Créditos carregadas</div>` : ''}</td>
       <td class="tvx-rule">${esc(r.kind.rule)}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
     </tr>`).join('');
 
