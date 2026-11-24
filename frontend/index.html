@@ -7979,6 +7979,35 @@ body.tvx-tv #view-tv{animation:none!important;transform:none!important}
   </div>
 </div>
 
+<div class="modal-bg" id="opSituacaoConfirmModalV4718">
+  <div class="modal" style="width:min(460px,100%)">
+    <div class="modal-head">
+      <h3>Confirmar mudança de etapa</h3>
+      <button class="x" type="button" onclick="closeOpSituacaoConfirmModalV4718()">×</button>
+    </div>
+
+    <div class="form" style="grid-template-columns:1fr">
+      <div class="field full">
+        <p style="margin:0;line-height:1.5">
+          Você tem certeza que deseja movimentar o job
+          <b id="opSituacaoConfirmJobV4718"></b>
+          da etapa <b id="opSituacaoConfirmDeV4718"></b>
+          para a etapa <b id="opSituacaoConfirmParaV4718"></b>?
+        </p>
+      </div>
+
+      <div class="field full">
+        <div class="field-hint" id="opSituacaoConfirmEmpresaV4718"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn secondary" type="button" onclick="closeOpSituacaoConfirmModalV4718()">Cancelar</button>
+      <button class="btn primary" type="button" id="opSituacaoConfirmBtnV4718" onclick="confirmOpSituacaoConfirmModalV4718()">Confirmar mudança</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg" id="retStandbyModalV472">
   <div class="modal" style="width:min(460px,100%)">
     <div class="modal-head">
@@ -13890,6 +13919,9 @@ function filterOperacao(){
           <td>
             <select class="status-select ${selectableClassV5(r['Situação'])}"
               data-row="${Number(r.__row)}"
+              data-job="${esc(r['Número do Job']||'')}"
+              data-empresa="${esc(r['Nome da Empresa']||'')}"
+              data-prev="${esc(r['Situação']||'')}"
               onchange="alterarSituacaoOperacaoDireto(this)">
               ${operationSituationOptions(r['Situação'])}
             </select>
@@ -13947,7 +13979,80 @@ function filterOperacao(){
 }
 
 
+let OP_SITUACAO_CONFIRM_CONTEXT_V4718=null;
+
+function openOpSituacaoConfirmModalV4718(context){
+  OP_SITUACAO_CONFIRM_CONTEXT_V4718=context;
+
+  const nomeEtapa=v=>String(v||'').trim()||'(sem etapa)';
+  const set=(id,v)=>{
+    const node=document.getElementById(id);
+    if(node)node.textContent=v;
+  };
+
+  set('opSituacaoConfirmJobV4718',String(context.job||'').trim()||'(sem número)');
+  set('opSituacaoConfirmDeV4718',nomeEtapa(context.de));
+  set('opSituacaoConfirmParaV4718',nomeEtapa(context.para));
+  set('opSituacaoConfirmEmpresaV4718',String(context.empresa||'').trim());
+
+  document
+    .getElementById('opSituacaoConfirmModalV4718')
+    ?.classList.add('show');
+
+  setTimeout(
+    ()=>document.getElementById('opSituacaoConfirmBtnV4718')?.focus(),
+    50
+  );
+}
+
+function closeOpSituacaoConfirmModalV4718(){
+  document
+    .getElementById('opSituacaoConfirmModalV4718')
+    ?.classList.remove('show');
+
+  const context=OP_SITUACAO_CONFIRM_CONTEXT_V4718;
+  OP_SITUACAO_CONFIRM_CONTEXT_V4718=null;
+
+  if(context && context.onCancel){
+    context.onCancel();
+  }
+}
+
+function confirmOpSituacaoConfirmModalV4718(){
+  const context=OP_SITUACAO_CONFIRM_CONTEXT_V4718;
+  if(!context)return;
+
+  document
+    .getElementById('opSituacaoConfirmModalV4718')
+    ?.classList.remove('show');
+
+  OP_SITUACAO_CONFIRM_CONTEXT_V4718=null;
+  context.onConfirm();
+}
+
+document.addEventListener('keydown',ev=>{
+  if(ev.key==='Escape' && OP_SITUACAO_CONFIRM_CONTEXT_V4718){
+    closeOpSituacaoConfirmModalV4718();
+  }
+});
+
 window.alterarSituacaoOperacaoDireto=function(el){
+  const anterior=String(el.dataset.prev||'');
+  const nova=String(el.value||'');
+
+  if(anterior.trim()===nova.trim())return;
+
+  openOpSituacaoConfirmModalV4718({
+    job:el.dataset.job,
+    empresa:el.dataset.empresa,
+    de:anterior,
+    para:nova,
+    onConfirm:()=>enviarSituacaoOperacaoV4718(el),
+    onCancel:()=>{ el.value=anterior; }
+  });
+};
+
+function enviarSituacaoOperacaoV4718(el){
 
   const row=Number(el.dataset.row);
   const situacao=el.value;
@@ -13994,7 +14099,7 @@ window.alterarSituacaoOperacaoDireto=function(el){
       situacao,
       AUTH_TOKEN
     );
-};
+}
 
 
 
