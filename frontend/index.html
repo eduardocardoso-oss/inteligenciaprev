@@ -20168,7 +20168,7 @@ const TVX_KINDS={
     label1:'Jobs para a Operação',
     label2:'Jobs sem perfil',
     fmt2:'int',
-    rule:'Estoque Checklist com Status Concluído e Data Finalização Checklist no mês, Analista Responsável = pessoa (linhas sem analista também entram). Jobs para a Operação: concluídos com perfil; Jobs sem perfil: concluídos com Perfil = Não. Contagem por empresa.'
+    rule:'Mesmos números do Estoque do Checklist (Reporte Temporal com Saída no mês): Status Concluído e Data Finalização Checklist no mês, de todos os analistas. Jobs para a Operação: concluídos com Perfil = Sim; Jobs sem perfil: os demais concluídos, inclusive sem perfil preenchido. Contagem por job.'
   },
   operacao:{
     area:'Operação',
@@ -20193,7 +20193,7 @@ const TVX_KINDS={
   },
   roboStudio:{
     area:'Automações',
-    label1:'Empresas no Robô Studio',
+    label1:'Empresas Retificadas no Robô Studio',
     label2:'Honorários gerados',
     fmt2:'money',
     rule:'Retificações concluídas no mês (qualquer analista) em que a coluna Robô contém "Studio". Honorários pela mesma regra da Retificação.'
@@ -20353,13 +20353,19 @@ function tvxComputeAll(key){
       ? buildChecklistRowsV317()
       : (DATA.checklist||[]);
 
+  // Mesma regra do Estoque do Checklist (Reporte Temporal com Saída = "Mês"):
+  // Status Concluído e saída no mês, até hoje.
+  const hoje=ret39Today();
+  const ckExit=r=>ret39DateOnly(r['Data Finalização Checkist'] || r['Data Finalização Checklist']);
+
   const ctx={
     key,
     creditIndex:tvxCreditIndex(),
-    checklistDone:checklistSource.filter(r=>
-      done(r['Status']) &&
-      directorMonthKeyFromDate(r['Data Finalização Checkist'] || r['Data Finalização Checklist'])===key
-    ),
+    checklistDone:checklistSource.filter(r=>{
+      if(norm(r['Status'])!=='concluido')return false;
+      const exit=ckExit(r);
+      return Boolean(exit) && exit<=hoje && tvxMonthKey(exit)===key;
+    }),
     retDelivered:(DATA.retificacao||[]).filter(r=>
       done(r['Status Retificação'] || r['Retificação']) &&
       directorMonthKeyFromDate(r['Data Finalização Retificação'])===key
@@ -20374,13 +20380,12 @@ function tvxComputePerson(person,ctx){
   let rows=[],v1=0,v2=0,diag=null;
 
   if(person.kind==='checklist'){
-    rows=ctx.checklistDone.filter(r=>{
-      const analyst=String(r['Analista Responsável']||'').trim();
-      return analyst ? person.match(analyst) : true;
-    });
-    const semPerfil=r=>norm(r.__perfil || r['Empresa tem Perfil'] || r['Perfil'])==='nao';
-    v1=tvxCompanies(rows.filter(r=>!semPerfil(r)));
-    v2=tvxCompanies(rows.filter(semPerfil));
+    // A Yasmin é a única responsável pelo Checklist: usa todos os concluídos do mês,
+    // contando jobs como o Estoque do Checklist (Com perfil = Perfil "Sim";
+    // Sem perfil = os demais, inclusive concluídos sem perfil preenchido).
+    rows=ctx.checklistDone;
+    v1=rows.filter(r=>norm(r.__perfil)==='sim').length;
+    v2=rows.length-v1;
   }else if(person.kind==='operacao'){
     rows=(DATA.operacao||[]).filter(r=>
       person.match(r['Analista Responsável']) &&
