@@ -20066,14 +20066,14 @@ const TVX_KINDS={
     label1:'Jobs entregues',
     label2:'Valores analisados',
     fmt2:'money',
-    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos para os jobs dessas linhas.'
+    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados).'
   },
   revisao:{
     area:'Revisão',
     label1:'Jobs revisados',
     label2:'Valor total',
     fmt2:'money',
-    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos para os jobs dessas linhas.'
+    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados).'
   },
   retificacao:{
     area:'Retificação',
@@ -20144,15 +20144,14 @@ function tvxCompanies(rows){
 
 /* ---------- crédito pelo número do job ---------- */
 
-function tvxJobBase(job){
-  return slaOperacaoJobBaseV4634(job) || slaOperacaoCanonicalJobV4634(job);
-}
-
-function tvxJobsMatch(a,b){
-  if(slaOperacaoJobMatchScoreV4634(a,b)>=0)return true;
-  const bare=v=>/^\d+$/.test(slaOperacaoCanonicalJobV4634(v));
-  const base=slaOperacaoJobBaseV4634(a);
-  return !!base && base===slaOperacaoJobBaseV4634(b) && (bare(a) || bare(b));
+// Cruzamento Operação x Créditos pelo número do job (mesma regra da aba
+// Diretoria): vale o número do job, ignorando sufixos como -RPA/-RPQ.
+// Um job da Operação pode trazer vários números separados por "/".
+function tvxJobNumbers(job){
+  return String(job||'').split('/')
+    .map(part=>String(part||'').trim().match(/\d+/))
+    .filter(Boolean)
+    .map(m=>m[0].replace(/^0+(?=\d)/,''));
 }
 
 function tvxCreditIndex(){
@@ -20160,9 +20159,10 @@ function tvxCreditIndex(){
   (DATA.creditos||[]).forEach((row,i)=>{
     const job=String(row['Número do Job']||'').trim();
     if(!job)return;
-    const base=tvxJobBase(job);
-    if(!index.has(base))index.set(base,[]);
-    index.get(base).push({id:row.__row!==undefined?row.__row:'i'+i,job,row});
+    tvxJobNumbers(job).forEach(num=>{
+      if(!index.has(num))index.set(num,[]);
+      index.get(num).push({id:row.__row!==undefined?row.__row:'i'+i,row});
+    });
   });
   return index;
 }
@@ -20172,10 +20172,12 @@ function tvxCreditForRows(rows,index){
   let total=0;
   const jobs=new Set(rows.map(r=>String(r['Número do Job']||'').trim()).filter(Boolean));
   jobs.forEach(job=>{
-    (index.get(tvxJobBase(job))||[]).forEach(c=>{
-      if(used.has(c.id) || !tvxJobsMatch(job,c.job))return;
-      used.add(c.id);
-      total+=money(c.row['Valor']);
+    tvxJobNumbers(job).forEach(num=>{
+      (index.get(num)||[]).forEach(c=>{
+        if(used.has(c.id))return;
+        used.add(c.id);
+        total+=money(c.row['Valor']);
+      });
     });
   });
   return total;
