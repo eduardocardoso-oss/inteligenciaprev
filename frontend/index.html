@@ -20066,14 +20066,14 @@ const TVX_KINDS={
     label1:'Jobs entregues',
     label2:'Valores analisados',
     fmt2:'money',
-    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados).'
+    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados). Também entram os créditos cuja Data Finalização Revisão, no próprio Estoque de Créditos, cai no mês e cujo número do job pertence a jobs da pessoa na Operação.'
   },
   revisao:{
     area:'Revisão',
     label1:'Jobs revisados',
     label2:'Valor total',
     fmt2:'money',
-    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados).'
+    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados). Também entram os créditos cuja Data Finalização Revisão, no próprio Estoque de Créditos, cai no mês e cujo número do job pertence a jobs da pessoa na Operação.'
   },
   retificacao:{
     area:'Retificação',
@@ -20207,6 +20207,53 @@ function tvxCreditForRows(rows,index,diag){
   return total;
 }
 
+// Crédito do mês de uma pessoa: junta (sem repetir) dois cruzamentos pelo número do job.
+//  1) jobs da pessoa na Operação com Data Finalização Revisão no mês -> créditos desses jobs;
+//  2) jobs da pessoa na Operação (qualquer data) -> créditos do Estoque de Créditos
+//     cuja própria Data Finalização Revisão cai no mês.
+function tvxCreditForPerson(monthRows,allRows,ctx,diag){
+  const used=new Map();
+  const add=c=>{if(!used.has(c.id))used.set(c.id,c.row);};
+
+  const monthJobs=new Set(monthRows.map(r=>String(r['Número do Job']||'').trim()).filter(Boolean));
+  let matched=0;
+  monthJobs.forEach(job=>{
+    let found=false;
+    tvxJobNumbers(job).forEach(num=>{
+      (ctx.creditIndex.get(num)||[]).forEach(c=>{found=true;add(c);});
+    });
+    if(found)matched++;
+  });
+
+  const allNums=new Set();
+  allRows.forEach(r=>tvxJobNumbers(r['Número do Job']).forEach(n=>allNums.add(n)));
+  let byCreditDate=0;
+  allNums.forEach(num=>{
+    (ctx.creditIndex.get(num)||[]).forEach(c=>{
+      if(directorMonthKeyFromDate(c.row['Data Finalização Revisão'])!==ctx.key)return;
+      if(!used.has(c.id))byCreditDate++;
+      add(c);
+    });
+  });
+
+  let total=0;
+  used.forEach(row=>{total+=tvxCreditValue(row);});
+
+  if(diag){
+    const credits=DATA.creditos||[];
+    diag.jobs=monthJobs.size;
+    diag.matched=matched;
+    diag.extraByCreditDate=byCreditDate;
+    diag.opAllJobs=allNums.size;
+    diag.creditRows=credits.length;
+    diag.opSample=[...monthJobs].slice(0,4);
+    diag.creditSample=credits.slice(0,4).map(r=>String(r['Número do Job']||''));
+    diag.creditCols=credits.length?Object.keys(credits[0]).filter(k=>k.indexOf('__')!==0).join(' | '):'';
+    diag.creditWithValue=credits.filter(r=>tvxCreditValue(r)>0).length;
+  }
+  return total;
+}
+
 /* ---------- retificação ---------- */
 
 function tvxRobotValue(row){
@@ -20267,7 +20314,7 @@ function tvxComputePerson(person,ctx){
     );
     v1=tvxCompanies(rows);
     diag={};
-    v2=tvxCreditForRows(rows,ctx.creditIndex,diag);
+    v2=tvxCreditForPerson(rows,(DATA.operacao||[]).filter(r=>person.match(r['Analista Responsável'])),ctx,diag);
   }else if(person.kind==='revisao'){
     rows=(DATA.operacao||[]).filter(r=>
       person.match(r['Revisor']) &&
@@ -20275,7 +20322,7 @@ function tvxComputePerson(person,ctx){
     );
     v1=tvxCompanies(rows);
     diag={};
-    v2=tvxCreditForRows(rows,ctx.creditIndex,diag);
+    v2=tvxCreditForPerson(rows,(DATA.operacao||[]).filter(r=>person.match(r['Revisor'])),ctx,diag);
   }else if(person.kind==='retificacao'){
     rows=ctx.retDelivered.filter(r=>person.match(r['Analista']));
     v1=tvxCompanies(rows);
@@ -20399,7 +20446,7 @@ function renderTvResultados(){
     <tr>
       <td><b>${esc(r.person.name)}</b></td>
       <td>${esc(r.kind.area)}</td>
-      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}${r.diag ? `<div class="tvx-rule">Cruzamento: ${r.diag.jobs} job(s) na Operação no mês · ${r.diag.matched} encontrado(s) no Estoque de Créditos · ${r.diag.creditRows} linha(s) no Estoque de Créditos carregadas (${r.diag.creditWithValue} com valor)<br>Jobs da Operação (exemplo): ${esc(r.diag.opSample.join(', ')||'-')}<br>Jobs do Estoque de Créditos (exemplo): ${esc(r.diag.creditSample.join(', ')||'-')}<br>Colunas do Estoque de Créditos: ${esc(r.diag.creditCols||'-')}</div>` : ''}</td>
+      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}${r.diag ? `<div class="tvx-rule">Cruzamento: ${r.diag.jobs} job(s) na Operação no mês · ${r.diag.matched} encontrado(s) no Estoque de Créditos (+${r.diag.extraByCreditDate} pela data do próprio crédito; ${r.diag.opAllJobs} job(s) da pessoa na Operação, qualquer data) · ${r.diag.creditRows} linha(s) no Estoque de Créditos carregadas (${r.diag.creditWithValue} com valor)<br>Jobs da Operação (exemplo): ${esc(r.diag.opSample.join(', ')||'-')}<br>Jobs do Estoque de Créditos (exemplo): ${esc(r.diag.creditSample.join(', ')||'-')}<br>Colunas do Estoque de Créditos: ${esc(r.diag.creditCols||'-')}</div>` : ''}</td>
       <td class="tvx-rule">${esc(r.kind.rule)}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
     </tr>`).join('');
 
