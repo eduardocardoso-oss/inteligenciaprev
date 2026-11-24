@@ -20070,14 +20070,14 @@ const TVX_KINDS={
     label1:'Jobs entregues',
     label2:'Valores analisados',
     fmt2:'money',
-    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com a coluna Job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados), sem os temas de desconto.'
+    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos, cruzando o código do job da Operação com a coluna Job do Estoque de Créditos pelo número e pelo sufixo (RPA, RPQ, T, C1..., escrito com hífen, espaço ou junto), sem os temas de desconto.'
   },
   revisao:{
     area:'Revisão',
     label1:'Jobs revisados',
     label2:'Valor total',
     fmt2:'money',
-    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com a coluna Job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados), sem os temas de desconto.'
+    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos, cruzando o código do job da Operação com a coluna Job do Estoque de Créditos pelo número e pelo sufixo (RPA, RPQ, T, C1..., escrito com hífen, espaço ou junto), sem os temas de desconto.'
   },
   retificacao:{
     area:'Retificação',
@@ -20148,21 +20148,18 @@ function tvxCompanies(rows){
 
 /* ---------- crédito pelo número do job ---------- */
 
-// Cruzamento Operação x Créditos pelo número do job (mesma regra da aba
-// Diretoria): vale o número do job, ignorando sufixos como -RPA/-RPQ.
-// Um job da Operação pode trazer vários números separados por "/".
-function tvxJobNumbers(job){
-  return String(job||'').split('/')
-    .map(part=>String(part||'').trim().match(/\d+/))
-    .filter(Boolean)
-    .map(m=>m[0].replace(/^0+(?=\d)/,''));
+// Cruzamento Operação x Créditos pelo código do job: número + sufixos (RPA, RPQ, T, C1...),
+// aceitando hífen, espaço ou tudo junto (regra em jobKeysFromOperationV4717/jobSplitCreditV4717).
+// Um job da Operação pode trazer vários códigos separados por "/".
+function tvxJobKeys(job){
+  return jobKeysFromOperationV4717(job);
 }
 
-// Job do Estoque de Créditos: coluna "Job" ("85554-RPQ - EMPRESA"); só vale o código antes de " - ".
+// Job do Estoque de Créditos: coluna "Job" ("85554-RPQ - EMPRESA").
 // (A coluna A da aba é DATA e o backend a entrega como "Número do Job", por isso ela fica como reserva.)
 function tvxCreditJob(row){
   const raw=row['Job']!==undefined ? row['Job'] : row['Número do Job'];
-  return String(raw||'').split(' - ')[0].trim();
+  return jobSplitCreditV4717(raw).key;
 }
 
 // Temas de desconto não entram no valor analisado.
@@ -20173,12 +20170,10 @@ function tvxCreditCounts(row){
 function tvxCreditIndex(){
   const index=new Map();
   (DATA.creditos||[]).forEach((row,i)=>{
-    const job=tvxCreditJob(row);
-    if(!job)return;
-    tvxJobNumbers(job).forEach(num=>{
-      if(!index.has(num))index.set(num,[]);
-      index.get(num).push({id:row.__row!==undefined?row.__row:'i'+i,row});
-    });
+    const key=tvxCreditJob(row);
+    if(!key)return;
+    if(!index.has(key))index.set(key,[]);
+    index.get(key).push({id:row.__row!==undefined?row.__row:'i'+i,row});
   });
   return index;
 }
@@ -20194,8 +20189,8 @@ function tvxCreditValue(row){
 }
 
 // Crédito do mês de uma pessoa: jobs da pessoa na Operação com Data Finalização Revisão
-// no mês, cruzados pelo número do job com a coluna Job do Estoque de Créditos
-// (sufixos como -RPA/-RPQ ignorados); soma a coluna Valor, sem os temas de desconto
+// no mês, cruzados pelo código do job (número + sufixo) com a coluna Job do Estoque de
+// Créditos; soma a coluna Valor, sem os temas de desconto
 // e sem repetir a mesma linha de crédito.
 function tvxCreditForPerson(monthRows,ctx,diag){
   const used=new Map();
@@ -20203,8 +20198,8 @@ function tvxCreditForPerson(monthRows,ctx,diag){
   let matched=0;
   monthJobs.forEach(job=>{
     let found=false;
-    tvxJobNumbers(job).forEach(num=>{
-      (ctx.creditIndex.get(num)||[]).forEach(c=>{
+    tvxJobKeys(job).forEach(key=>{
+      (ctx.creditIndex.get(key)||[]).forEach(c=>{
         found=true;
         if(!used.has(c.id))used.set(c.id,c.row);
       });
@@ -20934,6 +20929,120 @@ function toast(msg){
   );
 }
 
+/* ---------- código do job (número + sufixos) ---------- */
+// O código do job é o número mais os sufixos (RPA, RPQ, T, P, C1, RF01...), escritos de
+// qualquer jeito: "88678-RPA", "88678 RPA", "88678RPA", "88678 - rpa", "088678–RPA" viram
+// todos "88678-RPA". "82410-C1RF01" vira "82410-C1-RF1" (zeros à esquerda não contam).
+// Dois jobs só cruzam quando número E sufixos são iguais.
+const JOB_SUFFIX_RE_V4717=/^(?:RPA|RPQ|RF\d+|C\d+|T|P)/;
+
+function jobPlainV4717(v){
+  return String(v??'')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .toUpperCase()
+    .replace(/[\u2010-\u2015]/g,'-');
+}
+
+function jobTokenV4717(t){
+  return t.replace(/\d+/g,d=>d.replace(/^0+(?=\d)/,''));
+}
+
+// Lê os sufixos do início de um texto (sem o número).
+// strict=false: campo da Operação (só códigos) -> qualquer bloco de letras(+dígitos) é sufixo.
+// strict=true: coluna Job dos Créditos (tem o nome da empresa) -> só sufixos conhecidos.
+function jobSuffixesV4717(text,known,strict){
+  const tokens=[];
+  let s=text;
+  while(true){
+    s=s.replace(/^[^A-Z0-9]+/,'');
+    if(!s || /^\d/.test(s))return {tokens,rest:s};
+    let tok=null;
+    const base=s.match(JOB_SUFFIX_RE_V4717);
+    if(base){
+      const after=s.slice(base[0].length);
+      // termina em separador/fim, ou vem colado em outro sufixo ("C1RF01", "TC1")
+      if(!/^[A-Z0-9]/.test(after) || (/^[A-Z]/.test(after) && jobSuffixesV4717(after,known,true).tokens.length))tok=base[0];
+    }
+    if(!tok){
+      const g=s.match(/^[A-Z]+\d*(?![A-Z0-9])/);
+      if(g && (!strict || (known && known.has(jobTokenV4717(g[0])))))tok=g[0];
+    }
+    if(!tok)return {tokens,rest:s};
+    tokens.push(jobTokenV4717(tok));
+    s=s.slice(tok.length);
+  }
+}
+
+function jobKeyV4717(num,tokens){
+  return [String(num).replace(/^0+(?=\d)/,''),...tokens].join('-');
+}
+
+// Campo "Número do Job" da Operação: um ou mais códigos separados por "/", "," ou ";".
+// "88678-RPA/RPQ" -> 88678-RPA e 88678-RPQ (a parte sem número herda o anterior).
+function jobKeysFromOperationV4717(v){
+  const keys=[];
+  let last=null;
+  jobPlainV4717(v).split(/[\/,;]+/).forEach(part=>{
+    const m=part.match(/^\D*?(\d{3,})(.*)$/);
+    let num,rest;
+    if(m){num=m[1];rest=m[2];last=num;}
+    else if(last && /[A-Z]/.test(part)){num=last;rest=part;}
+    else return;
+    keys.push(jobKeyV4717(num,jobSuffixesV4717(rest,null,false).tokens));
+  });
+  return [...new Set(keys)];
+}
+
+// Sufixos usados na Operação: servem para reconhecer sufixos novos na coluna Job dos Créditos.
+let JOB_KNOWN_SUFFIXES_V4717={src:null,set:new Set()};
+function jobKnownSuffixesV4717(){
+  const src=DATA.operacao||[];
+  if(JOB_KNOWN_SUFFIXES_V4717.src!==src){
+    const set=new Set();
+    src.forEach(r=>jobKeysFromOperationV4717(r['Número do Job']).forEach(k=>k.split('-').slice(1).forEach(t=>set.add(t))));
+    JOB_KNOWN_SUFFIXES_V4717={src,set};
+  }
+  return JOB_KNOWN_SUFFIXES_V4717.set;
+}
+
+// Coluna Job dos Créditos: "CÓDIGO - EMPRESA". O trecho colado ao número pode ter sufixos;
+// depois de cada " - ", o bloco só conta como sufixo se for inteiro sufixo
+// ("85753 - T - EMPRESA" -> 85753-T; "85601-T - P2R PRE VESTIBULAR" -> 85601-T).
+function jobSplitCreditV4717(v){
+  const original=String(v??'').trim();
+  const plain=jobPlainV4717(original);
+  const m=plain.match(/^(\D*?)(\d{3,})(.*)$/);
+  if(!m)return {key:'',company:original};
+
+  const known=jobKnownSuffixesV4717();
+  const sep=/\s+-\s+/;
+  const segs=m[3].split(sep);
+  const first=jobSuffixesV4717(segs[0],known,true);
+  const tokens=[...first.tokens];
+  let used=1;
+  if(!first.rest){
+    for(let i=1;i<segs.length;i++){
+      const r=jobSuffixesV4717(segs[i],known,true);
+      if(r.rest || !r.tokens.length)break;
+      tokens.push(...r.tokens);
+      used++;
+    }
+  }
+
+  // nome da empresa: o que sobra do texto original depois do código
+  const origRest=original.slice(m[1].length+m[2].length);
+  const origSegs=origRest.split(/\s+[-\u2010-\u2015]\s+/);
+  let company;
+  if(first.rest){
+    const seg0=origSegs[0];
+    company=[seg0.slice(seg0.length-first.rest.length),...origSegs.slice(1)].join(' - ');
+  }else{
+    company=origSegs.slice(used).join(' - ');
+  }
+
+  return {key:jobKeyV4717(m[2],tokens),company:company.trim()};
+}
+
 // Estoque de Créditos: a aba hoje tem as colunas DATA | Job | Tema | Classificação | Valor |
 // Honorário | Honorário | Status. O backend entrega a coluna A (DATA) com o nome
 // "Número do Job", e o job vem junto com a empresa na coluna Job ("85554-RPQ - EMPRESA").
@@ -20956,11 +21065,11 @@ function normalizeCreditosRowsV4716(){
     const iso=date.match(isoDate);
     if(iso)date=iso[3]+'/'+iso[2]+'/'+iso[1];
 
-    // coluna Job: "85554-RPQ - EMPRESA LTDA"
+    // coluna Job: "85554-RPQ - EMPRESA LTDA" (sufixo em qualquer formato)
     const raw=String(r['Job']||'').trim();
-    const sep=raw.indexOf(' - ');
-    const job=sep>=0 ? raw.slice(0,sep).trim() : raw;
-    const company=sep>=0 ? raw.slice(sep+3).trim() : '';
+    const split=jobSplitCreditV4717(raw);
+    const job=split.key || raw;
+    const company=split.key ? split.company : '';
 
     r['Número do Job']=job;
     if(!String(r['Nome da Empresa']||'').trim())r['Nome da Empresa']=company;
