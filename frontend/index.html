@@ -20070,14 +20070,14 @@ const TVX_KINDS={
     label1:'Jobs entregues',
     label2:'Valores analisados',
     fmt2:'money',
-    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados). Também entram os créditos cuja Data Finalização Revisão, no próprio Estoque de Créditos, cai no mês e cujo número do job pertence a jobs da pessoa na Operação.'
+    rule:'Estoque Operação com Analista Responsável = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valores analisados: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com a coluna Job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados), sem os temas de desconto.'
   },
   revisao:{
     area:'Revisão',
     label1:'Jobs revisados',
     label2:'Valor total',
     fmt2:'money',
-    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com o número do job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados). Também entram os créditos cuja Data Finalização Revisão, no próprio Estoque de Créditos, cai no mês e cujo número do job pertence a jobs da pessoa na Operação.'
+    rule:'Estoque Operação com Revisor = pessoa e Data Finalização Revisão no mês (contagem por empresa). Valor total: soma da coluna Valor do Estoque de Créditos, cruzando o número do job da Operação com a coluna Job do Estoque de Créditos (sufixos como -RPA/-RPQ são ignorados), sem os temas de desconto.'
   },
   retificacao:{
     area:'Retificação',
@@ -20158,10 +20158,22 @@ function tvxJobNumbers(job){
     .map(m=>m[0].replace(/^0+(?=\d)/,''));
 }
 
+// Job do Estoque de Créditos: coluna "Job" ("85554-RPQ - EMPRESA"); só vale o código antes de " - ".
+// (A coluna A da aba é DATA e o backend a entrega como "Número do Job", por isso ela fica como reserva.)
+function tvxCreditJob(row){
+  const raw=row['Job']!==undefined ? row['Job'] : row['Número do Job'];
+  return String(raw||'').split(' - ')[0].trim();
+}
+
+// Temas de desconto não entram no valor analisado.
+function tvxCreditCounts(row){
+  return !/^descontos?\b/.test(norm(row['Tema']));
+}
+
 function tvxCreditIndex(){
   const index=new Map();
   (DATA.creditos||[]).forEach((row,i)=>{
-    const job=String(row['Número do Job']||'').trim();
+    const job=tvxCreditJob(row);
     if(!job)return;
     tvxJobNumbers(job).forEach(num=>{
       if(!index.has(num))index.set(num,[]);
@@ -20181,77 +20193,35 @@ function tvxCreditValue(row){
   return 0;
 }
 
-function tvxCreditForRows(rows,index,diag){
-  const used=new Set();
-  let total=0;
-  const jobs=new Set(rows.map(r=>String(r['Número do Job']||'').trim()).filter(Boolean));
-  let matched=0;
-  jobs.forEach(job=>{
-    let found=false;
-    tvxJobNumbers(job).forEach(num=>{
-      (index.get(num)||[]).forEach(c=>{
-        found=true;
-        if(used.has(c.id))return;
-        used.add(c.id);
-        total+=tvxCreditValue(c.row);
-      });
-    });
-    if(found)matched++;
-  });
-  if(diag){
-    const credits=DATA.creditos||[];
-    diag.jobs=jobs.size;
-    diag.matched=matched;
-    diag.creditRows=credits.length;
-    diag.opSample=[...jobs].slice(0,4);
-    diag.creditSample=credits.slice(0,4).map(r=>String(r['Número do Job']||''));
-    diag.creditCols=credits.length?Object.keys(credits[0]).filter(k=>k.indexOf('__')!==0).join(' | '):'';
-    diag.creditWithValue=credits.filter(r=>tvxCreditValue(r)>0).length;
-  }
-  return total;
-}
-
-// Crédito do mês de uma pessoa: junta (sem repetir) dois cruzamentos pelo número do job.
-//  1) jobs da pessoa na Operação com Data Finalização Revisão no mês -> créditos desses jobs;
-//  2) jobs da pessoa na Operação (qualquer data) -> créditos do Estoque de Créditos
-//     cuja própria Data Finalização Revisão cai no mês.
-function tvxCreditForPerson(monthRows,allRows,ctx,diag){
+// Crédito do mês de uma pessoa: jobs da pessoa na Operação com Data Finalização Revisão
+// no mês, cruzados pelo número do job com a coluna Job do Estoque de Créditos
+// (sufixos como -RPA/-RPQ ignorados); soma a coluna Valor, sem os temas de desconto
+// e sem repetir a mesma linha de crédito.
+function tvxCreditForPerson(monthRows,ctx,diag){
   const used=new Map();
-  const add=c=>{if(!used.has(c.id))used.set(c.id,c.row);};
-
   const monthJobs=new Set(monthRows.map(r=>String(r['Número do Job']||'').trim()).filter(Boolean));
   let matched=0;
   monthJobs.forEach(job=>{
     let found=false;
     tvxJobNumbers(job).forEach(num=>{
-      (ctx.creditIndex.get(num)||[]).forEach(c=>{found=true;add(c);});
+      (ctx.creditIndex.get(num)||[]).forEach(c=>{
+        found=true;
+        if(!used.has(c.id))used.set(c.id,c.row);
+      });
     });
     if(found)matched++;
   });
 
-  const allNums=new Set();
-  allRows.forEach(r=>tvxJobNumbers(r['Número do Job']).forEach(n=>allNums.add(n)));
-  let byCreditDate=0;
-  allNums.forEach(num=>{
-    (ctx.creditIndex.get(num)||[]).forEach(c=>{
-      if(directorMonthKeyFromDate(c.row['Data Finalização Revisão'])!==ctx.key)return;
-      if(!used.has(c.id))byCreditDate++;
-      add(c);
-    });
-  });
-
   let total=0;
-  used.forEach(row=>{total+=tvxCreditValue(row);});
+  used.forEach(row=>{if(tvxCreditCounts(row))total+=tvxCreditValue(row);});
 
   if(diag){
     const credits=DATA.creditos||[];
     diag.jobs=monthJobs.size;
     diag.matched=matched;
-    diag.extraByCreditDate=byCreditDate;
-    diag.opAllJobs=allNums.size;
     diag.creditRows=credits.length;
     diag.opSample=[...monthJobs].slice(0,4);
-    diag.creditSample=credits.slice(0,4).map(r=>String(r['Número do Job']||''));
+    diag.creditSample=credits.slice(0,4).map(tvxCreditJob);
     diag.creditCols=credits.length?Object.keys(credits[0]).filter(k=>k.indexOf('__')!==0).join(' | '):'';
     diag.creditWithValue=credits.filter(r=>tvxCreditValue(r)>0).length;
   }
@@ -20318,7 +20288,7 @@ function tvxComputePerson(person,ctx){
     );
     v1=tvxCompanies(rows);
     diag={};
-    v2=tvxCreditForPerson(rows,(DATA.operacao||[]).filter(r=>person.match(r['Analista Responsável'])),ctx,diag);
+    v2=tvxCreditForPerson(rows,ctx,diag);
   }else if(person.kind==='revisao'){
     rows=(DATA.operacao||[]).filter(r=>
       person.match(r['Revisor']) &&
@@ -20326,7 +20296,7 @@ function tvxComputePerson(person,ctx){
     );
     v1=tvxCompanies(rows);
     diag={};
-    v2=tvxCreditForPerson(rows,(DATA.operacao||[]).filter(r=>person.match(r['Revisor'])),ctx,diag);
+    v2=tvxCreditForPerson(rows,ctx,diag);
   }else if(person.kind==='retificacao'){
     rows=ctx.retDelivered.filter(r=>person.match(r['Analista']));
     v1=tvxCompanies(rows);
@@ -20450,7 +20420,7 @@ function renderTvResultados(){
     <tr>
       <td><b>${esc(r.person.name)}</b></td>
       <td>${esc(r.kind.area)}</td>
-      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}${r.diag ? `<div class="tvx-rule">Cruzamento: ${r.diag.jobs} job(s) na Operação no mês · ${r.diag.matched} encontrado(s) no Estoque de Créditos (+${r.diag.extraByCreditDate} pela data do próprio crédito; ${r.diag.opAllJobs} job(s) da pessoa na Operação, qualquer data) · ${r.diag.creditRows} linha(s) no Estoque de Créditos carregadas (${r.diag.creditWithValue} com valor)<br>Jobs da Operação (exemplo): ${esc(r.diag.opSample.join(', ')||'-')}<br>Jobs do Estoque de Créditos (exemplo): ${esc(r.diag.creditSample.join(', ')||'-')}<br>Colunas do Estoque de Créditos: ${esc(r.diag.creditCols||'-')}</div>` : ''}</td>
+      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}${r.diag ? `<div class="tvx-rule">Cruzamento: ${r.diag.jobs} job(s) na Operação no mês · ${r.diag.matched} encontrado(s) no Estoque de Créditos · ${r.diag.creditRows} linha(s) no Estoque de Créditos carregadas (${r.diag.creditWithValue} com valor)<br>Jobs da Operação (exemplo): ${esc(r.diag.opSample.join(', ')||'-')}<br>Jobs do Estoque de Créditos (exemplo): ${esc(r.diag.creditSample.join(', ')||'-')}<br>Colunas do Estoque de Créditos: ${esc(r.diag.creditCols||'-')}</div>` : ''}</td>
       <td class="tvx-rule">${esc(r.kind.rule)}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
     </tr>`).join('');
 
@@ -20473,7 +20443,7 @@ function tvxRenderAlert(results){
   if(!credits.length){
     msgs.push('<b>O Estoque de Créditos chegou vazio ao site (0 linhas).</b>Sem ele não há valor para cruzar com os jobs da Operação. Confira se o seu acesso inclui Visão Geral ou Diretoria e se o Apps Script publicado é a versão mais recente do Code.gs (ele só envia o Estoque de Créditos para quem tem essas abas).');
   }else{
-    const semMatch=withCredit.filter(r=>r.diag.jobs>0 && r.diag.matched===0 && !(r.diag.extraByCreditDate>0));
+    const semMatch=withCredit.filter(r=>r.diag.jobs>0 && r.diag.matched===0);
     if(semMatch.length){
       const d=semMatch[0].diag;
       msgs.push('<b>Há jobs na Operação sem nenhum correspondente no Estoque de Créditos ('+esc(semMatch.map(r=>r.person.name).join(', '))+').</b>Jobs da Operação (exemplo): '+esc(d.opSample.join(', ')||'-')+' · Jobs do Estoque de Créditos (exemplo): '+esc(d.creditSample.join(', ')||'-')+' · Colunas do Estoque de Créditos: '+esc(d.creditCols||'-')+' · Linhas com valor: '+d.creditWithValue+' de '+d.creditRows+'.');
