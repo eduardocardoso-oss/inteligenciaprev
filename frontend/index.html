@@ -6140,6 +6140,8 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
 
 /* ===== Apresentação TV (Resultados do Time) ===== */
 #view-tv{--tvx-bg1:#0b1c36;--tvx-bg2:#06101f;--tvx-accent:#35e0c2;--tvx-blue:#4f83ff}
+.tvx-alert{margin:0 0 14px;padding:12px 16px;border-radius:12px;background:#fff4e5;border:1px solid #f0c27a;color:#6b4300;font-size:13px;line-height:1.5}
+.tvx-alert b{display:block;margin-bottom:2px}
 .tvx-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 16px;margin-bottom:14px}
 .tvx-toolbar-info{min-width:0}
 .tvx-toolbar-info b{display:block;font-size:15px}
@@ -6227,7 +6229,7 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
 
 /* modo TV: palco ocupa a tela toda */
 body.tvx-tv{overflow:hidden;background:#06101f}
-body.tvx-tv .side,body.tvx-tv .top,body.tvx-tv .side-backdrop,body.tvx-tv .tvx-toolbar,body.tvx-tv .tvx-check{display:none!important}
+body.tvx-tv .side,body.tvx-tv .top,body.tvx-tv .side-backdrop,body.tvx-tv .tvx-alert,body.tvx-tv .tvx-toolbar,body.tvx-tv .tvx-check{display:none!important}
 body.tvx-tv .main{margin:0!important;padding:0!important;max-width:none!important}
 body.tvx-tv .app{display:block!important}
 body.tvx-tv .tvx-viewport{position:fixed;inset:0;z-index:99999;width:100vw;height:100vh;max-height:none;aspect-ratio:auto;border-radius:0}
@@ -7752,6 +7754,8 @@ body.tvx-tv #view-tv{animation:none!important;transform:none!important}
       <button class="btn primary" type="button" data-tvx-action="tv">Modo TV (tela cheia)</button>
     </div>
   </div>
+
+  <div class="tvx-alert" id="tvxAlert" hidden></div>
 
   <div class="tvx-viewport" id="tvxViewport">
     <div class="tvx-stage" id="tvxStage">
@@ -20450,9 +20454,34 @@ function renderTvResultados(){
       <td class="tvx-rule">${esc(r.kind.rule)}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
     </tr>`).join('');
 
+  tvxRenderAlert(results);
+
   tvxApplyActive();
   tvxFit();
   tvxHandleUrlOnce();
+}
+
+// Avisa, acima da apresentação, quando o cruzamento Operação x Créditos não tem de onde tirar valor.
+function tvxRenderAlert(results){
+  const el=document.getElementById('tvxAlert');
+  if(!el)return;
+
+  const credits=DATA.creditos||[];
+  const withCredit=results.filter(r=>r.diag);
+  const msgs=[];
+
+  if(!credits.length){
+    msgs.push('<b>O Estoque de Créditos chegou vazio ao site (0 linhas).</b>Sem ele não há valor para cruzar com os jobs da Operação. Confira se o seu acesso inclui Visão Geral ou Diretoria e se o Apps Script publicado é a versão mais recente do Code.gs (ele só envia o Estoque de Créditos para quem tem essas abas).');
+  }else{
+    const semMatch=withCredit.filter(r=>r.diag.jobs>0 && r.diag.matched===0 && !(r.diag.extraByCreditDate>0));
+    if(semMatch.length){
+      const d=semMatch[0].diag;
+      msgs.push('<b>Há jobs na Operação sem nenhum correspondente no Estoque de Créditos ('+esc(semMatch.map(r=>r.person.name).join(', '))+').</b>Jobs da Operação (exemplo): '+esc(d.opSample.join(', ')||'-')+' · Jobs do Estoque de Créditos (exemplo): '+esc(d.creditSample.join(', ')||'-')+' · Colunas do Estoque de Créditos: '+esc(d.creditCols||'-')+' · Linhas com valor: '+d.creditWithValue+' de '+d.creditRows+'.');
+    }
+  }
+
+  el.hidden=!msgs.length;
+  el.innerHTML=msgs.join('<br>');
 }
 
 /* ---------- palco, ajuste de texto e rotação ---------- */
