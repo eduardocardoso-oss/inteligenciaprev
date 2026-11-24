@@ -20194,7 +20194,16 @@ function tvxCreditForRows(rows,index,diag){
     });
     if(found)matched++;
   });
-  if(diag){diag.jobs=jobs.size;diag.matched=matched;diag.creditRows=(DATA.creditos||[]).length;}
+  if(diag){
+    const credits=DATA.creditos||[];
+    diag.jobs=jobs.size;
+    diag.matched=matched;
+    diag.creditRows=credits.length;
+    diag.opSample=[...jobs].slice(0,4);
+    diag.creditSample=credits.slice(0,4).map(r=>String(r['Número do Job']||''));
+    diag.creditCols=credits.length?Object.keys(credits[0]).filter(k=>k.indexOf('__')!==0).join(' | '):'';
+    diag.creditWithValue=credits.filter(r=>tvxCreditValue(r)>0).length;
+  }
   return total;
 }
 
@@ -20390,7 +20399,7 @@ function renderTvResultados(){
     <tr>
       <td><b>${esc(r.person.name)}</b></td>
       <td>${esc(r.kind.area)}</td>
-      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}${r.diag ? `<div class="tvx-rule">Cruzamento: ${r.diag.jobs} job(s) na Operação no mês · ${r.diag.matched} encontrado(s) no Estoque de Créditos · ${r.diag.creditRows} linha(s) no Estoque de Créditos carregadas</div>` : ''}</td>
+      <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}${r.diag ? `<div class="tvx-rule">Cruzamento: ${r.diag.jobs} job(s) na Operação no mês · ${r.diag.matched} encontrado(s) no Estoque de Créditos · ${r.diag.creditRows} linha(s) no Estoque de Créditos carregadas (${r.diag.creditWithValue} com valor)<br>Jobs da Operação (exemplo): ${esc(r.diag.opSample.join(', ')||'-')}<br>Jobs do Estoque de Créditos (exemplo): ${esc(r.diag.creditSample.join(', ')||'-')}<br>Colunas do Estoque de Créditos: ${esc(r.diag.creditCols||'-')}</div>` : ''}</td>
       <td class="tvx-rule">${esc(r.kind.rule)}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
     </tr>`).join('');
 
