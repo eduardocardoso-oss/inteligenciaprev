@@ -6193,16 +6193,6 @@ table td.nowrap,table th.nowrap,td.money,th.money,.nowrap,.money{overflow-wrap:n
 .tvx-metric-value{margin-top:10px;font-size:190px;line-height:1.05;font-weight:700;letter-spacing:-.03em;white-space:nowrap;font-variant-numeric:tabular-nums}
 .tvx-metric:nth-child(even) .tvx-metric-value{color:var(--tvx-accent)}
 .tvx-metrics.n1{align-content:center}
-.tvx-metrics.n5{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
-.tvx-metrics.n5 .tvx-metric{padding:20px 30px 24px}
-.tvx-metrics.n5 .tvx-metric-label{font-size:21px;letter-spacing:.06em;min-height:30px}
-.tvx-metrics.n5 .tvx-metric-value{font-size:96px}
-.tvx-sum-card.n5{padding:14px 24px}
-.tvx-sum-card.n5 .tvx-sum-name{font-size:28px}
-.tvx-sum-card.n5 .tvx-sum-area{font-size:14px}
-.tvx-sum-card.n5 .tvx-sum-line{margin-top:4px}
-.tvx-sum-card.n5 .tvx-sum-line b{font-size:26px}
-.tvx-sum-card.n5 .tvx-sum-line span{font-size:11.5px}
 .tvx-metrics.n3,.tvx-metrics.n4{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
 .tvx-metrics.n3 .tvx-metric,.tvx-metrics.n4 .tvx-metric{padding:30px 34px 34px}
 .tvx-metrics.n3 .tvx-metric-label,.tvx-metrics.n4 .tvx-metric-label{font-size:23px;letter-spacing:.07em;min-height:56px}
@@ -20104,9 +20094,9 @@ const TVX_KINDS={
 const TVX_TEAM=[
   {name:'Yasmin Nunes',short:'Yasmin',kind:'checklist',match:v=>{const n=norm(v);return n==='yasmin' || n.startsWith('yasmin ');}},
   {name:'Luiz Neto',short:'Luiz',kind:'operacao',match:tvxNameIs('luiz','luiz neto'),retMatch:tvxNameIs('luiz','luiz neto')},
-  {name:'Letícia Oliveira',short:'Letícia O.',kind:'operacao',match:tvxNameIs('leticia','leticia oliveira'),retMatch:tvxNameIs('leticia oliveira'),apurado:true},
-  {name:'Brenda Guterres',short:'Brenda',kind:'operacao',match:tvxNameIs('brenda','brenda guterres'),retMatch:tvxNameIs('brenda','brenda guterres'),apurado:true},
-  {name:'Mayan Sampaio',short:'Mayan',kind:'revisao',match:v=>isMayanReviewerV314(v),apurado:true},
+  {name:'Letícia Oliveira',short:'Letícia O.',kind:'operacao',match:tvxNameIs('leticia','leticia oliveira'),retMatch:tvxNameIs('leticia oliveira')},
+  {name:'Brenda Guterres',short:'Brenda',kind:'operacao',match:tvxNameIs('brenda','brenda guterres'),retMatch:tvxNameIs('brenda','brenda guterres')},
+  {name:'Mayan Sampaio',short:'Mayan',kind:'revisao',match:v=>isMayanReviewerV314(v)},
   {name:'Ellen Rogowski',short:'Ellen',kind:'retificacao',match:tvxNameIs('ellen','ellen rogowski')},
   {name:'Letícia da Silva',short:'Letícia S.',kind:'retificacao',match:tvxNameIs('leticia','leticia da silva','leticia silva','leticia santos')},
   {name:'Igor Paz',short:'Igor',kind:'roboStudio'}
@@ -20273,12 +20263,6 @@ function tvxComputePerson(person,ctx){
     {label:kind.label2,value:v2,fmt:kind.fmt2}
   ];
 
-  // Crédito apurado: valor do Estoque de Créditos dos jobs da Operação com Crédito? = Sim.
-  if(person.apurado){
-    const apuradoRows=rows.filter(r=>norm(r['Crédito?'])==='sim');
-    metrics.push({label:'Crédito apurado',value:tvxCreditForRows(apuradoRows,ctx.creditIndex),fmt:'money'});
-  }
-
   // Quem também faz retificação mostra quantas entregou e os honorários gerados.
   if(person.retMatch){
     const retRows=ctx.retDelivered.filter(r=>person.retMatch(r['Analista']));
@@ -20341,7 +20325,7 @@ function tvxPersonHtml(r){
           ${r.metrics.map(m=>`
           <div class="tvx-metric">
             <div class="tvx-metric-label">${esc(m.label)}</div>
-            <div class="tvx-metric-value tvx-fit" data-max="${r.metrics.length>4?460:(r.metrics.length>2?440:1000)}">${esc(tvxFmt(m.value,m.fmt))}</div>
+            <div class="tvx-metric-value tvx-fit" data-max="${r.metrics.length>2?440:1000}">${esc(tvxFmt(m.value,m.fmt))}</div>
           </div>`).join('')}
         </div>
       </div>
@@ -20388,7 +20372,7 @@ function renderTvResultados(){
       <td><b>${esc(r.person.name)}</b></td>
       <td>${esc(r.kind.area)}</td>
       <td colspan="4">${r.allMetrics.map(m=>`<div>${esc(m.label)}: <b>${esc(tvxFmt(m.value,m.fmt))}</b>${m.fmt==='money' && !(m.value>0) ? ' <span class="tvx-rule">(oculto na TV)</span>' : ''}</div>`).join('')}</td>
-      <td class="tvx-rule">${esc(r.kind.rule)}${r.person.apurado ? ' Crédito apurado: número do job das linhas da Operação com Crédito? = Sim cruzado com o número do job no Estoque de Créditos (soma da coluna Valor).' : ''}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
+      <td class="tvx-rule">${esc(r.kind.rule)}${r.person.retMatch ? ' Retificações entregues / Honorários das retificações: Estoque Retificação com Analista = pessoa, Status Retificação Concluído e Data Finalização Retificação no mês; honorários pela mesma regra da aba Retificação.' : ''}</td>
     </tr>`).join('');
 
   tvxApplyActive();
