@@ -20934,6 +20934,40 @@ function toast(msg){
   );
 }
 
+// Estoque de Créditos: a aba hoje tem as colunas DATA | Job | Tema | Classificação | Valor |
+// Honorário | Honorário | Status. O backend entrega a coluna A (DATA) com o nome
+// "Número do Job", e o job vem junto com a empresa na coluna Job ("85554-RPQ - EMPRESA").
+// Aqui cada linha volta a ter Número do Job, Nome da Empresa e a data nos campos que as
+// telas usam. Linhas no formato antigo (sem coluna Job) ficam como estão.
+function normalizeCreditosRowsV4716(){
+  if(!Array.isArray(DATA.creditos))return;
+
+  const isoDate=/^(\d{4})-(\d{2})-(\d{2})/;
+  const brDate=/^\d{2}\/\d{2}\/\d{4}/;
+
+  DATA.creditos.forEach(r=>{
+    if(!r || r.__credNormV4716 || r['Job']===undefined)return;
+    r.__credNormV4716=true;
+
+    // coluna A: data (pode vir como "DATA" ou, pelo backend, como "Número do Job")
+    let date=String(r['DATA']!==undefined ? r['DATA'] : '').trim();
+    const colA=String(r['Número do Job']||'').trim();
+    if(!date && (isoDate.test(colA) || brDate.test(colA)))date=colA;
+    const iso=date.match(isoDate);
+    if(iso)date=iso[3]+'/'+iso[2]+'/'+iso[1];
+
+    // coluna Job: "85554-RPQ - EMPRESA LTDA"
+    const raw=String(r['Job']||'').trim();
+    const sep=raw.indexOf(' - ');
+    const job=sep>=0 ? raw.slice(0,sep).trim() : raw;
+    const company=sep>=0 ? raw.slice(sep+3).trim() : '';
+
+    r['Número do Job']=job;
+    if(!String(r['Nome da Empresa']||'').trim())r['Nome da Empresa']=company;
+    if(!String(r['Data Finalização Revisão']||'').trim())r['Data Finalização Revisão']=date;
+  });
+}
+
 function loadData(){
 
   if(loading){
@@ -20948,6 +20982,8 @@ function loadData(){
       data=>{
 
         DATA=data;
+
+        normalizeCreditosRowsV4716();
 
         normalizePeopleDataV352();
 
